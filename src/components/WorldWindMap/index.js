@@ -33,7 +33,7 @@ class Map extends Component {
         return (
             <div id="map" style={{
                 position: 'absolute',
-                top: '220px',
+                top: 0,
                 left: 0,
                 right: 0,
                 bottom: 0
