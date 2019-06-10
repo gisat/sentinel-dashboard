@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import config from '../../../../../config/index';
+// import config from '../../../../../config/index';
 
 import _ from 'lodash';
 import classNames from 'classnames';
-import moment from 'moment';
 
 import utils from '../../../../../utils/utils';
 
 const LAYER_HEIGHT = 10;
 
+
+//TODO - not used -> refactor to "overlay"
 class Layers extends React.PureComponent {
 
 	static propTypes = {

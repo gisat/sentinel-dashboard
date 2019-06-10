@@ -1,12 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import config from '../../../../../config/index';
-
-import _ from 'lodash';
-import classNames from 'classnames';
-import moment from 'moment';
-
-import utils from '../../../../../utils/utils';
 
 class Mouse extends React.PureComponent {
 

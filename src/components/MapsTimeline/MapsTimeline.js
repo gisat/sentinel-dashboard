@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 
 import TimelineContent from './components/TimelineContent';
-import Tooltip from './components/Tooltip';
+// import Tooltip from './components/Tooltip';
 
 const CONTROLS_WIDTH = 0;
 const MOUSE_BUFFER_WIDTH = 5;
 const INITIAL_STATE = {
 	mouseX: null,
-	displayTooltip: false
+	// displayTooltip: false
 };
 
 class MapsTimeline extends React.PureComponent {
@@ -22,7 +22,12 @@ class MapsTimeline extends React.PureComponent {
 		initialPeriod: PropTypes.shape({
 			start: PropTypes.object,
 			end: PropTypes.object
-		}).isRequired
+		}).isRequired,
+		dayWidth: PropTypes.number, //1.5
+		// layers: , //for tooltip
+		containerWidth: PropTypes.number,
+		// activeLayers: //for tooltip
+		// initialize: PropTypes.func
 	};
 
 	//static defaultProps = {
@@ -32,7 +37,7 @@ class MapsTimeline extends React.PureComponent {
 	constructor(props) {
 		super();
 		this.state = {...INITIAL_STATE};
-		props.initialize();
+		// props.initialize();
 
 		this.calculate = this.calculate.bind(this);
 		this.getX = this.getX.bind(this);
@@ -43,8 +48,8 @@ class MapsTimeline extends React.PureComponent {
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onWheel = this.onWheel.bind(this);
 		this.onDrag = this.onDrag.bind(this);
-		this.displayTooltip = this.displayTooltip.bind(this);
-		this.hideTooltip = this.hideTooltip.bind(this);
+		// this.displayTooltip = this.displayTooltip.bind(this);
+		// this.hideTooltip = this.hideTooltip.bind(this);
 
 		this.calculate(props);
 
@@ -137,16 +142,16 @@ class MapsTimeline extends React.PureComponent {
 		this._lastX = e.clientX;
 	}
 
-	displayTooltip() {
-		this.setState({
-			displayTooltip: true
-		});
-	}
-	hideTooltip() {
-		this.setState({
-			displayTooltip: false
-		});
-	}
+	// displayTooltip() {
+	// 	this.setState({
+	// 		displayTooltip: true
+	// 	});
+	// }
+	// hideTooltip() {
+	// 	this.setState({
+	// 		displayTooltip: false
+	// 	});
+	// }
 
 	/**
 	 * Based on the amount of pixels the wheel moves update the size of the visible pixels.
@@ -175,7 +180,7 @@ class MapsTimeline extends React.PureComponent {
 			}
 
 			let beforeMouseDays = this.state.mouseX / newWidth;
-			let afterMouseDays = (this.props.containerWidth - this.state.mouseX) / newWidth;
+			// let afterMouseDays = (this.props.containerWidth - this.state.mouseX) / newWidth;
 			let allDays = this.props.containerWidth / newWidth;
 
 			let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
@@ -298,23 +303,23 @@ class MapsTimeline extends React.PureComponent {
       onDrag: this.onDrag,
 			mouseX: this.state.mouseX,
 			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
-			displayTooltip: this.displayTooltip,
-			hideTooltip: this.hideTooltip,
+			// displayTooltip: this.displayTooltip,
+			// hideTooltip: this.hideTooltip,
 		};
 		children.push(React.createElement(TimelineContent, contentProps));
 
-		if (this.state.mouseX && this.state.displayTooltip) {
-			children.push(React.createElement(Tooltip, {
-				key: 'mapsTimelineTooltip',
-				mouseX: this.state.mouseX,
-				getTime: this.getTime,
-				layers: this.props.layers,
-				containerWidth: this.props.containerWidth,
-				mouseBufferWidth: MOUSE_BUFFER_WIDTH,
-				activeLayers: this.props.activeLayers,
-				dataPeriod: this.props.initialPeriod
-			}));
-		}
+		// if (this.state.mouseX && this.state.displayTooltip) {
+		// 	children.push(React.createElement(Tooltip, {
+		// 		key: 'mapsTimelineTooltip',
+		// 		mouseX: this.state.mouseX,
+		// 		getTime: this.getTime,
+		// 		layers: this.props.layers,
+		// 		containerWidth: this.props.containerWidth,
+		// 		mouseBufferWidth: MOUSE_BUFFER_WIDTH,
+		// 		activeLayers: this.props.activeLayers,
+		// 		dataPeriod: this.props.initialPeriod
+		// 	}));
+		// }
 
 		return React.createElement('div', {className: 'ptr-timeline-container'}, children);
 	}

@@ -1,18 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import config from '../../../../../config/index';
-
-import _ from 'lodash';
-import classNames from 'classnames';
-import moment from 'moment';
-
-import utils from '../../../../../utils/utils';
 
 import Months from './Months';
 import Days from './Days';
 import Years from './Years';
 import Mouse from './Mouse';
-import Layers from './Layers';
+// import Layers from './Layers';
 import OutOfScopeOverlays from './OutOfScopeOverlays';
 
 
@@ -80,7 +73,7 @@ class TimelineContent extends React.PureComponent {
 						mouseX={this.props.mouseX}
 						height={height}
 					/>
-					<Layers
+					{/* <Layers
 						layers={this.props.layers}
 						dayWidth={this.props.dayWidth}
 						getX={this.props.getX}
@@ -88,7 +81,7 @@ class TimelineContent extends React.PureComponent {
 						period={this.props.period}
 						activeLayers={this.props.activeLayers}
 						activeLayerPeriods={this.props.activeLayerPeriods}
-					/>
+					/> */}
 					<OutOfScopeOverlays
 						dayWidth={this.props.dayWidth}
 						getX={this.props.getX}

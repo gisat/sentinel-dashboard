@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import config from '../../../../../config/index';
 
 import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
-
-import utils from '../../../../../utils/utils';
 
 class Days extends React.PureComponent {
 
@@ -34,7 +31,7 @@ class Days extends React.PureComponent {
 
 		let ret = _.map(days, day => {
 			let start = this.props.getX(day.start);
-			let end = this.props.getX(day.end);
+			// let end = this.props.getX(day.end);
 			let monday = day.start.format('dddd') === 'Monday';
 			if (this.props.dayWidth > 2 || (this.props.dayWidth > 0.3 && monday)) {
 				let height = this.props.height;

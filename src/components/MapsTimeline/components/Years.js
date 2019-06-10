@@ -1,12 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import config from '../../../../../config/index';
 
 import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
-
-import utils from '../../../../../utils/utils';
 
 class Years extends React.PureComponent {
 
@@ -34,7 +31,7 @@ class Years extends React.PureComponent {
 
 		let ret = _.map(years, year => {
 			let start = this.props.getX(year.start);
-			let end = this.props.getX(year.end);
+			// let end = this.props.getX(year.end);
 			let label = null;
 			if (this.props.dayWidth < 1.5) {
 				label = (

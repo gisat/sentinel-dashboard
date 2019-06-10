@@ -3,6 +3,9 @@ import {Context} from './context/context';
 import types from './context/types';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
+import MapsTimeline from './components/MapsTimeline/MapsTimeline';
+
+import period from './utils/period'
 
 function App() {
     const {state, dispatch} = useContext(Context);
@@ -13,6 +16,8 @@ function App() {
             payload: time
         })
     };
+
+    const timelinePeriod = period('2000/2020');
 
     return (
         <React.Fragment>
@@ -28,6 +33,12 @@ function App() {
             </div>
             <SatellitePanel />
             <WorldWindMap/>
+            <MapsTimeline
+                period = {timelinePeriod}
+                initialPeriod = {timelinePeriod}
+                // onLayerPeriodClick: this.onLayerPeriodClick,
+                containerWidth = {500}
+                />
         </React.Fragment>
     );
 }
