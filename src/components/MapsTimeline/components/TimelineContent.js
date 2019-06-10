@@ -8,6 +8,9 @@ import Mouse from './Mouse';
 // import Layers from './Layers';
 import OutOfScopeOverlays from './OutOfScopeOverlays';
 
+import './style.css';
+
+const DEFAULT_HEIGHT = 40;
 
 class TimelineContent extends React.PureComponent {
 
@@ -19,7 +22,7 @@ class TimelineContent extends React.PureComponent {
 
 		//console.log('TimelineContent#render props', this.props);
 
-		let height = (this.props.layers && this.props.layers.length * 10 + 20) || 20;
+		let height = (this.props.layers && this.props.layers.length * 10 + DEFAULT_HEIGHT) || DEFAULT_HEIGHT;
 
 		let content = null;
 		if (this.props.content) {

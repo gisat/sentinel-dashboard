@@ -36,3 +36,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+.timelineWrapper{
+  z-index: 100;
+  position: absolute;
+  bottom: 0px;
+  width: 100%;
+}

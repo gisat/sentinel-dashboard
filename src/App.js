@@ -1,4 +1,5 @@
 import React, {useContext} from 'react';
+import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
 import types from './context/types';
 import WorldWindMap from './components/WorldWindMap/index';
@@ -21,24 +22,28 @@ function App() {
 
     return (
         <React.Fragment>
-            <div className="header">
-                <h1>Sentinel Dashboard</h1>
-                <p>Select your satellite</p>
-            </div>
-            <div>
-                {state.currentTime.toString()}
-            </div>
-            <div>
-                <input type="date" value={state.currentTime} onChange={(e) => changeTime(e.target.value)}/>
-            </div>
             <SatellitePanel />
+            <div class={'timelineWrapper'}>
+                <ReactResizeDetector
+                    key="11"
+                    handleWidth
+                    render={({ width }) => {
+                        if (width) {
+                            return (
+                                <MapsTimeline
+                                    period = {timelinePeriod}
+                                    initialPeriod = {timelinePeriod}
+                                    // onLayerPeriodClick: this.onLayerPeriodClick,
+                                    containerWidth = {width}
+                                    />
+                            )
+                        } else {
+                            return(<div></div>)
+                        }
+                    }}
+                    />
+            </div>
             <WorldWindMap/>
-            <MapsTimeline
-                period = {timelinePeriod}
-                initialPeriod = {timelinePeriod}
-                // onLayerPeriodClick: this.onLayerPeriodClick,
-                containerWidth = {500}
-                />
         </React.Fragment>
     );
 }
