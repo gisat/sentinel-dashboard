@@ -18,7 +18,7 @@ function App() {
         })
     };
 
-    const timelinePeriod = period('2000/2020');
+    const timelinePeriod = period('2010/2015');
 
     return (
         <React.Fragment>

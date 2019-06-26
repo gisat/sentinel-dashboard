@@ -12,6 +12,17 @@ const INITIAL_STATE = {
 	// displayTooltip: false
 };
 
+const getClientXFromEvent = (evt) => {
+	let clientX;
+	const isTouch = evt.touches && evt.touches[0]
+	if(isTouch) {
+		clientX = evt.touches[0].clientX;
+	} else {
+		clientX = evt.clientX;
+	}
+	return clientX;
+}
+
 class MapsTimeline extends React.PureComponent {
 
 	static propTypes = {
@@ -47,6 +58,7 @@ class MapsTimeline extends React.PureComponent {
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onWheel = this.onWheel.bind(this);
+		this.onPinch = this.onPinch.bind(this);
 		this.onDrag = this.onDrag.bind(this);
 		// this.displayTooltip = this.displayTooltip.bind(this);
 		// this.hideTooltip = this.hideTooltip.bind(this);
@@ -108,19 +120,21 @@ class MapsTimeline extends React.PureComponent {
 
 
 	onMouseMove(e) {
+		const clientX = getClientXFromEvent(e);
+
 		this.setState({
-			mouseX: e.clientX
+			mouseX: clientX
 		});
 
 		if(this._drag) {
-			let distance = e.clientX - this._lastX;
+			let distance = clientX - this._lastX;
 			if(distance !== 0) {
 				this.onDrag({
 					distance: Math.abs(distance),
 					direction: distance < 0 ? 'future': 'past'
 				});
 
-				this._lastX = e.clientX;
+				this._lastX = clientX;
 			}
 			e.preventDefault();
 		}
@@ -132,14 +146,12 @@ class MapsTimeline extends React.PureComponent {
 	}
 
 	onMouseUp() {
-		console.log('onMouseUp');
 		this._drag = false;
 		this._lastX = null;
 	}
 	onMouseDown(e) {
-		console.log('onMouseDown');
 		this._drag = true;
-		this._lastX = e.clientX;
+		this._lastX = getClientXFromEvent(e);;
 	}
 
 	// displayTooltip() {
@@ -152,6 +164,59 @@ class MapsTimeline extends React.PureComponent {
 	// 		displayTooltip: false
 	// 	});
 	// }
+
+	onPinch(e) {
+		e.preventDefault();
+		let change;
+		let mouseTime = this.getTime(this.state.mouseX);
+		if (e.scale > 1) {
+			// zoom out
+			change = 1 + e.scale / 10;
+		} else {
+			// zoom in
+			change = 1 - e.scale / 10;
+		}
+			
+		let newWidth = this.state.dayWidth * change;
+
+		//don't allow zoom out outside initial zoom
+		if (newWidth < this.dimensions.dayWidth) {
+			newWidth = this.dimensions.dayWidth;
+		}
+
+		let beforeMouseDays = this.state.mouseX / newWidth;
+		let allDays = this.props.containerWidth / newWidth;
+
+		let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
+		let end = moment(start).add(moment.duration(allDays * (60 * 60 * 24 * 1000), 'ms'));
+
+		// if zoomed out of initial period, save temporary period limit (for drag)
+		if (start < this.props.initialPeriod.start) {
+			this.setState({
+				periodLimit: {
+					start: moment(start),
+					end: this.state.periodLimit.end
+				}
+			});
+		}
+		if (end > this.props.initialPeriod.end) {
+			this.setState({
+				periodLimit: {
+					start: this.state.periodLimit.start,
+					end: moment(end)
+				}
+			});
+		}
+
+		this.setState({
+			dayWidth: newWidth,
+			period: {
+				start: start,
+				end: end
+			}
+		});
+	}
+
 
 	/**
 	 * Based on the amount of pixels the wheel moves update the size of the visible pixels.
@@ -300,8 +365,9 @@ class MapsTimeline extends React.PureComponent {
 			onMouseLeave: this.onMouseLeave,
 			onMouseUp: this.onMouseUp,
 			onMouseDown: this.onMouseDown,
-      onWheel: this.onWheel,
-      onDrag: this.onDrag,
+			onPinch: this.onPinch,
+			onWheel: this.onWheel,
+      		onDrag: this.onDrag,
 			mouseX: this.state.mouseX,
 			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
 			// displayTooltip: this.displayTooltip,

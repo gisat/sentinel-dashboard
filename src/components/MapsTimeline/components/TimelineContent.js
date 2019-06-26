@@ -18,6 +18,50 @@ class TimelineContent extends React.PureComponent {
 
 	};
 
+	constructor(props){
+		super(props);
+		this.node = React.createRef();
+	}
+
+
+	componentDidMount() {
+		if(this.props.onPinch && typeof this.props.onPinch === 'function') {
+			this.node.current.addEventListener('gesturechange', this.props.onPinch);
+		}
+
+		if(this.props.onMouseDown && typeof this.props.onMouseDown === 'function') {
+			this.node.current.addEventListener('touchstart', this.props.onMouseDown);
+		}
+
+		if(this.props.onMouseUp && typeof this.props.onMouseUp === 'function') {
+			this.node.current.addEventListener('touchend', this.props.onMouseUp);
+		}
+
+		if(this.props.onMouseMove && typeof this.props.onMouseMove === 'function') {
+			this.node.current.addEventListener('touchmove', this.props.onMouseMove);
+		}
+	
+	  }
+	
+	  componentWillUnmount() {
+		if(this.props.onPinch && typeof this.props.onPinch === 'function') {
+			this.node.current.removeEventListener('gesturechange', this.props.onPinch);
+		}
+
+		if(this.props.onMouseDown && typeof this.props.onMouseDown === 'function') {
+			this.node.current.removeEventListener('touchstart', this.props.onMouseDown);
+		}
+
+		if(this.props.onMouseUp && typeof this.props.onMouseUp === 'function') {
+			this.node.current.removeEventListener('touchend', this.props.onMouseUp);
+		}
+
+		if(this.props.onMouseMove && typeof this.props.onMouseMove === 'function') {
+			this.node.current.removeEventListener('touchmove', this.props.onMouseMove);
+		}
+	  }
+	
+
 	render() {
 
 		//console.log('TimelineContent#render props', this.props);
@@ -39,6 +83,7 @@ class TimelineContent extends React.PureComponent {
 
 		return (
 			<div
+				ref={this.node}
 				className="ptr-timeline-content"
 				onMouseLeave={this.props.onMouseLeave}
 				onWheel={this.props.onWheel}
