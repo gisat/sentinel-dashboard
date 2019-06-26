@@ -159,6 +159,7 @@ class MapsTimeline extends React.PureComponent {
 	 *
 	 */
 	onWheel(e) {
+		e.preventDefault();
 		let change;
 		let mouseTime = this.getTime(this.state.mouseX);
 
