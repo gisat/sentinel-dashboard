@@ -5,6 +5,7 @@ import Months from './Months';
 import Days from './Days';
 import Years from './Years';
 import Mouse from './Mouse';
+import Picker from './Picker';
 // import Layers from './Layers';
 import OutOfScopeOverlays from './OutOfScopeOverlays';
 
@@ -15,7 +16,8 @@ const DEFAULT_HEIGHT = 40;
 class TimelineContent extends React.PureComponent {
 
 	static propTypes = {
-
+		pickDateByCenter: PropTypes.bool,
+		selectedDate: PropTypes.object
 	};
 
 	constructor(props){
@@ -121,6 +123,7 @@ class TimelineContent extends React.PureComponent {
 						mouseX={this.props.mouseX}
 						height={height}
 					/>
+					{this.props.pickDateByCenter ? <Picker position={this.props.width / 2} height={height}/> : null}
 					{/* <Layers
 						layers={this.props.layers}
 						dayWidth={this.props.dayWidth}

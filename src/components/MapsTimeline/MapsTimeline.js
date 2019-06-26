@@ -370,6 +370,11 @@ class MapsTimeline extends React.PureComponent {
       		onDrag: this.onDrag,
 			mouseX: this.state.mouseX,
 			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
+
+			pickDateByCenter: true,
+			selectedDate: null
+
+
 			// displayTooltip: this.displayTooltip,
 			// hideTooltip: this.hideTooltip,
 		};
