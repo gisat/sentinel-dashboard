@@ -28,7 +28,7 @@ function App() {
     return (
         <div className={'app'}>
             <SatellitePanel />
-            <div class={'timelineWrapper'}>
+            <div className={'timelineWrapper'}>
                 <ReactResizeDetector
                     key="11"
                     handleWidth
