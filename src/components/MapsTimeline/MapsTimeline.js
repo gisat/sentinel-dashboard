@@ -79,22 +79,24 @@ class MapsTimeline extends React.PureComponent {
 		};
 	}
 
+	componentDidMount() {
+		this.dispatchChange();
+	}
 	componentDidUpdate(nextProps) {
 		if (nextProps.containerWidth !== this.props.containerWidth) {
 			this.calculate(nextProps);
 		}
 	}
 
-	handleChange(change) {
-		const cb = () => {
-			if(typeof this.props.onChange === 'function') {
-				let centerTime = this.getTime(this.dimensions.width / 2);
-				//
-				this.props.onChange(this.state, centerTime);
-			}
+	dispatchChange() {
+		if(typeof this.props.onChange === 'function') {
+			let centerTime = this.getTime(this.dimensions.width / 2);
+			this.props.onChange(this.state, centerTime);
 		}
+	}
 
-		this.setState((state) => change, cb)
+	handleChange(change) {
+		this.setState((state) => change, this.dispatchChange)
 	}
 
 
