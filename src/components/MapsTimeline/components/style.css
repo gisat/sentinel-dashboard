@@ -22,6 +22,12 @@
 	stroke: rgba(0,0,0,.3);
 }
 
+
+.ptr-timeline-hour {
+	stroke-width: 1;
+	stroke: rgba(0,0,0,.2);
+}
+
 .ptr-timeline-year > line {
 	stroke-width: 1;
 	stroke: rgba(0,0,0,.6);

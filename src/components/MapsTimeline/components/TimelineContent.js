@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 
 import Months from './Months';
 import Days from './Days';
+import Hours from './Hours';
 import Years from './Years';
 import Mouse from './Mouse';
 import Picker from './Picker';
@@ -107,6 +108,12 @@ class TimelineContent extends React.PureComponent {
 						dayWidth={this.props.dayWidth}
 					/>
 					<Days
+						period={this.props.period}
+						getX={this.props.getX}
+						height={height}
+						dayWidth={this.props.dayWidth}
+					/>
+					<Hours
 						period={this.props.period}
 						getX={this.props.getX}
 						height={height}
