@@ -47,3 +47,17 @@ code {
   bottom: 0px;
   width: 100%;
 }
+
+.time-widget-wrapper{
+  z-index: 100;
+}
+
+.time-widget-wrapper.horizontal{
+  position: absolute;
+  bottom: 46px;
+  right: 0px;
+
+  border-top: rgba(123, 123, 123, 0.7) 1px solid;
+  border-left: rgba(123, 123, 123, 0.7) 1px solid;
+  box-shadow: -0.1rem -0.1rem 0.5rem 0.1rem rgba(123, 123, 123, 0.7)
+}

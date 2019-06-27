@@ -5,6 +5,7 @@ import types from './context/types';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline from './components/MapsTimeline/MapsTimeline';
+import TimeWidget from './components/TimeWidget/';
 
 import period from './utils/period'
 
@@ -20,8 +21,12 @@ function App() {
 
     const timelinePeriod = period('2010/2015');
 
+    const onTimeChange = (timelineState, centerTime) => {
+        changeTime(centerTime.toDate());
+    }
+
     return (
-        <React.Fragment>
+        <div className={'app'}>
             <SatellitePanel />
             <div class={'timelineWrapper'}>
                 <ReactResizeDetector
@@ -35,6 +40,7 @@ function App() {
                                     initialPeriod = {timelinePeriod}
                                     // onLayerPeriodClick: this.onLayerPeriodClick,
                                     containerWidth = {width}
+                                    onChange = {onTimeChange}
                                     />
                             )
                         } else {
@@ -43,8 +49,14 @@ function App() {
                     }}
                     />
             </div>
+            <div className={'time-widget-wrapper horizontal'}>
+                <TimeWidget
+                    time={state.currentTime}
+                    />
+                
+            </div>
             <WorldWindMap/>
-        </React.Fragment>
+        </div>
     );
 }
 

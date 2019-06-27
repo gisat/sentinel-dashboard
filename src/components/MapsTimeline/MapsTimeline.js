@@ -37,6 +37,7 @@ class MapsTimeline extends React.PureComponent {
 		dayWidth: PropTypes.number, //1.5
 		// layers: , //for tooltip
 		containerWidth: PropTypes.number,
+		onChange: PropTypes.func,
 		// activeLayers: //for tooltip
 		// initialize: PropTypes.func
 	};
@@ -78,10 +79,22 @@ class MapsTimeline extends React.PureComponent {
 		};
 	}
 
-	componentWillReceiveProps(nextProps) {
+	componentDidUpdate(nextProps) {
 		if (nextProps.containerWidth !== this.props.containerWidth) {
 			this.calculate(nextProps);
 		}
+	}
+
+	handleChange(change) {
+		const cb = () => {
+			if(typeof this.props.onChange === 'function') {
+				let centerTime = this.getTime(this.dimensions.width / 2);
+				//
+				this.props.onChange(this.state, centerTime);
+			}
+		}
+
+		this.setState((state) => change, cb)
 	}
 
 
@@ -99,7 +112,7 @@ class MapsTimeline extends React.PureComponent {
 		};
 
 		if (this.state.dayWidth) { // don't set state in constructor
-			this.setState({
+			this.handleChange({
 				dayWidth: this.dimensions.dayWidth
 			});
 		}
@@ -122,7 +135,7 @@ class MapsTimeline extends React.PureComponent {
 	onMouseMove(e) {
 		const clientX = getClientXFromEvent(e);
 
-		this.setState({
+		this.handleChange({
 			mouseX: clientX
 		});
 
@@ -140,7 +153,7 @@ class MapsTimeline extends React.PureComponent {
 		}
 	}
 	onMouseLeave(e) {
-		this.setState({
+		this.handleChange({
 			mouseX: null
 		});
 	}
@@ -192,7 +205,7 @@ class MapsTimeline extends React.PureComponent {
 
 		// if zoomed out of initial period, save temporary period limit (for drag)
 		if (start < this.props.initialPeriod.start) {
-			this.setState({
+			this.handleChange({
 				periodLimit: {
 					start: moment(start),
 					end: this.state.periodLimit.end
@@ -200,7 +213,7 @@ class MapsTimeline extends React.PureComponent {
 			});
 		}
 		if (end > this.props.initialPeriod.end) {
-			this.setState({
+			this.handleChange({
 				periodLimit: {
 					start: this.state.periodLimit.start,
 					end: moment(end)
@@ -208,7 +221,7 @@ class MapsTimeline extends React.PureComponent {
 			});
 		}
 
-		this.setState({
+		this.handleChange({
 			dayWidth: newWidth,
 			period: {
 				start: start,
@@ -255,7 +268,7 @@ class MapsTimeline extends React.PureComponent {
 
 			// if zoomed out of initial period, save temporary period limit (for drag)
 			if (start < this.props.initialPeriod.start) {
-				this.setState({
+				this.handleChange({
 					periodLimit: {
 						start: moment(start),
 						end: this.state.periodLimit.end
@@ -263,7 +276,7 @@ class MapsTimeline extends React.PureComponent {
 				});
 			}
 			if (end > this.props.initialPeriod.end) {
-				this.setState({
+				this.handleChange({
 					periodLimit: {
 						start: this.state.periodLimit.start,
 						end: moment(end)
@@ -271,7 +284,7 @@ class MapsTimeline extends React.PureComponent {
 				});
 			}
 
-			this.setState({
+			this.handleChange({
 				dayWidth: newWidth,
 				period: {
 					start: start,
@@ -338,7 +351,7 @@ class MapsTimeline extends React.PureComponent {
 			}
 		}
 
-		this.setState({
+		this.handleChange({
 			period: {
 				start: start,
 				end: end

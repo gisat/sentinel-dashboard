@@ -11,7 +11,7 @@ import OutOfScopeOverlays from './OutOfScopeOverlays';
 
 import './style.css';
 
-const DEFAULT_HEIGHT = 40;
+const DEFAULT_HEIGHT = 45;
 
 class TimelineContent extends React.PureComponent {
 

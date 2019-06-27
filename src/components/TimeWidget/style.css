@@ -1,0 +1,17 @@
+.time-widget{
+    background: #FFF;
+    font-size: 1.5rem;
+    padding: 0.3rem;
+}  
+
+.time-widget .month::after{
+    content: "\00a0 ";
+}
+
+.time-widget .day::after{
+    content: "\00a0 ";
+}
+
+.time-widget .year::after{
+    content: "\00a0 ";
+}
