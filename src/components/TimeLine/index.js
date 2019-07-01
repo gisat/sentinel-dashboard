@@ -6,6 +6,7 @@ import TimelineEventsWrapper from './TimelineEventsWrapper';
 import Years from './years';
 import Months from './months';
 import Picker from './centerPicker';
+import Mouse from './mouse';
 // import Days from './Days';
 // import Hours from './Hours';
 
@@ -77,6 +78,7 @@ class TimelineContent extends React.PureComponent {
 		this.state = {
 			dayWidth:1,
 			periodLimit: props.period,
+			mouseX: null
 		}
 	}
 
@@ -93,6 +95,11 @@ class TimelineContent extends React.PureComponent {
 		const periodLimitChanged = periodLimit !== this.state.periodLimit;
 		if(periodLimitChanged) {
 			this.setState({periodLimit})
+		}
+
+		const mouseXChanged = changed.mouseX !== this.state.mouseX;
+		if(mouseXChanged) {
+			this.setState({mouseX: changed.mouseX})
 		}
 		
 		const hasChangeListener = typeof this.props.onChange === 'function';
@@ -132,7 +139,7 @@ class TimelineContent extends React.PureComponent {
 
 	render() {
 		const {levels, period, initialPeriod, height, onMouseLeave, onWheel, onMouseDown, onMouseMove, containerWidth, pickDateByCenter} = this.props;
-		const {dayWidth, periodLimit} = this.state;
+		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		let content = null;
 
@@ -172,6 +179,7 @@ class TimelineContent extends React.PureComponent {
 							dayWidth={activeDayWidth}
 						/>
 						{pickDateByCenter ? <Picker position={containerWidth / 2} height={height}/> : null}
+						{mouseX ? <Mouse mouseX={mouseX} mouseBufferWidth={20} height={height} /> : null}
 					</svg>
 				</div>
 			</TimelineEventsWrapper>

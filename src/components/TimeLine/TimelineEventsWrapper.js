@@ -120,7 +120,9 @@ class TimelineEventsWrapper extends React.PureComponent {
 			this.props.onChange({
 				dayWidth: this.state.dayWidth,
 				periodLimit: this.state.periodLimit,
-				centerTime});
+				mouseX: this.state.mouseX,
+				centerTime
+			});
 		}
 	}
 	handleChange(change) {

@@ -5,7 +5,7 @@ import Months from './Months';
 import Days from './Days';
 import Hours from './Hours';
 import Years from './Years';
-import Mouse from './Mouse';
+// import Mouse from './Mouse';
 import Picker from './Picker';
 // import Layers from './Layers';
 import OutOfScopeOverlays from './OutOfScopeOverlays';
@@ -125,11 +125,11 @@ class TimelineContent extends React.PureComponent {
 						height={height}
 						dayWidth={this.props.dayWidth}
 					/>
-					<Mouse
+					{/* <Mouse
 						mouseBufferWidth={this.props.mouseBufferWidth}
 						mouseX={this.props.mouseX}
 						height={height}
-					/>
+					/> */}
 					{this.props.pickDateByCenter ? <Picker position={this.props.width / 2} height={height}/> : null}
 					{/* <Layers
 						layers={this.props.layers}

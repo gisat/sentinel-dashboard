@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
+import './style.css'
 class Mouse extends React.PureComponent {
 
 	static propTypes = {
@@ -8,9 +8,6 @@ class Mouse extends React.PureComponent {
 	};
 
 	render() {
-
-		//console.log('Mouse#render props', this.props);
-
 		if (this.props.mouseX) {
 			return (
 				<g
