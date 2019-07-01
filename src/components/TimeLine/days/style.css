@@ -1,0 +1,13 @@
+.ptr-timeline-day {
+	stroke-width: 1;
+	stroke: rgba(0,0,0,.2);
+}
+.ptr-timeline-day.Monday {
+	stroke: rgba(0,0,0,.3);
+}
+.ptr-timeline-day.background {
+	stroke: rgba(0,0,0,.07);
+}
+.ptr-timeline-day.background.Monday {
+	stroke: rgba(0,0,0,.1);
+}

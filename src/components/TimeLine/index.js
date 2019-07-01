@@ -5,6 +5,7 @@ import moment from 'moment';
 import TimelineEventsWrapper from './TimelineEventsWrapper';
 import Years from './years';
 import Months from './months';
+import Days from './days';
 import Picker from './centerPicker';
 import Mouse from './mouse';
 // import Days from './Days';
@@ -25,6 +26,10 @@ const LEVELS = [
 	{
 		end: 20,
 		level: 'month',
+	},
+	{
+		end: 200,
+		level: 'days',
 	}
 ]
 
@@ -132,6 +137,8 @@ class TimelineContent extends React.PureComponent {
 				return Years;
 			case 'month':
 				return Months;
+			case 'days':
+				return Days;
 			default:
 				return null;
 		}

@@ -1,59 +1,7 @@
-.ptr-timeline-content {
-	width: 100%;
-	line-height: 0.6rem;
-}
-
-.ptr-timeline-month > rect {
-	fill: #fff;
-}
-.ptr-timeline-month.odd > rect {
-	fill: #f1f1f1;
-}
-.ptr-timeline-month-label {
-	font-size: 0.8rem;
-	fill: rgba(0,0,0,.4);
-}
-
-.ptr-timeline-day {
-	stroke-width: 1;
-	stroke: rgba(0,0,0,.2);
-}
-.ptr-timeline-day.Monday {
-	stroke: rgba(0,0,0,.3);
-}
-
-
 .ptr-timeline-hour {
 	stroke-width: 1;
 	stroke: rgba(0,0,0,.2);
 }
-
-.ptr-timeline-year > line {
-	stroke-width: 1;
-	stroke: rgba(0,0,0,.6);
-}
-.ptr-timeline-year-label {
-	font-size: 0.8rem;
-	fill: rgba(0,0,0,.6);
-}
-
-
-/*.ptr-timeline-month.background > rect {*/
-	/*fill: #fff;*/
-/*}*/
-.ptr-timeline-month.background.odd > rect {
-	fill: #f9f9f9;
-}
-.ptr-timeline-day.background {
-	stroke: rgba(0,0,0,.07);
-}
-.ptr-timeline-day.background.Monday {
-	stroke: rgba(0,0,0,.1);
-}
-.ptr-timeline-year.background > line {
-	stroke: rgba(0,0,0,.2);
-}
-
 
 .ptr-timeline-layer-period {
 	cursor: pointer;
@@ -66,15 +14,6 @@
 }
 .ptr-timeline-layer-period-symbol.active {
 	fill: #cc0044;
-}
-
-
-.ptr-timeline-mouse > rect {
-	fill: rgba(76, 177, 204, .15);
-}
-.ptr-timeline-mouse > line {
-	stroke-width: 1;
-	stroke: rgba(76, 177, 204, .7);
 }
 
 .ptr-timeline-tooltip {

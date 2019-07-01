@@ -1,4 +1,4 @@
-.satellite-selector {
+/* .satellite-selector {
     display: -webkit-flex;
     display: flex;
     flex-flow: column;
@@ -9,4 +9,10 @@
     bottom:10px;
     font-size: 14px;
     bottom: 170px;
+} */
+
+.ptr-timeline-content {
+	width: 100%;
+    line-height: 0.6rem;
+    background: #f9f9f9;
 }

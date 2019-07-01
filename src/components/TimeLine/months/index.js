@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {getMonths} from '../utils/interval';
 
 import _ from 'lodash';
 import classNames from 'classnames';
@@ -9,33 +10,30 @@ import './style.css';
 class Months extends React.PureComponent {
 
 	static propTypes = {
-
+		period: PropTypes.shape({
+			start: PropTypes.object,
+			end: PropTypes.object
+		}),
+		getX: PropTypes.func,
+		dayWidth: PropTypes.number,
+		height: PropTypes.number,
 	};
 
 	render() {
-		let start = moment(this.props.period.start);
-		let end = moment(this.props.period.end);
-		let months = [];
-		let current = moment(this.props.period.start);
+		const {period, getX, dayWidth, height} = this.props;
+		const periodStart = moment(period.start);
+		const periodEnd = moment(period.end);
+		const months = getMonths(periodStart, periodEnd);
 
-		while (end > current || current.format('YYYY-MM') === end.format('YYYY-MM')) {
-			months.push({
-				month: current.format('YYYY-MM'),
-				start: (current.format('YYYY-MM') === start.format('YYYY-MM')) ? start : moment(current).startOf('month'),
-				end: (current.format('YYYY-MM') === end.format('YYYY-MM')) ? end : moment(current).endOf('month')
-			});
-			current.add(1,'month');
-		}
-
-		let ret = _.map(months, month => {
-			let start = this.props.getX(month.start);
-			let end = this.props.getX(month.end);
+		const ret = _.map(months, month => {
+			const start = getX(month.start);
+			const end = getX(month.end);
 			let label = null;
-			if (!this.props.background && this.props.dayWidth > 1.5) {
+			if (dayWidth > 1.5) {
 				label = (
 					<text
 						x={start + 3}
-						y={this.props.height - 2}
+						y={height - 2}
 						className="ptr-timeline-month-label"
 					>
 						{month.month}
@@ -45,15 +43,13 @@ class Months extends React.PureComponent {
 			return (
 				<g
 					key={month.month}
-					className={classNames("ptr-timeline-month", (+month.start.format('M') % 2) ? 'odd' : 'even', {
-						background: this.props.background
-					})}
+					className={classNames("ptr-timeline-month", (+month.start.format('M') % 2) ? 'odd' : 'even')}
 				>
 					<rect
 						x={start}
 						width={end-start}
 						y={0}
-						height={this.props.height}
+						height={height}
 					/>
 					{label}
 				</g>
