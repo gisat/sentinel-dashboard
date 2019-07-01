@@ -1,0 +1,12 @@
+.satellite-selector {
+    display: -webkit-flex;
+    display: flex;
+    flex-flow: column;
+    flex-wrap: wrap;
+    position: absolute;
+    left:0;
+    top:0;
+    bottom:10px;
+    font-size: 14px;
+    bottom: 170px;
+}

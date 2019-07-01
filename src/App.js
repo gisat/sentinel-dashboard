@@ -21,8 +21,8 @@ function App() {
 
     const timelinePeriod = period('2010/2015');
 
-    const onTimeChange = (timelineState, centerTime) => {
-        changeTime(centerTime.toDate());
+    const onTimeChange = (timelineState) => {
+        changeTime(timelineState.centerTime.toDate());
     }
 
     return (

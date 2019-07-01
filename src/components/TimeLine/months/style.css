@@ -1,0 +1,19 @@
+
+.ptr-timeline-month > rect {
+	fill: #fff;
+}
+.ptr-timeline-month.odd > rect {
+	fill: #f1f1f1;
+}
+.ptr-timeline-month-label {
+	font-size: 0.8rem;
+	fill: rgba(0,0,0,.4);
+}
+
+
+/*.ptr-timeline-month.background > rect {*/
+	/*fill: #fff;*/
+/*}*/
+.ptr-timeline-month.background.odd > rect {
+	fill: #f9f9f9;
+}
