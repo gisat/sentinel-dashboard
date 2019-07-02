@@ -11,3 +11,7 @@
 .ptr-timeline-day.background.Monday {
 	stroke: rgba(0,0,0,.1);
 }
+.ptr-timeline-day-label {
+	font-size: 0.7rem;
+	fill: rgba(0,0,0,.4);
+}

@@ -80,15 +80,35 @@ class Hours extends React.PureComponent {
 			if (!this.props.background) {
 				height = height - 20
 			}
+
+			let label = null
+			if (this.props.dayWidth > 900) {
+				label = (
+					<text
+						x={start + 3}
+						y={height - 2}
+						className="ptr-timeline-hour-label"
+					>
+						{hour.hour}
+					</text>
+				);
+			}
+
 			return (
-				<line
-					key={`${hour.start.toISOString()}+${hour.hour}`}
-					x1={start + 0.5}
-					x2={start + 0.5}
-					y1={0}
-					y2={height}
-					className={classNames("ptr-timeline-hour", {background: this.props.background})}
-				/>
+				<g
+				key={`${hour.year}-${hour.month}-${hour.day}-${hour.hour}`}
+				className={classNames("ptr-timeline-hour")}
+				>
+					<line
+						key={`${hour.start.toISOString()}+${hour.hour}`}
+						x1={start + 0.5}
+						x2={start + 0.5}
+						y1={0}
+						y2={height}
+						className={classNames("ptr-timeline-hour", {background: this.props.background})}
+					/>
+					{label}
+				</g>
 			);
 		});
 

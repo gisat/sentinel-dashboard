@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+
+import {getYears} from '../utils/interval';
 import './style.css';
+
 import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
@@ -12,21 +15,12 @@ class Years extends React.PureComponent {
 	};
 
 	render() {
-		let start = moment(this.props.period.start);
-		let end = moment(this.props.period.end);
-		let years = [];
-		let current = moment(this.props.period.start);
-
-		while (end > current || current.format('YYYY') === end.format('YYYY')) {
-			years.push({
-				year: current.format('YYYY'),
-				start: (current.format('YYYY') === start.format('YYYY')) ? start : moment(current).startOf('year'),
-				end: (current.format('YYYY') === end.format('YYYY')) ? end : moment(current).endOf('year')
-			});
-			current.add(1,'year');
-		}
-
-		let ret = _.map(years, year => {
+		const {period, getX, dayWidth, height} = this.props;
+		const periodStart = moment(period.start);
+		const periodEnd = moment(period.end);
+		const yearsCfg = getYears(periodStart, periodEnd);
+		
+		const years = _.map(yearsCfg, year => {
 			let start = this.props.getX(year.start);
 			// let end = this.props.getX(year.end);
 			let label = null;
@@ -57,7 +51,7 @@ class Years extends React.PureComponent {
 			);
 		});
 
-		return React.createElement('g', null, ret);
+		return React.createElement('g', null, years);
 	}
 
 }

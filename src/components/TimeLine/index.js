@@ -9,8 +9,6 @@ import Days from './days';
 import Hours from './hours';
 import Picker from './centerPicker';
 import Mouse from './mouse';
-// import Days from './Days';
-// import Hours from './Hours';
 
 // import Mouse from './Mouse';
 // import Picker from './Picker';
@@ -33,7 +31,7 @@ const LEVELS = [
 		level: 'days',
 	},
 	{
-		end: 1600,
+		end: 2500,
 		level: 'hours',
 	}
 ]
