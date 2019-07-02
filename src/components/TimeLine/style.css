@@ -12,7 +12,9 @@
 } */
 
 .ptr-timeline-content {
-	width: 100%;
+    width: 100%;
+    z-index: 1000;
     line-height: 0.6rem;
     background: #f9f9f9;
+    -webkit-transform: translate3d(0,0,0);
 }
