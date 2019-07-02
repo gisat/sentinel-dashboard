@@ -31,3 +31,18 @@ export const getDays = (start, end) => {
 
     return days;
 }
+
+export const getHours = (start, end) => {
+    const hours = [];
+    let current = moment(start);
+
+    while (end > current || current.format('HH') === end.format('HH')) {
+        hours.push({
+            hour: current.format('HH'),
+            start: (current.format('YYYY-MM-DD-HH') === start.format('YYYY-MM-DD-HH')) ? start : moment(current).startOf('hour'),
+            end: (current.format('YYYY-MM-DD-HH') === end.format('YYYY-MM-DD-HH')) ? end : moment(current).endOf('hour')
+        });
+        current.add(1,'hour');
+    }
+    return hours;
+}

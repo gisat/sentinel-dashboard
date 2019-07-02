@@ -18,10 +18,6 @@ class Days extends React.PureComponent {
 		dayWidth: PropTypes.number,
 	};
 
-	static propTypes = {
-
-	};
-
 	render() {
 		const {period, getX, dayWidth, height} = this.props;
 		const periodStart = moment(period.start);
