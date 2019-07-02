@@ -1,8 +1,28 @@
 .time-widget{
     background: #FFF;
     font-size: 1.5rem;
-    padding: 0.3rem;
+    padding: 0.3rem 0.3rem 0rem 0.3rem;
+    display: flex;
 }  
+
+.time-cell{
+    display: flex;
+    flex-flow: column;
+    cursor: pointer;
+}
+
+.time-cell .indicator{
+    height: 0.3rem;
+    background: #ebebff;
+}
+
+.time-cell:hover .indicator{
+    background: #dbdbff;
+}
+
+.time-cell.active .indicator{
+    background: #adadff;
+}
 
 .time-widget .month::after{
     content: "\00a0 ";

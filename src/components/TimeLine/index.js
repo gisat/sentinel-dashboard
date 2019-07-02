@@ -28,11 +28,11 @@ const LEVELS = [
 	},
 	{
 		end: 200,
-		level: 'days',
+		level: 'day',
 	},
 	{
 		end: 2500,
-		level: 'hours',
+		level: 'hour',
 	}
 ]
 
@@ -140,9 +140,9 @@ class TimelineContent extends React.PureComponent {
 				return Years;
 			case 'month':
 				return Months;
-			case 'days':
+			case 'day':
 				return Days;
-			case 'hours':
+			case 'hour':
 				return Hours;
 			default:
 				return null;

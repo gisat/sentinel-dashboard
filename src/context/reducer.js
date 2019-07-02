@@ -28,6 +28,13 @@ const setTime = (state, action) => {
     };
 }
 
+const setActiveTimeLevel = (state, action) => {
+    return {
+        ...state,
+        activeTimeLevel: action.payload
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -44,6 +51,8 @@ export default (state, action) => {
             return setFocus(state, null);
         case types.CHANGE_TIME:
             return setTime(state, action);
+        case types.CHANGE_ACTIVE_TIME_LEVEL:
+            return setActiveTimeLevel(state, action);
         default:
             return state;
     }

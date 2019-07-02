@@ -35,3 +35,17 @@ export const focusOnProduct = satellite => {
         }
     }
 };
+export const setActiveTimeLevel = level => {
+    return {
+        type: types.CHANGE_ACTIVE_TIME_LEVEL,
+        payload: level
+    }
+};
+
+
+export const changeTime = time => {
+    return {
+        type: types.CHANGE_TIME,
+        payload: time
+    }
+};
