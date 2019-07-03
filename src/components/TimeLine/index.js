@@ -2,20 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import TimelineEventsWrapper from './TimelineEventsWrapper';
-import Years from './years';
-import Months from './months';
-import Days from './days';
-import Hours from './hours';
-import Picker from './centerPicker';
-import Mouse from './mouse';
+import {ContextProvider} from './context';
+import TimelineContent from './timelineContent';
 
-// import Mouse from './Mouse';
-// import Picker from './Picker';
-// import Layers from './Layers';
-// import OutOfScopeOverlays from './OutOfScopeOverlays';
-
-import './style.css';
+const CONTROLS_WIDTH = 0;
 
 const LEVELS = [
 	{
@@ -36,7 +26,7 @@ const LEVELS = [
 	}
 ]
 
-class TimelineContent extends React.PureComponent {
+class Timeline extends React.PureComponent {
 
 	static propTypes = {
 		period: PropTypes.shape({
@@ -61,13 +51,6 @@ class TimelineContent extends React.PureComponent {
 			level: PropTypes.string
 		})),												//ordered levels by higher level.end 
 		
-		onMouseEnter: PropTypes.func,
-		onMouseLeave: PropTypes.func,
-		onMouseUp: PropTypes.func,
-		onMouseMove: PropTypes.func,
-		onMouseDown: PropTypes.func,
-		onPinch: PropTypes.func,
-		
 		onChange: PropTypes.func,
 	};
 
@@ -79,41 +62,20 @@ class TimelineContent extends React.PureComponent {
 
 	constructor(props){
 		super(props);
-		this.node = React.createRef();
 
-		this.onChange = this.onChange.bind(this);
+		// this.onChange = this.onChange.bind(this);
 
 		this.state = {
-			dayWidth:1,
-			periodLimit: props.period,
-			mouseX: null
-		}
-	}
-
-
-	onChange(changed) {
-
-		const dayWidth = changed.dayWidth;
-		const dayWidthChanged = dayWidth !== this.state.dayWidth;
-		if(dayWidthChanged) {
-			this.setState({dayWidth})
+			dayWidth: props.dayWidth,
+			period: props.period,
+			periodLimit: props.periodLimit || props.period,
+			centerTime:null
 		}
 
-		const periodLimit = changed.periodLimit;
-		const periodLimitChanged = periodLimit !== this.state.periodLimit;
-		if(periodLimitChanged) {
-			this.setState({periodLimit})
-		}
-
-		const mouseXChanged = changed.mouseX !== this.state.mouseX;
-		if(mouseXChanged) {
-			this.setState({mouseX: changed.mouseX})
-		}
-		
-		const hasChangeListener = typeof this.props.onChange === 'function';
-		if((periodLimitChanged || dayWidthChanged) && hasChangeListener) {
-			this.props.onChange(changed);
-		}
+		this.updateContext = this.updateContext.bind(this);
+		this.getX = this.getX.bind(this);
+		this.getTime = this.getTime.bind(this);
+		this.getActiveLevel = this.getActiveLevel.bind(this);
 	}
 
 	getX(date) {
@@ -124,80 +86,111 @@ class TimelineContent extends React.PureComponent {
 	}
 
 	getTime(x) {
-		let diffDays = x / this.props.dayWidth;
+		let diffDays = x / this.state.dayWidth;
 		let diff = diffDays * (60 * 60 * 24 * 1000);
-		return moment(this.props.period.start).add(moment.duration(diff, 'ms'));
+		return moment(this.state.periodLimit.start).add(moment.duration(diff, 'ms'));
 	}
 
 	//Find first level with smaller start level.
-	getActiveLevel(dayWidth, levels) {
-		return levels.find((l) => dayWidth <= l.end)
+	getActiveLevel(dayWidth) {
+		return this.props.levels.find((l) => dayWidth <= l.end)
 	}
 
-	getLevelElement(levelKey) {
-		switch (levelKey) {
-			case 'year':
-				return Years;
-			case 'month':
-				return Months;
-			case 'day':
-				return Days;
-			case 'hour':
-				return Hours;
-			default:
-				return null;
+
+	getDayWidthForPeriod(period, containerWidth) {
+		const start = moment(period.start);
+		const end = moment(period.end);
+
+		const diff = end.diff(start, 'ms');
+		const diffDays = diff / (60 * 60 * 24 * 1000);
+
+		const dayWidth = (containerWidth - CONTROLS_WIDTH) / diffDays;
+		
+		return dayWidth;
+	}
+
+	// getLevelElement(levelKey) {
+	// 	switch (levelKey) {
+	// 		case 'year':
+	// 			return Years;
+	// 		case 'month':
+	// 			return Months;
+	// 		case 'day':
+	// 			return Days;
+	// 		case 'hour':
+	// 			return Hours;
+	// 		default:
+	// 			return null;
+	// 	}
+	// }
+
+	getPeriodLimitByDayWidth(dayWidth) {
+		const {containerWidth} = this.props;
+		const {centerTime} = this.state;
+
+		const allDays = containerWidth / dayWidth;
+		const halfMouseDays = allDays / 2;
+
+		const start = moment(centerTime).subtract(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms'));
+		const end = moment(centerTime).add(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms'));
+		return {
+			start,
+			end
+		}
+	}
+
+	updateContext(options) {	
+		if (options) {
+			
+			//on change dayWidth calculate periodLimit
+			if(options.dayWidth) {
+				options.periodLimit = this.getPeriodLimitByDayWidth()
+			}
+			
+			//on change periodLimit calculate dayWidth
+			if(options.periodLimit) {
+				options.dayWidth = this.getDayWidthForPeriod(options.periodLimit, this.props.containerWidth);
+			}
+			
+			this.setState({...options}, () => {
+				let centerTime = this.getTime(this.props.containerWidth / 2);
+				this.setState({centerTime})
+			});
 		}
 	}
 
 	render() {
-		const {levels, period, initialPeriod, height, onMouseLeave, onWheel, onMouseDown, onMouseMove, containerWidth, pickDateByCenter} = this.props;
+		const {levels, period, height, containerWidth, pickDateByCenter} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
-
-		let content = null;
 
 		const lastLevel = levels[levels.length - 1];
 		const maxDayWidth = lastLevel.end;
 		const activeDayWidth = dayWidth >= maxDayWidth ? maxDayWidth : dayWidth;
 		const activeLevel = this.getActiveLevel(activeDayWidth, levels).level;
-
-		const LevelElement = this.getLevelElement(activeLevel);
+		const minDayWidth = this.getDayWidthForPeriod(period,containerWidth)
 
 		return (
-			<TimelineEventsWrapper
-				width={containerWidth}
-				period={period}
-				periodLimit={initialPeriod}
-				onChange={this.onChange}
-				maxDayWidth={maxDayWidth}
-				>
-				<div
-					ref={this.node}
-					className="ptr-timeline-content"
-					onMouseLeave={onMouseLeave}
-					onWheel={onWheel}
-					onMouseDown={onMouseDown}
-					onMouseUp={onMouseDown}
-					onMouseMove={onMouseMove}
-				>
-					{content}
-					<svg
-						width={containerWidth}
-						height={height}
-					>
-						<LevelElement
-							period={periodLimit}
-							getX={(dayWidth) => this.getX(dayWidth)}
-							height={height}
-							dayWidth={activeDayWidth}
-						/>
-						{pickDateByCenter ? <Picker position={containerWidth / 2} height={height}/> : null}
-						{mouseX ? <Mouse mouseX={mouseX} mouseBufferWidth={20} height={height} /> : null}
-					</svg>
-				</div>
-			</TimelineEventsWrapper>
+			<ContextProvider value={{
+				updateContext: this.updateContext,
+				width: containerWidth,
+				height,
+				getX: this.getX,
+				getTime: this.getTime,
+				getActiveLevel: this.getActiveLevel,
+				dayWidth,
+				maxDayWidth,
+				minDayWidth,
+				period,
+				periodLimit,
+				mouseX,
+				activeLevel,
+				pickDateByCenter,
+				}}>
+				<TimelineContent />
+			</ContextProvider>
 		);
 	}
 
 }
 
-export default TimelineContent;
+export default Timeline;

@@ -1,17 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-
-const INITIAL_STATE = {
-	minDayWidth: null,
-	dayWidth: null,
-	dimensions: null,
-	period: {start:null, end:null}, //time period whereis possible move
-	periodLimit: null, //current time period visible on timeline
-	// displayTooltip: false
-};
-
-const CONTROLS_WIDTH = 0;
+import {Context as TimeLineContext} from './context';
 
 const getClientXFromEvent = (evt) => {
 	let clientX;
@@ -26,55 +16,12 @@ const getClientXFromEvent = (evt) => {
 
 
 class TimelineEventsWrapper extends React.PureComponent {
-
-	static propTypes = {
-		// period: PropTypes.shape({
-		// 	start: PropTypes.object,
-		// 	end: PropTypes.object
-		// }),
-		
-		maxDayWidth: PropTypes.number,
-		dayWidth: PropTypes.number,
-		period: PropTypes.shape({ //time period whereis possible move
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-
-		periodLimit: PropTypes.shape({ //current time period visible on timeline
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-
-
-		
-		// height: PropTypes.number,
-		// width: PropTypes.number,
-
-		onChange: PropTypes.func,
-
-		onWheel: PropTypes.func,
-		onMouseEnter: PropTypes.func,
-		onMouseLeave: PropTypes.func,
-		onMouseUp: PropTypes.func,
-		onMouseDown: PropTypes.func,
-		onPinch: PropTypes.func,
-	};
-
 	static defaultProps = {}
 
+	static contextType = TimeLineContext;
 	constructor(props){
 		super(props);
-		const periodLimit = props.periodLimit || props.period;
-		const minDayWidth = this.getDayWidthForPeriod(periodLimit, props.width);
-		this.state = {...INITIAL_STATE, 
-				period: {
-					start: props.period.start,
-					end: props.period.end
-				},
-				periodLimit,
-				minDayWidth,
-				dayWidth: minDayWidth,
-			};
+
 		this.node = React.createRef();
 		this._drag = null;
 		this._lastX = null;
@@ -86,19 +33,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseLeave = this.onMouseLeave.bind(this);
-
-		// // this.onMouseEnter = this.onMouseEnter.bind(this);
 	}
-
-	componentDidUpdate(props, prevProps) {
-		const widthChanged = props.width !== prevProps.width;
-		const periodChanged = props.period && props.period.start && prevProps.period && prevProps.period.start && moment().isSame(props.period.start, prevProps.period.start);
-		if(widthChanged || periodChanged) {
-			const minDayWidth = this.getDayWidthForPeriod(props.period, props.width);
-			this.handleChange({minDayWidth});
-		}
-	}
-
 	componentDidMount() {
 		this.node.current.addEventListener('gesturechange', this.onPinch);
 		this.node.current.addEventListener('touchstart', this.onMouseDown);
@@ -113,40 +48,6 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.node.current.removeEventListener('touchmove', this.onMouseMove);
 	}
 
-
-	dispatchChange() {
-		if(typeof this.props.onChange === 'function') {
-			let centerTime = this.getTime(this.props.width / 2);
-			this.props.onChange({
-				dayWidth: this.state.dayWidth,
-				periodLimit: this.state.periodLimit,
-				mouseX: this.state.mouseX,
-				centerTime
-			});
-		}
-	}
-	handleChange(change) {
-		this.setState((state) => change, this.dispatchChange)
-	}
-
-	getDayWidthForPeriod(period, containerWidth) {
-		let start = moment(period.start);
-		let end = moment(period.end);
-
-		let diff = end.diff(start, 'ms');
-		let diffDays = diff / (60 * 60 * 24 * 1000);
-
-		const dayWidth = (containerWidth - CONTROLS_WIDTH)/diffDays;
-		return dayWidth;
-	}
-
-	getTime(x) {
-		let diffDays = x / this.state.dayWidth;
-		let diff = diffDays * (60 * 60 * 24 * 1000);
-		return moment(this.state.periodLimit.start).add(moment.duration(diff, 'ms'));
-	}
-
-
 	onMouseUp() {
 		this._drag = false;
 		this._lastX = null;
@@ -160,7 +61,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 		
 		const clientX = getClientXFromEvent(e);
 		
-		this.handleChange({
+		this.context.updateContext({
 			mouseX: clientX
 		});
 		
@@ -188,11 +89,11 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 * @param dragInfo.direction {String} Either past or future. Based on this.
 	 */
 	onDrag(dragInfo) {
-		const {dayWidth} = this.state;
-		const periodStart = moment(this.state.period.start);
-    	const periodEnd = moment(this.state.period.end);
-		let periodLimitStart =  moment(this.state.periodLimit.start)
-		let periodLimitEnd = moment(this.state.periodLimit.end)
+		const {dayWidth, period, periodLimit, width, updateContext} = this.context;
+		const periodStart = moment(period.start);
+    	const periodEnd = moment(period.end);
+		let periodLimitStart =  moment(periodLimit.start)
+		let periodLimitEnd = moment(periodLimit.end)
 
     // Either add  to start and end.
 		let daysChange = Math.abs(dragInfo.distance) / dayWidth;
@@ -202,8 +103,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 			
 			if(periodLimitStart.isBefore(periodStart)) {
 				//use last period limit
-				periodLimitStart = moment(this.state.periodLimit.start);
-				periodLimitEnd = moment(this.state.periodLimit.end);
+				periodLimitStart = moment(periodLimit.start);
+				periodLimitEnd = moment(periodLimit.end);
 			}
 		} else {
 			periodLimitStart.add(daysChange * (60 * 60 * 24 * 1000), 'ms');
@@ -211,12 +112,12 @@ class TimelineEventsWrapper extends React.PureComponent {
 
 			if(periodLimitEnd.isAfter(periodEnd)) {
 				//use last period limit
-				periodLimitStart = moment(this.state.periodLimit.start);
-				periodLimitEnd = moment(this.state.periodLimit.end);
+				periodLimitStart = moment(periodLimit.start);
+				periodLimitEnd = moment(periodLimit.end);
 			}
 		}
 
-		let widthOfTimeline = this.props.width;
+		let widthOfTimeline = width;
 		// If the result is smaller than width of the timeline
 		let widthOfResult = (periodLimitEnd.diff(periodLimitStart, 'ms') / (60 * 60 * 24 * 1000)) * dayWidth;
 		// Make sure that we stay within the limits.
@@ -229,7 +130,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 			}
 		}
 
-		this.handleChange({
+		updateContext({
 			periodLimit: {
 				end: periodLimitEnd,
 				start: periodLimitStart
@@ -241,7 +142,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this._drag = false;
 		this._lastX = null;
 
-		this.handleChange({
+		this.context.updateContext({
 			mouseX: null
 		});
 
@@ -253,14 +154,13 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 *
 	 */
 	onWheel(e) {
+		const {period, mouseX,getTime} = this.context;
 		e.preventDefault();
 		let change;
-		let mouseTime = this.getTime(this.state.mouseX);
-		// console.log(mouseTime);
-		
+		let mouseTime = getTime(mouseX);
 
 		// only allow zoom inside data scope
-		if (mouseTime.isAfter(this.state.period.start) && mouseTime.isBefore(this.state.period.end)) {
+		if (mouseTime.isAfter(period.start) && mouseTime.isBefore(period.end)) {
 			if (e.deltaY > 0) {
 				// zoom out
 				change = 1 - Math.abs(e.deltaY / (10 * 100));
@@ -269,40 +169,44 @@ class TimelineEventsWrapper extends React.PureComponent {
 				change = 1 + Math.abs(e.deltaY / (10 * 100));
 			}
 
-			let newWidth = this.state.dayWidth * change;
+			let newWidth = this.context.dayWidth * change;
 
-			if(newWidth > this.props.maxDayWidth) {
-				newWidth = this.props.maxDayWidth;
-			}
-
-			//don't allow zoom out outside initial zoom
-			if (newWidth < this.state.minDayWidth) {
-				newWidth = this.state.minDayWidth;
-			}
-
-			let beforeMouseDays = this.state.mouseX / newWidth;
-			// let afterMouseDays = (this.props.containerWidth - this.state.mouseX) / newWidth;
-			let allDays = this.props.width / newWidth;
-
-			let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
-			//let end = moment(mouseTime).add(moment.duration(afterMouseDays, 'days));
-			let end = moment(start).add(moment.duration(allDays * (60 * 60 * 24 * 1000), 'ms'));
-
-			this.handleChange({
-				dayWidth: newWidth,
-				periodLimit: {
-					start: start,
-					end: end
-				}
-			});
-
+			this.zoom(newWidth);
 		}
 	}
 
+	zoom(newWidth) {
+		const {dayWidth, period, mouseX, minDayWidth, width, maxDayWidth, getTime, updateContext, periodLimit} = this.context;
+		let mouseTime = getTime(mouseX);
+		if(newWidth > this.context.maxDayWidth) {
+			newWidth = this.context.maxDayWidth;
+		}
+
+		//don't allow zoom out outside initial zoom
+		if (newWidth < this.context.minDayWidth) {
+			newWidth = this.context.minDayWidth;
+		}
+
+		let beforeMouseDays = this.context.mouseX / newWidth;
+		let allDays = this.context.width / newWidth;
+
+		let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
+		let end = moment(start).add(moment.duration(allDays * (60 * 60 * 24 * 1000), 'ms'));
+
+
+		updateContext({
+			periodLimit: {
+				start: start,
+				end: end
+			}
+		});
+	}
+
 	onPinch(e){
+		const {dayWidth, mouseX, minDayWidth, width, getTime, updateContext} = this.context;
 		e.preventDefault();
 		let change;
-		let mouseTime = this.getTime(this.state.mouseX);
+		let mouseTime = getTime(mouseX);
 		if (e.scale > 1) {
 			// zoom out
 			change = 1 + e.scale / 10;
@@ -311,36 +215,13 @@ class TimelineEventsWrapper extends React.PureComponent {
 			change = 1 - e.scale / 10;
 		}
 
-		let newWidth = this.state.dayWidth * change;
-
-		//don't allow zoom out outside initial zoom
-		if (newWidth < this.state.minDayWidth) {
-			newWidth = this.state.minDayWidth;
-		}
-
-		let beforeMouseDays = this.state.mouseX / newWidth;
-		// let afterMouseDays = (this.props.containerWidth - this.state.mouseX) / newWidth;
-		let allDays = this.props.width / newWidth;
-
-		let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
-		//let end = moment(mouseTime).add(moment.duration(afterMouseDays, 'days));
-		let end = moment(start).add(moment.duration(allDays * (60 * 60 * 24 * 1000), 'ms'));
-
-		this.handleChange({
-			dayWidth: newWidth,
-			periodLimit: {
-				start: start,
-				end: end
-			}
-		});
-
+		let newWidth = dayWidth * change;
+		this.zoom(newWidth);
 	}
 
 	render() {
-		// const {dayWidth, levels, period, height, onMouseLeave, onMouseEnter, onWheel, onMouseDown, onMouseMove, width, children} = this.props;
 		const {children} = this.props;
-		const {periodLimit, dayWidth} = this.state;
-		//console.log(dayWidth);
+		const {periodLimit, dayWidth} = this.context;
 		
 		const childrenWithProps = React.cloneElement(children, {
 			period: periodLimit,
