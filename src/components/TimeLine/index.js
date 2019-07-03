@@ -63,19 +63,36 @@ class Timeline extends React.PureComponent {
 	constructor(props){
 		super(props);
 
-		// this.onChange = this.onChange.bind(this);
-
-		this.state = {
-			dayWidth: props.dayWidth,
-			period: props.period,
-			periodLimit: props.periodLimit || props.period,
-			centerTime:null
-		}
-
 		this.updateContext = this.updateContext.bind(this);
 		this.getX = this.getX.bind(this);
 		this.getTime = this.getTime.bind(this);
 		this.getActiveLevel = this.getActiveLevel.bind(this);
+
+
+		const state = this.getStateUpdate({
+			period: props.period,
+			periodLimit: props.periodLimit || props.period,
+		})
+
+		this.state = state;
+
+		if(typeof this.props.onChange === 'function') {
+			this.props.onChange(this.state)
+		}
+
+		// this.state={dayWidth:1,period:props.period,periodLimit: props.periodLimit || props.period}
+
+	}
+
+	componentDidUpdate(prevProps) {
+		//if parent component set activeLevel
+		if(prevProps.activeLevel !== this.props.activeLevel && this.state.activeLevel !== this.props.activeLevel) {
+			const level = this.props.levels.find((l) => this.props.activeLevel === l.level);
+			
+			//zoom to dayWidth
+
+			this.updateContext({dayWidth: level.end - 0.1})
+		}
 	}
 
 	getX(date) {
@@ -85,10 +102,10 @@ class Timeline extends React.PureComponent {
 		return diffDays * this.state.dayWidth;
 	}
 
-	getTime(x) {
-		let diffDays = x / this.state.dayWidth;
+	getTime(x, dayWidth = this.state.dayWidth, startTime = this.state.periodLimit.start) {
+		let diffDays = x / dayWidth;
 		let diff = diffDays * (60 * 60 * 24 * 1000);
-		return moment(this.state.periodLimit.start).add(moment.duration(diff, 'ms'));
+		return moment(startTime).add(moment.duration(diff, 'ms'));
 	}
 
 	//Find first level with smaller start level.
@@ -124,31 +141,40 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
-	updateContext(options) {	
+	updateContext(options) {
 		if (options) {
+			const stateUpdate = this.getStateUpdate(options);
+			this.setState(stateUpdate, () => {
+				if(typeof this.props.onChange === 'function') {
+					this.props.onChange(this.state);
+				}
+			})
+		}
+	}
+
+	getStateUpdate(options) {	
+		if (options) {
+			const updateContext = {};
+			Object.assign(updateContext, {...options});
 			
 			//on change dayWidth calculate periodLimit
 			if(options.dayWidth) {
-				options.periodLimit = this.getPeriodLimitByDayWidth()
+				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByDayWidth(options.dayWidth)})
 			}
 			
 			//on change periodLimit calculate dayWidth
 			if(options.periodLimit) {
-				options.dayWidth = this.getDayWidthForPeriod(options.periodLimit, this.props.containerWidth);
+				Object.assign(updateContext, {dayWidth: this.getDayWidthForPeriod(options.periodLimit, this.props.containerWidth)})
 			}
 
-			if(options.dayWidth) {
-				options.activeLevel = this.getActiveLevel(options.dayWidth, this.props.levels).level;
+			if(updateContext.dayWidth) {
+				Object.assign(updateContext, {activeLevel: this.getActiveLevel(updateContext.dayWidth, this.props.levels).level})
+				Object.assign(updateContext, {centerTime: this.getTime(this.props.containerWidth / 2, updateContext.dayWidth, updateContext.periodLimit.start)})
 			}
-			
-			this.setState({...options}, () => {
-				let centerTime = this.getTime(this.props.containerWidth / 2);
-				this.setState({centerTime}, () => {
-					if(typeof this.props.onChange === 'function') {
-						this.props.onChange(this.state);
-					}
-				})
-			});
+
+			return updateContext
+		} else {
+			return {};
 		}
 	}
 

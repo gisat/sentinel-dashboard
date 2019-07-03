@@ -42,6 +42,7 @@ function App() {
                                     initialPeriod = {timelinePeriod}
                                     // onLayerPeriodClick: this.onLayerPeriodClick,
                                     containerWidth = {width}
+                                    activeLevel={state.activeTimeLevel}
                                     onChange = {onTimeChange}
                                     />
                             )
