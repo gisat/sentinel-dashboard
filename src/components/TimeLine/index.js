@@ -109,21 +109,6 @@ class Timeline extends React.PureComponent {
 		return dayWidth;
 	}
 
-	// getLevelElement(levelKey) {
-	// 	switch (levelKey) {
-	// 		case 'year':
-	// 			return Years;
-	// 		case 'month':
-	// 			return Months;
-	// 		case 'day':
-	// 			return Days;
-	// 		case 'hour':
-	// 			return Hours;
-	// 		default:
-	// 			return null;
-	// 	}
-	// }
-
 	getPeriodLimitByDayWidth(dayWidth) {
 		const {containerWidth} = this.props;
 		const {centerTime} = this.state;
@@ -151,10 +136,18 @@ class Timeline extends React.PureComponent {
 			if(options.periodLimit) {
 				options.dayWidth = this.getDayWidthForPeriod(options.periodLimit, this.props.containerWidth);
 			}
+
+			if(options.dayWidth) {
+				options.activeLevel = this.getActiveLevel(options.dayWidth, this.props.levels).level;
+			}
 			
 			this.setState({...options}, () => {
 				let centerTime = this.getTime(this.props.containerWidth / 2);
-				this.setState({centerTime})
+				this.setState({centerTime}, () => {
+					if(typeof this.props.onChange === 'function') {
+						this.props.onChange(this.state);
+					}
+				})
 			});
 		}
 	}

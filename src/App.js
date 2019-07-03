@@ -26,24 +26,6 @@ function App() {
     const onSetActiveTimeLevel = (level) => {
         dispatch(setActiveTimeLevel(level));
     }
-
-    let dayWidth;
-    switch (state.activeTimeLevel) {
-        case 'year':
-            dayWidth = 1
-            break;
-        case 'month':
-                dayWidth = 20
-                break;
-        case 'day':
-                dayWidth = 200
-                break;
-        case 'hour':
-                dayWidth = 2500
-                break;
-        default:
-                dayWidth = 1
-    }
 	
     return (
         <div className={'app'}>

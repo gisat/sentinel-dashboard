@@ -30,71 +30,10 @@ class MapsTimeline extends React.PureComponent {
 		// initialize: PropTypes.func
 	};
 
-	constructor(props) {
-		super();
-		this.state = {...INITIAL_STATE};
-
-		this.calculate = this.calculate.bind(this);
-		this.getTime = this.getTime.bind(this);
-		this.calculate(props);
-
-		this.state = {
-			period: {
-				start: props.initialPeriod.start,
-				end: props.initialPeriod.end
-			},
-			periodLimit: {
-				start: props.initialPeriod.start,
-				end: props.initialPeriod.end
-			},
-			dayWidth: this.dimensions.dayWidth
-		};
-	}
-
-	componentDidMount() {
-		this.dispatchChange();
-	}
-	componentDidUpdate(nextProps) {
-		if (nextProps.containerWidth !== this.props.containerWidth) {
-			this.calculate(nextProps);
-		}
-	}
-
-	dispatchChange() {
+	onTimelineChange(timelineState) {
 		if(typeof this.props.onChange === 'function') {
-			let centerTime = this.getTime(this.dimensions.width / 2);
-			this.props.onChange({...this.state, centerTime});
+			this.props.onChange(timelineState);
 		}
-	}
-
-	handleChange(change) {
-		this.setState((state) => change, this.dispatchChange)
-	}
-
-	calculate(props) {
-		let start = moment(props.initialPeriod.start);
-		let end = moment(props.initialPeriod.end);
-
-		let diff = end.diff(start, 'ms');
-		let diffDays = diff / (60 * 60 * 24 * 1000);
-
-		this.dimensions = {
-			width: props.containerWidth - CONTROLS_WIDTH,
-			days: diffDays,
-			dayWidth: (props.containerWidth - CONTROLS_WIDTH)/diffDays
-		};
-
-		if (this.state.dayWidth) { // don't set state in constructor
-			this.handleChange({
-				dayWidth: this.dimensions.dayWidth
-			});
-		}
-	}
-
-	getTime(x, props) {
-		let diffDays = x / this.state.dayWidth;
-		let diff = diffDays * (60 * 60 * 24 * 1000);
-		return moment(this.state.period.start).add(moment.duration(diff, 'ms'));
 	}
 
 	render() {
@@ -104,14 +43,14 @@ class MapsTimeline extends React.PureComponent {
 		let {maps, activeMapKey, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
 		contentProps = {...contentProps,
 			key: 'mapsTimelineContent',
-			dayWidth: this.state.dayWidth,
-			period: this.state.period,
+			dayWidth: this.props.dayWidth,
+			period: this.props.period,
 			initialPeriod: this.props.initialPeriod,
-			mouseX: this.state.mouseX,
 			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
 
 			pickDateByCenter: true,
-			selectedDate: null
+			selectedDate: null,
+			onChange: (timelineState) => {this.onTimelineChange(timelineState)}
 		};
 		children.push(React.createElement(TimelineContent, contentProps));
 		return React.createElement('div', {className: 'ptr-timeline-container'}, children);
