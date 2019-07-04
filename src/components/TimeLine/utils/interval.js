@@ -66,3 +66,22 @@ export const getHours = (start, end) => {
     }
     return hours;
 }
+
+export const getMinutes = (start, end) => {
+    const minutes = [];
+    let current = moment(start);
+
+    while (end > current || current.format('mm') === end.format('mm')) {
+        minutes.push({
+            year: current.format('YYYY'),
+            month: current.format('MM'),
+            day: current.format('DD'),
+            hour: current.format('HH'),
+            minute: current.format('mm'),
+            start: (current.format('YYYY-MM-DD-HH-mm') === start.format('YYYY-MM-DD-HH-mm')) ? start : moment(current).startOf('minute'),
+            end: (current.format('YYYY-MM-DD-HH-mm') === end.format('YYYY-MM-DD-HH-mm')) ? end : moment(current).endOf('minute')
+        });
+        current.add(1,'minute');
+    }
+    return minutes;
+}

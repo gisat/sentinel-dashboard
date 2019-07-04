@@ -9,29 +9,11 @@ import Years from './years';
 import Months from './months';
 import Days from './days';
 import Hours from './hours';
+import Minutes from './minutes';
 import Picker from './centerPicker';
 import Mouse from './mouse';
 
 import './style.css';
-
-const LEVELS = [
-	{
-		end: 1,
-		level: 'year',
-	},
-	{
-		end: 20,
-		level: 'month',
-	},
-	{
-		end: 200,
-		level: 'day',
-	},
-	{
-		end: 2500,
-		level: 'hour',
-	}
-]
 
 class TimelineContent extends React.PureComponent {
 	static contextType = TimeLineContext;
@@ -53,19 +35,13 @@ class TimelineContent extends React.PureComponent {
 
 		pickDateByCenter: PropTypes.bool,
 		selectedDate: PropTypes.object,
-		
-		levels: PropTypes.arrayOf(PropTypes.shape({
-			end: PropTypes.number,
-			level: PropTypes.string
-		})),												//ordered levels by higher level.end 
-		
+
 		onChange: PropTypes.func,
 	};
 
 	static defaultProps = {
 		height: 45,
 		dayWidth: 1.5,
-		levels: LEVELS,
 	}
 
 	getLevelElement(levelKey) {
@@ -78,13 +54,15 @@ class TimelineContent extends React.PureComponent {
 				return Days;
 			case 'hour':
 				return Hours;
+			case 'minute':
+				return Minutes;
 			default:
 				return null;
 		}
 	}
 
 	render() {
-		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel} = this.context;
+		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel, maxDayWidth} = this.context;
 		let content = null;
 
 		const LevelElement = this.getLevelElement(activeLevel);
@@ -92,6 +70,7 @@ class TimelineContent extends React.PureComponent {
 		return (
 				<TimelineEventsWrapper
 					width={width}
+					maxDayWidth={maxDayWidth}
 					period={period}
 					periodLimit={initialPeriod}
 					onChange={this.onChange}

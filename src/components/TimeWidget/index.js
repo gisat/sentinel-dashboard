@@ -53,11 +53,9 @@ const TimeWidget = (props) => {
                     </span>
                 </div>:
 
-                <div className={`time-cell ${props.active === 'second' ? 'active' : '' }`} onClick={() => props.onSelectActive('second')}>
+                <div>
                     <span>
                         {time.format('ss')}
-                    </span>
-                    <span className={'indicator'}>
                     </span>
                 </div>
             </> : null}

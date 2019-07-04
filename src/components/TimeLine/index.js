@@ -21,8 +21,12 @@ const LEVELS = [
 		level: 'day',
 	},
 	{
-		end: 2500,
+		end: 7000,
 		level: 'hour',
+	},
+	{
+		end: 70000,
+		level: 'minute',
 	}
 ]
 
@@ -146,15 +150,18 @@ class Timeline extends React.PureComponent {
 	}
 
 
-	getDayWidthForPeriod(period, containerWidth) {
+	getDayWidthForPeriod(period, containerWidth, maxDayWidth = this.getMaxDayWidth()) {
 		const start = moment(period.start);
 		const end = moment(period.end);
 
 		const diff = end.diff(start, 'ms');
 		const diffDays = diff / (60 * 60 * 24 * 1000);
 
-		const dayWidth = (containerWidth - CONTROLS_WIDTH) / diffDays;
-		
+		let dayWidth = (containerWidth - CONTROLS_WIDTH) / diffDays;
+		if(dayWidth > maxDayWidth) {
+			dayWidth = maxDayWidth;
+		}
+
 		return dayWidth;
 	}
 
@@ -217,12 +224,17 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
+	getMaxDayWidth(levels = this.props.levels) {
+		const lastLevel = levels[levels.length - 1];
+		const maxDayWidth = lastLevel.end;
+		return maxDayWidth;
+	}
+
 	render() {
 		const {levels, period, height, containerWidth, pickDateByCenter} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
-		const lastLevel = levels[levels.length - 1];
-		const maxDayWidth = lastLevel.end;
+		const maxDayWidth = this.getMaxDayWidth();
 		const activeDayWidth = dayWidth >= maxDayWidth ? maxDayWidth : dayWidth;
 		const activeLevel = this.getActiveLevel(activeDayWidth, levels).level;
 		const minDayWidth = this.getDayWidthForPeriod(period,containerWidth)
