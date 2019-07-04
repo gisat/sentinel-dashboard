@@ -90,18 +90,22 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 */
 	onDrag(dragInfo) {
 		const {dayWidth, period, periodLimit, width, updateContext} = this.context;
+		const allDays = this.context.width / dayWidth;
+		const halfDays = allDays / 2;
 		const periodStart = moment(period.start);
     	const periodEnd = moment(period.end);
 		let periodLimitStart =  moment(periodLimit.start)
 		let periodLimitEnd = moment(periodLimit.end)
+		let periodLimitCenter = moment(periodLimit.end).subtract(halfDays * (60 * 60 * 24 * 1000), 'ms')
 
     // Either add  to start and end.
 		let daysChange = Math.abs(dragInfo.distance) / dayWidth;
 		if(dragInfo.direction === 'past') {
 			periodLimitStart.subtract(daysChange * (60 * 60 * 24 * 1000), 'ms');
 	    	periodLimitEnd.subtract(daysChange * (60 * 60 * 24 * 1000), 'ms');
+	    	periodLimitCenter.subtract(daysChange * (60 * 60 * 24 * 1000), 'ms');
 			
-			if(periodLimitStart.isBefore(periodStart)) {
+			if(periodLimitCenter.isBefore(periodStart)) {
 				//use last period limit
 				periodLimitStart = moment(periodLimit.start);
 				periodLimitEnd = moment(periodLimit.end);
@@ -109,8 +113,9 @@ class TimelineEventsWrapper extends React.PureComponent {
 		} else {
 			periodLimitStart.add(daysChange * (60 * 60 * 24 * 1000), 'ms');
 			periodLimitEnd.add(daysChange * (60 * 60 * 24 * 1000), 'ms');
+			periodLimitCenter.add(daysChange * (60 * 60 * 24 * 1000), 'ms');
 
-			if(periodLimitEnd.isAfter(periodEnd)) {
+			if(periodLimitCenter.isAfter(periodEnd)) {
 				//use last period limit
 				periodLimitStart = moment(periodLimit.start);
 				periodLimitEnd = moment(periodLimit.end);
@@ -154,29 +159,40 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 *
 	 */
 	onWheel(e) {
-		const {period, mouseX,getTime} = this.context;
+		const {dayWidth} = this.context;
 		e.preventDefault();
 		let change;
-		let mouseTime = getTime(mouseX);
 
-		// only allow zoom inside data scope
-		if (mouseTime.isAfter(period.start) && mouseTime.isBefore(period.end)) {
-			if (e.deltaY > 0) {
-				// zoom out
-				change = 1 - Math.abs(e.deltaY / (10 * 100));
-			} else {
-				// zoom in
-				change = 1 + Math.abs(e.deltaY / (10 * 100));
-			}
-
-			let newWidth = this.context.dayWidth * change;
-
-			this.zoom(newWidth);
+		if (e.deltaY > 0) {
+			// zoom out
+			change = 1 - Math.abs(e.deltaY / (10 * 100));
+		} else {
+			// zoom in
+			change = 1 + Math.abs(e.deltaY / (10 * 100));
 		}
+
+		let newWidth = dayWidth * change;
+		this.zoom(newWidth);
+	}
+
+	onPinch(e) {
+		const {dayWidth} = this.context;
+		e.preventDefault();
+		let change;
+		if (e.scale > 1) {
+			// zoom out
+			change = 1 + e.scale / 10;
+		} else {
+			// zoom in
+			change = 1 - e.scale / 10;
+		}
+
+		let newWidth = dayWidth * change;
+		this.zoom(newWidth);
 	}
 
 	zoom(newWidth) {
-		const {dayWidth, period, mouseX, minDayWidth, width, maxDayWidth, getTime, updateContext, periodLimit} = this.context;
+		const {mouseX, getTime, updateContext, period} = this.context;
 		let mouseTime = getTime(mouseX);
 		if(newWidth > this.context.maxDayWidth) {
 			newWidth = this.context.maxDayWidth;
@@ -193,6 +209,20 @@ class TimelineEventsWrapper extends React.PureComponent {
 		let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
 		let end = moment(start).add(moment.duration(allDays * (60 * 60 * 24 * 1000), 'ms'));
 
+		//Don't allow zoom center out of period
+		let center = moment(start).add(moment.duration((allDays / 2) * (60 * 60 * 24 * 1000), 'ms'));
+
+		if(center.isBefore(period.start)) {
+			const startDiff = period.start.diff(center, 'ms');
+			start.add(startDiff, 'ms')
+			end.add(startDiff, 'ms')
+		}
+
+		if(center.isAfter(period.end)) {
+			const startDiff = period.end.diff(center, 'ms');
+			start.add(startDiff, 'ms')
+			end.add(startDiff, 'ms')
+		}
 
 		updateContext({
 			periodLimit: {
@@ -202,22 +232,6 @@ class TimelineEventsWrapper extends React.PureComponent {
 		});
 	}
 
-	onPinch(e){
-		const {dayWidth, mouseX, minDayWidth, width, getTime, updateContext} = this.context;
-		e.preventDefault();
-		let change;
-		let mouseTime = getTime(mouseX);
-		if (e.scale > 1) {
-			// zoom out
-			change = 1 + e.scale / 10;
-		} else {
-			// zoom in
-			change = 1 - e.scale / 10;
-		}
-
-		let newWidth = dayWidth * change;
-		this.zoom(newWidth);
-	}
 
 	render() {
 		const {children} = this.props;

@@ -13,7 +13,7 @@ import period from './utils/period'
 function App() {
     const {state, dispatch} = useContext(Context);
 
-    const timelinePeriod = period('2010/2015');
+    const timelinePeriod = period('2010/2025');
 
     const onTimeChange = (timelineState) => {
         dispatch(changeTime(timelineState.centerTime.toDate()));

@@ -195,6 +195,7 @@ class Timeline extends React.PureComponent {
 				height,
 				getX: this.getX,
 				getTime: this.getTime,
+				centerTime: this.state.centerTime,
 				getActiveLevel: this.getActiveLevel,
 				dayWidth,
 				maxDayWidth,
