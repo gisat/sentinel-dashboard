@@ -1,5 +1,7 @@
 import types from './types';
 
+let timer = null;
+
 export const toggleSatelliteSelection = (satellite, state) => {
     const satelliteInSelected = state.selected.includes(satellite.id);
     let dispatchObj = {
@@ -35,6 +37,7 @@ export const focusOnProduct = satellite => {
         }
     }
 };
+
 export const setActiveTimeLevel = level => {
     return {
         type: types.CHANGE_ACTIVE_TIME_LEVEL,
@@ -51,4 +54,26 @@ export const changeTime = time => {
         type: types.CHANGE_TIME,
         payload: time
     }
+}
+
+export const startTimer = (dispatch) => {
+  clearInterval(timer);
+  timer = setInterval(() => dispatch(tick()), 1000);
+  dispatch({
+      type: types.FOLLOW_NOW,
+      payload: true
+    });
+  dispatch(tick())
+}
+
+const tick = () => {
+    return changeTime(new Date());
 };
+
+export const stopTimer = () => {
+  clearInterval(timer);
+  return {
+    type: types.FOLLOW_NOW,
+    payload: false
+  };
+}

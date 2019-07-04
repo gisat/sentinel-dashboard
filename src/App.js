@@ -1,8 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setActiveTimeLevel, changeTime} from './context/actions';
-import types from './context/types';
+import {setActiveTimeLevel, changeTime, startTimer, stopTimer} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline from './components/MapsTimeline/MapsTimeline';
@@ -19,6 +18,7 @@ function App() {
         //TODO
         if(timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
             dispatch(changeTime(timelineState.centerTime));
+            dispatch(stopTimer());
         }
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
             dispatch(setActiveTimeLevel(timelineState.activeLevel));
@@ -31,6 +31,14 @@ function App() {
 
     const onSetTime = (time) => {
         dispatch(changeTime(time.toString()));
+    }
+
+    const onStartTimer = () => {
+        if(state.followNow){
+            dispatch(stopTimer());
+        } else {
+            startTimer(dispatch);
+        }
     }
 	
     return (
@@ -65,6 +73,8 @@ function App() {
                     active={state.activeTimeLevel}
                     onSelectActive={onSetActiveTimeLevel}
                     onSetTime={onSetTime}
+                    onStartTimer={onStartTimer}
+                    nowActive={state.followNow}
                     />
                 
             </div>

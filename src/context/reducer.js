@@ -35,6 +35,13 @@ const setActiveTimeLevel = (state, action) => {
     };
 }
 
+const setFollowNow = (state, action) => {
+    return {
+        ...state,
+        followNow: action.payload
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -53,6 +60,8 @@ export default (state, action) => {
             return setTime(state, action);
         case types.CHANGE_ACTIVE_TIME_LEVEL:
             return setActiveTimeLevel(state, action);
+        case types.FOLLOW_NOW:
+            return setFollowNow(state, action);
         default:
             return state;
     }
