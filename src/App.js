@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setActiveTimeLevel, changeTime} from './context/actions';
+import {setActiveTimeLevel, changeTime, setActiveTime} from './context/actions';
 import types from './context/types';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
@@ -16,8 +16,10 @@ function App() {
     const timelinePeriod = period('2010/2025');
 
     const onTimeChange = (timelineState) => {
-        dispatch(changeTime(timelineState.centerTime.toDate()));
         //TODO
+        if(timelineState.centerTime && timelineState.centerTime.toDate() !== state.currentTime) {
+            dispatch(setActiveTimeLevel(timelineState.activeLevel));
+        }
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
             dispatch(setActiveTimeLevel(timelineState.activeLevel));
         }
@@ -25,6 +27,10 @@ function App() {
 
     const onSetActiveTimeLevel = (level) => {
         dispatch(setActiveTimeLevel(level));
+    }
+
+    const onSetTime = (time) => {
+        dispatch(changeTime(time.toString()));
     }
 	
     return (
@@ -44,6 +50,7 @@ function App() {
                                     containerWidth = {width}
                                     activeLevel={state.activeTimeLevel}
                                     onChange = {onTimeChange}
+                                    time={state.currentTime}
                                     />
                             )
                         } else {
@@ -57,6 +64,7 @@ function App() {
                     time={state.currentTime}
                     active={state.activeTimeLevel}
                     onSelectActive={onSetActiveTimeLevel}
+                    onSetTime={onSetTime}
                     />
                 
             </div>

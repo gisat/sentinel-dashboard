@@ -8,6 +8,9 @@ const TimeWidget = (props) => {
         <div className={'time-widget'}>
             {time ?
             <>
+                <div onClick={() => props.onSetTime(new Date())}>
+                    NOW
+                </div>
                 <div className={`time-cell ${props.active === 'month' ? 'active' : '' }`} onClick={() => props.onSelectActive('month')}>
                     <span className={'month'}>
                         {time.format('MMMM')}

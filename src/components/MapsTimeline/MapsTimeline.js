@@ -41,7 +41,7 @@ class MapsTimeline extends React.PureComponent {
 
 		let children = [];
 
-		let {maps, activeMapKey,activeLevel, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
+		let {maps, activeMapKey, activeLevel, time, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
 		contentProps = {...contentProps,
 			key: 'mapsTimelineContent',
 			dayWidth: this.props.dayWidth,
@@ -52,7 +52,8 @@ class MapsTimeline extends React.PureComponent {
 			pickDateByCenter: true,
 			selectedDate: null,
 			onChange: (timelineState) => {this.onTimelineChange(timelineState)},
-			activeLevel
+			activeLevel,
+			time,
 		};
 		children.push(React.createElement(TimelineContent, contentProps));
 		return React.createElement('div', {className: 'ptr-timeline-container'}, children);

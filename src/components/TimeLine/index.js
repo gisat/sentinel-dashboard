@@ -90,8 +90,41 @@ class Timeline extends React.PureComponent {
 			const level = this.props.levels.find((l) => this.props.activeLevel === l.level);
 			
 			//zoom to dayWidth
-
 			this.updateContext({dayWidth: level.end - 0.1})
+		}
+	
+		//if parent component set time
+		if(prevProps.time !== this.props.time && this.state.time !== this.props.time) {
+			
+
+			const periodLimit = this.getPeriodLimitByTime(this.props.time);
+			
+			//zoom to dayWidth
+			this.updateContext({periodLimit})
+		}
+	}
+
+	getPeriodLimitByTime(time) {
+		const {containerWidth} = this.props;
+		const {period, dayWidth} = this.state;
+		const allDays = containerWidth / dayWidth;
+		let setTime = moment(time);
+
+		//check if setTime is in period
+		if (setTime.isBefore(period.start)){
+			setTime = period.start
+		}
+
+		if (setTime.isAfter(period.end)){
+			setTime = period.end
+		}
+
+		const halfDays = allDays / 2;
+		const start = moment(setTime).subtract(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms'));
+		const end = moment(setTime).add(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms'));
+		return {
+			start,
+			end
 		}
 	}
 
