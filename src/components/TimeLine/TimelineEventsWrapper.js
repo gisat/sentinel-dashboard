@@ -5,9 +5,9 @@ import {Context as TimeLineContext} from './context';
 
 const getClientXFromEvent = (evt) => {
 	let clientX;
-	const isTouch = evt.touches && evt.touches[0]
-	if(isTouch) {
-		clientX = evt.touches[0].clientX;
+	const touch = evt.touches && evt.touches[0] || evt.changedTouches && evt.changedTouches[0]
+	if(touch) {
+		clientX = touch.clientX;
 	} else {
 		clientX = evt.clientX;
 	}
@@ -25,36 +25,74 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.node = React.createRef();
 		this._drag = null;
 		this._lastX = null;
+		this._mouseDownX = null;
 
 		this.onWheel = this.onWheel.bind(this);
 		this.onPinch = this.onPinch.bind(this);
 		this.onDrag = this.onDrag.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
+		this.onClick = this.onClick.bind(this);
+		this.onTouchStart = this.onTouchStart.bind(this);
+		this.onTouchEnd = this.onTouchEnd.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseLeave = this.onMouseLeave.bind(this);
 	}
 	componentDidMount() {
 		this.node.current.addEventListener('gesturechange', this.onPinch);
-		this.node.current.addEventListener('touchstart', this.onMouseDown);
-		this.node.current.addEventListener('touchend', this.onMouseUp);
+		this.node.current.addEventListener('touchstart', this.onTouchStart);
+		this.node.current.addEventListener('touchend', this.onTouchEnd);
 		this.node.current.addEventListener('touchmove', this.onMouseMove);
 	}
 	
 	componentWillUnmount() {
 		this.node.current.removeEventListener('gesturechange', this.onPinch);
-		this.node.current.removeEventListener('touchstart', this.onMouseDown);
-		this.node.current.removeEventListener('touchend', this.onMouseUp);
+		this.node.current.removeEventListener('touchstart', this.onTouchStart);
+		this.node.current.removeEventListener('touchend', this.onTouchEnd);
 		this.node.current.removeEventListener('touchmove', this.onMouseMove);
 	}
 
-	onMouseUp() {
+	onMouseUp(e) {		
+		const clientX = getClientXFromEvent(e);
+		const isClick = Math.abs(this._mouseDownX - clientX) < 1;
 		this._drag = false;
 		this._lastX = null;
+		this._mouseDownX = null;
+		if (isClick) {
+			this.onClick(e)
+		}
 	}
+
 	onMouseDown(e) {
 		this._drag = true;
-		this._lastX = getClientXFromEvent(e);;
+		this._lastX = getClientXFromEvent(e);
+		this._mouseDownX = getClientXFromEvent(e);
+	}
+
+	onClick(e) {
+		const {width} = this.context;
+		const clickX = getClientXFromEvent(e);
+		const centerX = width / 2;
+
+		const distance = centerX - clickX
+
+		this.onDrag({
+			distance: Math.abs(distance),
+			direction: distance < 0 ? 'future': 'past'
+		});
+	}
+
+	onTouchStart = (evt) => {
+		evt.stopPropagation();
+		evt.preventDefault();
+	
+		this.onMouseDown(evt);
+	}
+
+	onTouchEnd = (evt) => {
+		evt.stopPropagation();
+		evt.preventDefault();
+		this.onMouseUp(evt);
 	}
 	
 	onMouseMove(e) {
@@ -146,6 +184,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 	onMouseLeave(e) {
 		this._drag = false;
 		this._lastX = null;
+		this._mouseDownX = null;
 
 		this.context.updateContext({
 			mouseX: null
