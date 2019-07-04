@@ -42,14 +42,10 @@ export const setActiveTimeLevel = level => {
     }
 };
 
-
-export const setActiveTime = time => {
-    return {
-        type: types.CHANGE_TIME,
-        payload: time
-    }
-};
-
+/**
+ * 
+ * @param {Date} time 
+ */
 export const changeTime = time => {
     return {
         type: types.CHANGE_TIME,

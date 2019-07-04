@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setActiveTimeLevel, changeTime, setActiveTime} from './context/actions';
+import {setActiveTimeLevel, changeTime} from './context/actions';
 import types from './context/types';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
@@ -17,8 +17,8 @@ function App() {
 
     const onTimeChange = (timelineState) => {
         //TODO
-        if(timelineState.centerTime && timelineState.centerTime.toDate() !== state.currentTime) {
-            dispatch(setActiveTimeLevel(timelineState.activeLevel));
+        if(timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
+            dispatch(changeTime(timelineState.centerTime));
         }
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
             dispatch(setActiveTimeLevel(timelineState.activeLevel));

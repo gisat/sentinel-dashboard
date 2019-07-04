@@ -72,6 +72,7 @@ class Timeline extends React.PureComponent {
 		const state = this.getStateUpdate({
 			period: props.period,
 			periodLimit: props.periodLimit || props.period,
+			centerTime: props.time,
 		})
 
 		this.state = state;
@@ -94,7 +95,7 @@ class Timeline extends React.PureComponent {
 		}
 	
 		//if parent component set time
-		if(prevProps.time !== this.props.time && this.state.time !== this.props.time) {
+		if(prevProps.time !== this.props.time && this.state.centerTime !== this.props.time) {
 			
 
 			const periodLimit = this.getPeriodLimitByTime(this.props.time);
@@ -104,9 +105,7 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
-	getPeriodLimitByTime(time) {
-		const {containerWidth} = this.props;
-		const {period, dayWidth} = this.state;
+	getPeriodLimitByTime(time, containerWidth = this.props.containerWidth, period = this.state.period, dayWidth = this.state.dayWidth) {
 		const allDays = containerWidth / dayWidth;
 		let setTime = moment(time);
 
@@ -202,9 +201,16 @@ class Timeline extends React.PureComponent {
 
 			if(updateContext.dayWidth) {
 				Object.assign(updateContext, {activeLevel: this.getActiveLevel(updateContext.dayWidth, this.props.levels).level})
-				Object.assign(updateContext, {centerTime: this.getTime(this.props.containerWidth / 2, updateContext.dayWidth, updateContext.periodLimit.start)})
 			}
 
+			if(updateContext.dayWidth && !options.centerTime) {
+				Object.assign(updateContext, {centerTime: this.getTime(this.props.containerWidth / 2, updateContext.dayWidth, updateContext.periodLimit.start).toDate()})
+			}
+
+			if(options.centerTime) {
+				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.props.containerWidth, this.props.period, updateContext.dayWidth)})
+			}
+			
 			return updateContext
 		} else {
 			return {};
