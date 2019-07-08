@@ -1,10 +1,10 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setActiveTimeLevel, changeTime, startTimer, stopTimer} from './context/actions';
+import {setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
-import MapsTimeline from './components/MapsTimeline/MapsTimeline';
+import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
 
 import period from './utils/period'
@@ -16,7 +16,6 @@ function App() {
     const timelinePeriod = period('2010/2025');
 
     const onTimeChange = (timelineState) => {
-        //TODO
         if(timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
             dispatch(changeTime(timelineState.centerTime));
             dispatch(stopTimer());
@@ -24,10 +23,14 @@ function App() {
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
             dispatch(setActiveTimeLevel(timelineState.activeLevel));
         }
+        if(timelineState.dayWidth && timelineState.dayWidth !== state.timeLine.dayWidth) {
+            dispatch(setTimeLevelDayWidth(timelineState.dayWidth));
+        }
     }
 
     const onSetActiveTimeLevel = (level) => {
-        dispatch(setActiveTimeLevel(level));
+        const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
+        zoomToTimeLevel(dispatch, level, timeLevelDayWidth, state.timeLine.dayWidth);
     }
 
     const onSetTime = (time) => {
@@ -90,10 +93,11 @@ function App() {
                                     initialPeriod = {timelinePeriod}
                                     // onLayerPeriodClick: this.onLayerPeriodClick,
                                     containerWidth = {width}
-                                    activeLevel={state.activeTimeLevel}
                                     onChange = {onTimeChange}
                                     time={state.currentTime}
                                     overlays={overlays}
+                                    LEVELS={LEVELS}
+                                    dayWidth={state.timeLine.dayWidth}
                                     />
                             )
                         } else {

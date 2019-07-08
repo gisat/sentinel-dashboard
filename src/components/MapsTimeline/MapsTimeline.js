@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import TimelineContent from '../TimeLine';
+import TimelineContent, {LEVELS} from '../TimeLine';
 
 const CONTROLS_WIDTH = 0;
 const MOUSE_BUFFER_WIDTH = 5;
@@ -41,7 +41,7 @@ class MapsTimeline extends React.PureComponent {
 
 		let children = [];
 
-		let {maps, activeMapKey, activeLevel, time, overlays, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
+		let {maps, activeMapKey, activeLevel, time, overlays, LEVELS, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
 		contentProps = {...contentProps,
 			key: 'mapsTimelineContent',
 			dayWidth: this.props.dayWidth,
@@ -54,12 +54,15 @@ class MapsTimeline extends React.PureComponent {
 			onChange: (timelineState) => {this.onTimelineChange(timelineState)},
 			activeLevel,
 			time,
-			overlays
+			overlays,
+			LEVELS
 		};
 		children.push(React.createElement(TimelineContent, contentProps));
 		return React.createElement('div', {className: 'ptr-timeline-container'}, children);
 	}
 
 }
+
+export {LEVELS};
 
 export default MapsTimeline;

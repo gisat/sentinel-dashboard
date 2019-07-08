@@ -42,6 +42,13 @@ const setFollowNow = (state, action) => {
     };
 }
 
+const setTimeLineDayWidth = (state, action) => {
+    return {
+        ...state,
+        timeLine: {...state.timeLine, dayWidth: action.payload}
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -62,6 +69,8 @@ export default (state, action) => {
             return setActiveTimeLevel(state, action);
         case types.FOLLOW_NOW:
             return setFollowNow(state, action);
+        case types.CHANGE_TIME_LINE_DAY_WIDTH:
+            return setTimeLineDayWidth(state, action);
         default:
             return state;
     }

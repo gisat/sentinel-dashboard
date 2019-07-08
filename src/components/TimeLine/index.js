@@ -7,7 +7,7 @@ import TimelineContent from './timelineContent';
 
 const CONTROLS_WIDTH = 0;
 
-const LEVELS = [
+export const LEVELS = [
 	{
 		end: 1,
 		level: 'year',
@@ -90,20 +90,16 @@ class Timeline extends React.PureComponent {
 	}
 
 	componentDidUpdate(prevProps) {
-		//if parent component set activeLevel
-		if(prevProps.activeLevel !== this.props.activeLevel && this.state.activeLevel !== this.props.activeLevel) {
-			const level = this.props.levels.find((l) => this.props.activeLevel === l.level);
-			
-			//zoom to dayWidth
-			this.updateContext({dayWidth: level.end - 0.1})
+		//if parent component set dayWidth
+		if(prevProps.dayWidth !== this.props.dayWidth && this.state.dayWidth !== this.props.dayWidth) {
+			this.updateContext({dayWidth: this.props.dayWidth})
 		}
 	
 		//if parent component set time
 		if(prevProps.time !== this.props.time && this.state.centerTime !== this.props.time) {
-			
 
 			const periodLimit = this.getPeriodLimitByTime(this.props.time);
-			
+
 			//zoom to dayWidth
 			this.updateContext({periodLimit})
 		}

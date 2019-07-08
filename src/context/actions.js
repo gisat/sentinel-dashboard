@@ -1,7 +1,7 @@
 import types from './types';
 
 let timer = null;
-
+let intervalKeyZoom = null;
 export const toggleSatelliteSelection = (satellite, state) => {
     const satelliteInSelected = state.selected.includes(satellite.id);
     let dispatchObj = {
@@ -43,6 +43,33 @@ export const setActiveTimeLevel = level => {
         type: types.CHANGE_ACTIVE_TIME_LEVEL,
         payload: level
     }
+};
+
+export const setTimeLevelDayWidth = dayWidth => {
+    return {
+        type: types.CHANGE_TIME_LINE_DAY_WIDTH,
+        payload: dayWidth
+    }
+};
+
+export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth) => {
+    window.clearInterval(intervalKeyZoom);
+    //zoom to dayWidth
+    const steps = 16;
+    const finalDayWidth = levelDayWidth - 0.1;
+    const dayWidthDiff =  finalDayWidth - currentDayWidth;
+    const peace = dayWidthDiff / steps;
+    let index = 0;
+
+    intervalKeyZoom = window.setInterval(() => {
+        index++;
+        if(index > steps) {
+            index = 0;
+            window.clearInterval(intervalKeyZoom);
+        } else {
+            dispatch(setTimeLevelDayWidth(currentDayWidth + (peace * index)));
+        }
+    }, 60)
 };
 
 /**
