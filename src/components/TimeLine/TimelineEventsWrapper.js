@@ -26,6 +26,14 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this._drag = null;
 		this._lastX = null;
 		this._mouseDownX = null;
+		this.decelerating = false;
+		this._pointerLastX = null;
+		this.multiplier = 5;
+		this.friction = 0.91; //default 0.92
+		this.stopThreshold = 0.3;
+		this.targetX = 0;
+		this.trackingPoints = [];
+		this.decVelX = 0;
 
 		this.onWheel = this.onWheel.bind(this);
 		this.onPinch = this.onPinch.bind(this);
@@ -61,12 +69,17 @@ class TimelineEventsWrapper extends React.PureComponent {
 		if (isClick) {
 			this.onClick(e)
 		}
+
+		this.stopTracking();
 	}
 
 	onMouseDown(e) {
 		this._drag = true;
+		this.trackingPoints = [];
 		this._lastX = getClientXFromEvent(e);
+		this._pointerLastX = getClientXFromEvent(e);
 		this._mouseDownX = getClientXFromEvent(e);
+		this.addTrackingPoint(this._pointerLastX);
 	}
 
 	onClick(e) {
@@ -113,6 +126,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 				});
 
 				this._lastX = clientX;
+
+				this.registerMovements(clientX);
 			}
 			e.preventDefault();
 		}
@@ -180,6 +195,104 @@ class TimelineEventsWrapper extends React.PureComponent {
 			}
 		});
 	}
+
+
+	/**
+	 * Handles move events
+	 * @param  {clientX} ev Normalized event
+	 */
+ 	 registerMovements(clientX) {
+		if (this._drag) {
+			this.addTrackingPoint(this._lastX);
+		}
+
+		const pointerChangeX = this._lastX - this._pointerLastX;
+
+		this.targetX += pointerChangeX * this.multiplier;
+
+		this._pointerLastX = this._lastX;
+	}
+
+
+	/**
+	 * Records movement for the last 100ms
+	 * @param {number} x
+	 */
+	addTrackingPoint(x) {
+		var time = Date.now();
+		while (this.trackingPoints.length > 0) {
+			if (time - this.trackingPoints[0].time <= 100) {
+				break;
+			}
+			this.trackingPoints.shift();
+		}
+
+		this.trackingPoints.push({x, time});
+	}
+
+	/**
+	 * Stops movement tracking, starts animation
+	 */
+	stopTracking() {
+		this.addTrackingPoint(this._pointerLastX);
+		
+		this.startDecelAnim();
+	}
+
+
+    /**
+     * Initialize animation of values coming to a stop
+     */
+    startDecelAnim() {
+		const firstPoint = this.trackingPoints[0];
+		const lastPoint = this.trackingPoints[this.trackingPoints.length - 1];
+  
+		const xOffset = lastPoint.x - firstPoint.x;
+		const timeOffset = lastPoint.time - firstPoint.time;
+  
+		const D = (timeOffset / 15) / this.multiplier;
+  
+		this.decVelX = (xOffset / D) || 0; // prevent NaN
+  
+		//check difference start/stop
+		if ((Math.abs(this.decVelX) > 1)) {
+			this.decelerating = true;
+			// end
+			requestAnimFrame(() => this.stepDecelAnim());
+		} else {
+		  this.clearScroll()
+		}
+	}
+
+
+  /**
+   * Animates values slowing down
+   */
+  stepDecelAnim() {
+    if (!this.decelerating) {
+        return;
+    }
+
+    this.decVelX *= this.friction;
+
+    this.targetX += this.decVelX;
+    
+    if (Math.abs(this.decVelX) > this.stopThreshold) {
+
+		this.onDrag({
+			distance: Math.abs(this.decVelX),
+			direction: this.decVelX < 0 ? 'future': 'past'
+		});
+
+        requestAnimFrame(this.stepDecelAnim.bind(this));
+    } else {
+        this.clearScroll();
+    }
+  }
+
+	clearScroll() {
+		this.decelerating = false;
+	  }
 
 	onMouseLeave(e) {
 		this._drag = false;
@@ -296,5 +409,17 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 }
+
+
+
+/**
+ * @see http://www.paulirish.com/2011/requestanimationframe-for-smart-animating/
+ */
+const requestAnimFrame = (function(){
+	return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || function(callback) {
+		window.setTimeout(callback, 1000 / 60);
+	};
+  })();
+  
 
 export default TimelineEventsWrapper;
