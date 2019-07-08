@@ -85,3 +85,41 @@ export const getMinutes = (start, end) => {
     }
     return minutes;
 }
+
+/**
+ * 
+ * @param {Moment} periodStart 
+ * @param {Moment} periodEnd 
+ * @param {Array} overlays 
+ *  overlay.label
+ *  overlay.key
+ *  overlay.classes
+ *  overlay.height
+ *  overlay.backdroundColor
+ *  overlay.top
+ */
+export const getOverlays = (periodStart, periodEnd, overlays) => {
+    const periodLimitStart = moment(periodStart)
+    const periodLimitEnd = moment(periodEnd)
+    const overlaysCfg = [];
+    for (const overlay of overlays) {
+        const start = moment(overlay.start);
+        const end = moment(overlay.end);
+
+        if(end.isAfter(periodLimitStart) && start.isBefore(periodLimitEnd)) {
+            overlaysCfg.push(
+                {
+                    label: overlay.label,
+                    key: overlay.key,
+                    classes: overlay.classes,
+                    height: overlay.height,
+                    top: overlay.top || 0,
+                    backgound: overlay.backdroundColor,
+                    start: start.isBefore(periodLimitStart) ? periodLimitStart : start,
+                    end: end.isAfter(periodLimitEnd) ? periodLimitEnd : end,
+                }
+            )
+        }
+    }
+    return overlaysCfg;
+}

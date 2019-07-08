@@ -12,6 +12,7 @@ import Hours from './hours';
 import Minutes from './minutes';
 import Picker from './centerPicker';
 import Mouse from './mouse';
+import Overlays from './overlay';
 
 import './style.css';
 
@@ -62,7 +63,7 @@ class TimelineContent extends React.PureComponent {
 	}
 
 	render() {
-		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel, maxDayWidth} = this.context;
+		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel, maxDayWidth, overlays} = this.context;
 		let content = null;
 
 		const LevelElement = this.getLevelElement(activeLevel);
@@ -83,6 +84,7 @@ class TimelineContent extends React.PureComponent {
 							width={width}
 							height={height}
 						>
+							{overlays ? <Overlays overlays={overlays} period={periodLimit} getX={(dayWidth) => this.context.getX(dayWidth)}/> : null}
 							<LevelElement
 								period={periodLimit}
 								getX={(dayWidth) => this.context.getX(dayWidth)}

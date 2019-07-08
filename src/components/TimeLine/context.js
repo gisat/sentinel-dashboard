@@ -10,6 +10,7 @@ export const Context = createContext({
     getX: null,
     centerTime: null,
     levels: null,
+    overlays: null,
 });
 
 export const ContextProvider = (props) => {

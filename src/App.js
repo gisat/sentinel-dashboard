@@ -8,6 +8,7 @@ import MapsTimeline from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
 
 import period from './utils/period'
+import moment from 'moment';
 
 function App() {
     const {state, dispatch} = useContext(Context);
@@ -40,6 +41,39 @@ function App() {
             startTimer(dispatch);
         }
     }
+
+    const overlays = [
+        {
+            key: 'overlay1',
+            start: moment(2018, 'YYYY'),
+            end: moment(2020, 'YYYY'),
+            backdroundColor: 'rgba(77, 77, 239, 0.7)',
+            label: 'label1',
+            classes: 'overlay1',
+            height: 20,
+            top: 0,
+        },
+        {
+            key: 'overlay2',
+            start: moment(2019, 'YYYY'),
+            end: moment(2022, 'YYYY'),
+            backdroundColor: 'rgba(255, 237, 66, 0.7)',
+            label: 'label2',
+            classes: 'overlay2',
+            height: 10,
+            top: 0,
+        },
+        {
+            key: 'overlay3',
+            start: moment(2015, 'YYYY'),
+            end: moment(2018, 'YYYY'),
+            backdroundColor: 'rgba(255, 69, 69, 0.7)',
+            label: 'label3',
+            classes: 'overlay3',
+            height: 10,
+            top: 20,
+        }
+    ]
 	
     return (
         <div className={'app'}>
@@ -59,6 +93,7 @@ function App() {
                                     activeLevel={state.activeTimeLevel}
                                     onChange = {onTimeChange}
                                     time={state.currentTime}
+                                    overlays={overlays}
                                     />
                             )
                         } else {
