@@ -11,6 +11,7 @@ export const Context = createContext({
     centerTime: null,
     levels: null,
     overlays: null,
+    periodLimitVisible: true,
 });
 
 export const ContextProvider = (props) => {

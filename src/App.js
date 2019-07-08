@@ -56,7 +56,7 @@ function App() {
         {
             key: 'overlay2',
             start: moment(2019, 'YYYY'),
-            end: moment(2022, 'YYYY'),
+            end: moment(2035, 'YYYY'),
             backdroundColor: 'rgba(255, 237, 66, 0.7)',
             label: 'label2',
             classes: 'overlay2',
@@ -65,7 +65,7 @@ function App() {
         },
         {
             key: 'overlay3',
-            start: moment(2015, 'YYYY'),
+            start: moment(2005, 'YYYY'),
             end: moment(2018, 'YYYY'),
             backdroundColor: 'rgba(255, 69, 69, 0.7)',
             label: 'label3',

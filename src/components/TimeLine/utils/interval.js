@@ -88,8 +88,40 @@ export const getMinutes = (start, end) => {
 
 /**
  * 
- * @param {Moment} periodStart 
- * @param {Moment} periodEnd 
+ * @param {Moment} periodStart - visible period
+ * @param {Moment} periodEnd - visible period
+ * @param {Moment} periodLimitStart - visible period
+ * @param {Moment} periodLimitEnd - visible period
+ */
+export const getPeriodLimits = (periodStart, periodEnd, periodLimitStart, periodLimitEnd) => {
+    const periodStartMom = moment(periodStart)
+    const periodEndMom = moment(periodEnd)
+    const periodLimitStartMom = moment(periodLimitStart)
+    const periodLimitEndMom = moment(periodLimitEnd)
+
+    const periodLimitsCfg = [];
+
+    if(periodLimitStartMom.isBefore(periodStartMom)) {
+        periodLimitsCfg.push({
+            start: periodLimitStartMom,
+            end: periodStartMom,
+        })
+    }
+
+    if(periodLimitEndMom.isAfter(periodEndMom)) {
+        periodLimitsCfg.push({
+            start: periodEndMom,
+            end: periodLimitEndMom,
+        })
+    }
+
+    return periodLimitsCfg;
+}
+
+/**
+ * 
+ * @param {Moment} periodStart - visible period
+ * @param {Moment} periodEnd - visible period
  * @param {Array} overlays 
  *  overlay.label
  *  overlay.key

@@ -256,7 +256,8 @@ class Timeline extends React.PureComponent {
 				mouseX,
 				activeLevel,
 				pickDateByCenter,
-				overlays
+				overlays,
+				periodLimitVisible: true
 				}}>
 				<TimelineContent />
 			</ContextProvider>
