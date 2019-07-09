@@ -103,12 +103,23 @@ class TimelineEventsWrapper extends React.PureComponent {
 	onTouchEnd = (evt) => {
 		evt.stopPropagation();
 		evt.preventDefault();
+
+		this.context.onHover(null);
+
+		this.context.updateContext({
+			mouseX: null,
+			mouseTime: null
+		});
 		this.onMouseUp(evt);
 	}
 	
 	onMouseMove(e) {
-		
 		const clientX = getClientXFromEvent(e);
+		this.context.onHover({
+			x: clientX,
+			y: this.context.height + 10,
+			time: this.context.getTime(clientX)
+		})
 		
 		this.context.updateContext({
 			mouseX: clientX,
@@ -297,6 +308,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this._drag = false;
 		this._lastX = null;
 		this._mouseDownX = null;
+
+		this.context.onHover(null);
 
 		this.context.updateContext({
 			mouseX: null,

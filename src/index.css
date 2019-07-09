@@ -49,7 +49,7 @@ code {
 }
 
 .time-widget-wrapper{
-  z-index: 100;
+  z-index: 99;
 }
 
 .time-widget-wrapper.horizontal{

@@ -1,0 +1,14 @@
+.ptr-popup {
+	position: absolute;
+	background: #ffffffe6;
+	z-index: 99999;
+	padding: .35rem;
+	border: 1px solid #000000;
+	box-shadow: 0 3px 7px 0 rgba(#000000, 0.20);
+	min-width: 8rem;
+	min-height: 2rem;
+}
+
+.ptr-popup div i {
+	font-weight: bold;
+}

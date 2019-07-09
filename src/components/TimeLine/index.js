@@ -33,6 +33,7 @@ export const LEVELS = [
 class Timeline extends React.PureComponent {
 
 	static propTypes = {
+		onHover: PropTypes.func,
 		period: PropTypes.shape({
 			start: PropTypes.object,
 			end: PropTypes.object
@@ -232,14 +233,13 @@ class Timeline extends React.PureComponent {
 	}
 
 	render() {
-		const {levels, period, height, containerWidth, pickDateByCenter, overlays} = this.props;
+		const {levels, period, height, containerWidth, pickDateByCenter, overlays, onHover} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		const maxDayWidth = this.getMaxDayWidth();
 		const activeDayWidth = dayWidth >= maxDayWidth ? maxDayWidth : dayWidth;
 		const activeLevel = this.getActiveLevel(activeDayWidth, levels).level;
 		const minDayWidth = this.getDayWidthForPeriod(period,containerWidth)
-
 		return (
 			<ContextProvider value={{
 				updateContext: this.updateContext,
@@ -259,11 +259,13 @@ class Timeline extends React.PureComponent {
 				pickDateByCenter,
 				overlays,
 				periodLimitVisible: true,
-				onClick: this.onClick
+				onClick: this.onClick,
+				onHover
 				}}>
 				<TimelineContent />
 			</ContextProvider>
 		);
+
 	}
 
 }

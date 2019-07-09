@@ -1,6 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import './style.css';
+
+
+import TimeLineHover from './TimeLineHover';
+import HoverHandler from '../HoverHandler/HoverHandler';
+import {isInside} from '../../utils/period';
 
 import Timeline, {LEVELS} from '../TimeLine';
 
@@ -15,6 +21,7 @@ class MapsTimeline extends React.PureComponent {
 	constructor (props) {
 		super(props);
 		this.onClick = this.onClick.bind(this);
+		this.getHoverContent = this.getHoverContent.bind(this);
 	}
 
 	static propTypes = {
@@ -32,20 +39,19 @@ class MapsTimeline extends React.PureComponent {
 		onChange: PropTypes.func,
 		activeLevel: PropTypes.string,
 		onTimeClick: PropTypes.func,
-		// activeLayers: //for tooltip
-		// initialize: PropTypes.func
 	};
 
 	onClick(evt) {
+		const {onTimeClick, onClick} = this.props
 		switch (evt.type) {
 			case 'time':
-				if(typeof this.props.onTimeClick === 'function') {
-					this.props.onTimeClick(evt);
+				if(typeof onTimeClick === 'function') {
+					onTimeClick(evt);
 				}
 				break;
 			default:
-				if(typeof this.props.onClick === 'function') {
-					this.props.onClick(evt);
+				if(typeof onClick === 'function') {
+					onClick(evt);
 				}
 				break;
 		}
@@ -57,16 +63,40 @@ class MapsTimeline extends React.PureComponent {
 		}
 	}
 
+	getOverlaysContent(x, time) {
+		const {overlays} = this.props;
+
+		const content = []
+		const hoveredOverlays = overlays.filter(o => isInside(o, time));
+		const hoveredOverlaysContent = hoveredOverlays.map(o => {
+			return (<div className={'hover-overlay'}>
+						<span class="dot" style={{backgroundColor: o.backdroundColor}}></span>
+						<span>{o.label}</span>
+					</div>)
+		})
+
+		content.push(...hoveredOverlaysContent);
+		return content;
+	}
+
+	getHoverContent(x, time) {
+		const overlaysContent = this.getOverlaysContent(x, time);
+		return (
+			<div>
+				time: {time.toString()}
+				{overlaysContent}
+			</div>
+		)
+	}
+
 	render() {
-
 		const children = [];
-
-		const {maps, activeMapKey, activeLevel, time, overlays, LEVELS, containerWidth, onTimeClick} = this.props; // consume unneeded props (though we'll probably use them in the future)
+		const {activeLevel, time, overlays, LEVELS, containerWidth, dayWidth, period, initialPeriod} = this.props; // consume unneeded props (though we'll probably use them in the future)
 		const contentProps = {
 			key: 'mapsTimelineContent',
-			dayWidth: this.props.dayWidth,
-			period: this.props.period,
-			initialPeriod: this.props.initialPeriod,
+			dayWidth,
+			period,
+			initialPeriod,
 			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
 
 			pickDateByCenter: true,
@@ -80,7 +110,16 @@ class MapsTimeline extends React.PureComponent {
 			onClick: this.onClick,
 		};
 		children.push(React.createElement(Timeline, contentProps));
-		return React.createElement('div', {className: 'ptr-timeline-container'}, children);
+
+		return (
+			<div className={'ptr-timeline-container'}>
+				<HoverHandler>
+					<TimeLineHover getHoverContent={this.getHoverContent}>
+						{children}
+					</TimeLineHover>
+				</HoverHandler>				
+			</div>
+		)
 	}
 
 }
