@@ -83,17 +83,13 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 	onClick(e) {
-		const {width} = this.context;
+		const {onClick, getTime} = this.context;
 		const clickX = getClientXFromEvent(e);
-		const centerX = width / 2;
 
-		const distance = centerX - clickX
-
-		//todo animate
-		this.context.onClick({
+		onClick({
 			type: 'time',
 			x: clickX,
-			time: this.context.getTime(clickX)
+			time: getTime(clickX)
 		})
 	}
 

@@ -40,6 +40,7 @@ function App() {
     }
 
     const onTimeClick = (evt) => {
+        dispatch(stopTimer());
         scrollToTime(dispatch, state.currentTime, evt.time);
     }
 
