@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer} from './context/actions';
+import {setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -20,9 +20,15 @@ function App() {
             dispatch(changeTime(timelineState.centerTime));
             dispatch(stopTimer());
         }
+
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
             dispatch(setActiveTimeLevel(timelineState.activeLevel));
         }
+
+        if(timelineState.mouseTime !== state.timeLine.mouseTime) {
+            dispatch(setTimeLineMouseTime(timelineState.mouseTime));
+        }
+
         if(timelineState.dayWidth && timelineState.dayWidth !== state.timeLine.dayWidth) {
             dispatch(setTimeLevelDayWidth(timelineState.dayWidth));
         }
@@ -114,6 +120,7 @@ function App() {
                     onSetTime={onSetTime}
                     onStartTimer={onStartTimer}
                     nowActive={state.followNow}
+                    mouseTime={state.timeLine.mouseTime}
                     />
                 
             </div>

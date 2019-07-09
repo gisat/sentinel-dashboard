@@ -1,11 +1,17 @@
 import React from 'react';
 import moment from 'moment';
+import classnames from 'classnames';
 import './style.css';
 
 const TimeWidget = (props) => {
-    const time = props.time ? moment(props.time) : null;
+    const currentTime = props.time ? moment(props.time) : null;
+    const mouseTime = props.mouseTime ? moment(props.mouseTime) : null;
+    const time = mouseTime || currentTime;
+    const classes = classnames('time-widget', {
+        'mouse-time': mouseTime
+    })
     return (
-        <div className={'time-widget'}>
+        <div className={classes}>
             {time ?
             <>
                 <div onClick={() => props.onStartTimer()} className={`time-cell ${props.nowActive ? 'active' : '' }`}>

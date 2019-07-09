@@ -4,6 +4,9 @@
     padding: 0.3rem 0.3rem 0rem 0.3rem;
     display: flex;
 }  
+.time-widget.mouse-time{
+    color: #808080;
+}  
 
 .time-cell{
     display: flex;

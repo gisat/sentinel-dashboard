@@ -89,6 +89,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 
 		const distance = centerX - clickX
 
+		//todo animate
 		this.onDrag({
 			distance: Math.abs(distance),
 			direction: distance < 0 ? 'future': 'past'
@@ -113,7 +114,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 		const clientX = getClientXFromEvent(e);
 		
 		this.context.updateContext({
-			mouseX: clientX
+			mouseX: clientX,
+			mouseTime: this.context.getTime(clientX)
 		});
 		
 		if(this._drag) {
@@ -300,7 +302,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this._mouseDownX = null;
 
 		this.context.updateContext({
-			mouseX: null
+			mouseX: null,
+			mouseTime: null
 		});
 
 	}

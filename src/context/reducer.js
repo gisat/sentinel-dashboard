@@ -49,6 +49,13 @@ const setTimeLineDayWidth = (state, action) => {
     };
 }
 
+const setTimeLineMouseTime = (state, action) => {
+    return {
+        ...state,
+        timeLine: {...state.timeLine, mouseTime: action.payload}
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -71,6 +78,8 @@ export default (state, action) => {
             return setFollowNow(state, action);
         case types.CHANGE_TIME_LINE_DAY_WIDTH:
             return setTimeLineDayWidth(state, action);
+        case types.TIME_LINE_SET_MOUSE_TIME:
+            return setTimeLineMouseTime(state, action);
         default:
             return state;
     }

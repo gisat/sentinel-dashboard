@@ -85,8 +85,6 @@ class Timeline extends React.PureComponent {
 			this.props.onChange(this.state)
 		}
 
-		// this.state={dayWidth:1,period:props.period,periodLimit: props.periodLimit || props.period}
-
 	}
 
 	componentDidUpdate(prevProps) {

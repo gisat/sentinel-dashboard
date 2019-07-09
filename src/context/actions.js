@@ -52,6 +52,12 @@ export const setTimeLevelDayWidth = dayWidth => {
     }
 };
 
+export const setTimeLineMouseTime = (mouseTime) => {
+    return {
+        type: types.TIME_LINE_SET_MOUSE_TIME,
+        payload: mouseTime
+    }
+}
 export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth) => {
     window.clearInterval(intervalKeyZoom);
     //zoom to dayWidth

@@ -24,7 +24,10 @@ const initialState = {
         // {type: 'product', value: 'S-2A'} No focus mean the default selection.
     currentTime: new Date(),
     activeTimeLevel: 'years',
-    timeLine: {}
+    timeLine: {
+        mouseTime: null,
+        dayWidth: null
+    }
 };
 
 export const ContextProvider = (props) => {
