@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
 
-import TimelineContent, {LEVELS} from '../TimeLine';
+import Timeline, {LEVELS} from '../TimeLine';
 
 const CONTROLS_WIDTH = 0;
 const MOUSE_BUFFER_WIDTH = 5;
@@ -12,6 +12,10 @@ const INITIAL_STATE = {
 };
 
 class MapsTimeline extends React.PureComponent {
+	constructor (props) {
+		super(props);
+		this.onClick = this.onClick.bind(this);
+	}
 
 	static propTypes = {
 		period: PropTypes.shape({
@@ -27,9 +31,25 @@ class MapsTimeline extends React.PureComponent {
 		containerWidth: PropTypes.number,
 		onChange: PropTypes.func,
 		activeLevel: PropTypes.string,
+		onTimeClick: PropTypes.func,
 		// activeLayers: //for tooltip
 		// initialize: PropTypes.func
 	};
+
+	onClick(evt) {
+		switch (evt.type) {
+			case 'time':
+				if(typeof this.props.onTimeClick === 'function') {
+					this.props.onTimeClick(evt);
+				}
+				break;
+			default:
+				if(typeof this.props.onClick === 'function') {
+					this.props.onClick(evt);
+				}
+				break;
+		}
+	}
 
 	onTimelineChange(timelineState) {
 		if(typeof this.props.onChange === 'function') {
@@ -39,10 +59,10 @@ class MapsTimeline extends React.PureComponent {
 
 	render() {
 
-		let children = [];
+		const children = [];
 
-		let {maps, activeMapKey, activeLevel, time, overlays, LEVELS, ...contentProps} = this.props; // consume unneeded props (though we'll probably use them in the future)
-		contentProps = {...contentProps,
+		const {maps, activeMapKey, activeLevel, time, overlays, LEVELS, containerWidth, onTimeClick} = this.props; // consume unneeded props (though we'll probably use them in the future)
+		const contentProps = {
 			key: 'mapsTimelineContent',
 			dayWidth: this.props.dayWidth,
 			period: this.props.period,
@@ -55,9 +75,11 @@ class MapsTimeline extends React.PureComponent {
 			activeLevel,
 			time,
 			overlays,
-			LEVELS
+			LEVELS,
+			containerWidth, 
+			onClick: this.onClick,
 		};
-		children.push(React.createElement(TimelineContent, contentProps));
+		children.push(React.createElement(Timeline, contentProps));
 		return React.createElement('div', {className: 'ptr-timeline-container'}, children);
 	}
 

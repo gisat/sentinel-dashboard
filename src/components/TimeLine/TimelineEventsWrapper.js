@@ -90,10 +90,11 @@ class TimelineEventsWrapper extends React.PureComponent {
 		const distance = centerX - clickX
 
 		//todo animate
-		this.onDrag({
-			distance: Math.abs(distance),
-			direction: distance < 0 ? 'future': 'past'
-		});
+		this.context.onClick({
+			type: 'time',
+			x: clickX,
+			time: this.context.getTime(clickX)
+		})
 	}
 
 	onTouchStart = (evt) => {

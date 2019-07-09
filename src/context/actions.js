@@ -1,7 +1,9 @@
 import types from './types';
+import moment from 'moment';
 
 let timer = null;
 let intervalKeyZoom = null;
+let intervalKeyScroll = null;
 export const toggleSatelliteSelection = (satellite, state) => {
     const satelliteInSelected = state.selected.includes(satellite.id);
     let dispatchObj = {
@@ -74,6 +76,23 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
             window.clearInterval(intervalKeyZoom);
         } else {
             dispatch(setTimeLevelDayWidth(currentDayWidth + (peace * index)));
+        }
+    }, 60)
+};
+
+export const scrollToTime = (dispatch, currentTime, newTime, period) => {
+    window.clearInterval(intervalKeyScroll);
+    const steps = 12;
+    const diff = moment(newTime).diff(moment(currentTime));
+    const peace = diff / steps;
+    let index = 0;
+    intervalKeyScroll = window.setInterval(() => {
+        index++;
+        if(index > steps) {
+            index = 0;
+            window.clearInterval(intervalKeyScroll);
+        } else {
+            dispatch(changeTime(moment(currentTime).add(peace * index).toDate()));
         }
     }, 60)
 };

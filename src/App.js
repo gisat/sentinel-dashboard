@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
+import {scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -37,6 +37,10 @@ function App() {
     const onSetActiveTimeLevel = (level) => {
         const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
         zoomToTimeLevel(dispatch, level, timeLevelDayWidth, state.timeLine.dayWidth);
+    }
+
+    const onTimeClick = (evt) => {
+        scrollToTime(dispatch, state.currentTime, evt.time);
     }
 
     const onSetTime = (time) => {
@@ -104,6 +108,7 @@ function App() {
                                     overlays={overlays}
                                     LEVELS={LEVELS}
                                     dayWidth={state.timeLine.dayWidth}
+                                    onTimeClick={onTimeClick}
                                     />
                             )
                         } else {
