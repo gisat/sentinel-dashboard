@@ -1,5 +1,6 @@
 import types from './types';
 import moment from 'moment';
+import {getInside} from '../utils/period';
 
 let timer = null;
 let intervalKeyZoom = null;
@@ -83,7 +84,11 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
 export const scrollToTime = (dispatch, currentTime, newTime, period, callback) => {
     window.clearInterval(intervalKeyScroll);
     const steps = 12;
-    const diff = moment(newTime).diff(moment(currentTime));
+    let timeInPeriod = newTime;
+    if(period) {
+        timeInPeriod = getInside(period, moment(newTime));
+    }
+    const diff = timeInPeriod.diff(moment(currentTime));
     const peace = diff / steps;
     let index = 0;
     intervalKeyScroll = window.setInterval(() => {

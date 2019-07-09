@@ -108,3 +108,17 @@ export const toString = period => {
 			return period.source;
 	}
 };
+
+export const isInside = (period, time) => {
+	return period.start.isBefore(time) && period.end.isAfter(time);
+}
+
+export const getInside = (period, time) => {
+	if(time.isBefore(period.start)) {
+		return period.start;
+	} else if(time.isAfter(period.end)) {
+		return period.end;
+	} else {
+		return time;
+	}
+}
