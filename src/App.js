@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
+import {setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -13,6 +13,7 @@ import moment from 'moment';
 function App() {
     const {state, dispatch} = useContext(Context);
 
+    //todo - to state
     const timelinePeriod = period('2010/2025');
 
     const onTimeChange = (timelineState) => {
@@ -52,7 +53,10 @@ function App() {
         if(state.followNow){
             dispatch(stopTimer());
         } else {
-            startTimer(dispatch);
+            dispatch(setFollowNow(true));
+            scrollToTime(dispatch, state.currentTime, moment(new Date()), timelinePeriod, () => {
+                startTimer(dispatch);
+            });
         }
     }
 

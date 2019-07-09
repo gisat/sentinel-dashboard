@@ -80,7 +80,7 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
     }, 60)
 };
 
-export const scrollToTime = (dispatch, currentTime, newTime, period) => {
+export const scrollToTime = (dispatch, currentTime, newTime, period, callback) => {
     window.clearInterval(intervalKeyScroll);
     const steps = 12;
     const diff = moment(newTime).diff(moment(currentTime));
@@ -91,6 +91,9 @@ export const scrollToTime = (dispatch, currentTime, newTime, period) => {
         if(index > steps) {
             index = 0;
             window.clearInterval(intervalKeyScroll);
+            if(typeof callback === 'function') {
+                callback();
+            }
         } else {
             dispatch(changeTime(moment(currentTime).add(peace * index).toDate()));
         }
@@ -108,13 +111,21 @@ export const changeTime = time => {
     }
 }
 
+/**
+ * 
+ * @param {bool} followNow 
+ */
+export const setFollowNow = followNow => {
+    return {
+        type: types.FOLLOW_NOW,
+        payload: followNow
+      };
+}
+
 export const startTimer = (dispatch) => {
   clearInterval(timer);
   timer = setInterval(() => dispatch(tick()), 1000);
-  dispatch({
-      type: types.FOLLOW_NOW,
-      payload: true
-    });
+  dispatch(setFollowNow(true));
   dispatch(tick())
 }
 
@@ -124,8 +135,5 @@ const tick = () => {
 
 export const stopTimer = () => {
   clearInterval(timer);
-  return {
-    type: types.FOLLOW_NOW,
-    payload: false
-  };
+  return setFollowNow(false);
 }
