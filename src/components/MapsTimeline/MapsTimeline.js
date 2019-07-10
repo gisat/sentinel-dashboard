@@ -11,6 +11,7 @@ import {isInside} from '../../utils/period';
 import Timeline, {LEVELS} from '../TimeLine';
 
 const CONTROLS_WIDTH = 0;
+const TOOLTIP_PADDING = 5;
 const MOUSE_BUFFER_WIDTH = 5;
 const INITIAL_STATE = {
 	mouseX: null,
@@ -22,6 +23,7 @@ class MapsTimeline extends React.PureComponent {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 		this.getHoverContent = this.getHoverContent.bind(this);
+		this.getTootlipStyle = this.getTootlipStyle.bind(this);
 	}
 
 	static propTypes = {
@@ -71,8 +73,8 @@ class MapsTimeline extends React.PureComponent {
 		const content = []
 		const hoveredOverlays = overlays.filter(o => isInside(o, time));
 		const hoveredOverlaysContent = hoveredOverlays.map(o => {
-			return (<div className={'hover-overlay'}>
-						<span class="dot" style={{backgroundColor: o.backdroundColor}}></span>
+			return (<div className={'hover-overlay'} key={o.key}>
+						<span className="dot" style={{backgroundColor: o.backdroundColor}}></span>
 						<span>{o.label}</span>
 					</div>)
 		})
@@ -89,6 +91,45 @@ class MapsTimeline extends React.PureComponent {
 				{overlaysContent}
 			</div>
 		)
+	}
+
+	getTootlipStyle(posX, posY, maxX, maxY, width, height) {
+		const {vertical} = this.props;
+		if(!vertical) {
+			posX = posX - width / 2
+	
+			// positioning
+			if ((posX + width)> (maxX - TOOLTIP_PADDING)) {
+				posX = maxX - TOOLTIP_PADDING - (width);
+			}
+	
+			if (posX < TOOLTIP_PADDING) {
+				posX = TOOLTIP_PADDING;
+			}
+
+			posY = posY + TOOLTIP_PADDING;
+		} else {
+			//in vertical posX is on Y axes
+			//in vertical posY is on X axes
+			posY = maxY - posX - height / 2
+		
+			if ((posY + height)> (maxY - TOOLTIP_PADDING)) {
+				posY = maxY - TOOLTIP_PADDING - (height);
+			}
+	
+			if (posY < TOOLTIP_PADDING) {
+				posY = TOOLTIP_PADDING;
+			}
+
+
+			posX = 0 - width - TOOLTIP_PADDING;
+		}
+
+		return {
+			bottom: posY,
+			left: posX,
+			width
+		};
 	}
 
 	render() {
@@ -117,7 +158,7 @@ class MapsTimeline extends React.PureComponent {
 
 		return (
 			<div className={'ptr-timeline-container'}>
-				<HoverHandler>
+				<HoverHandler getStyle={this.getTootlipStyle}>
 					<TimeLineHover getHoverContent={this.getHoverContent}>
 						{children}
 					</TimeLineHover>

@@ -122,9 +122,10 @@ class TimelineEventsWrapper extends React.PureComponent {
 		const {vertical} = this.context;
 		const clientX = getClientXFromEvent(e, vertical);
 		this.context.onHover({
-			x: clientX,
-			y: this.context.height + 10,
-			time: this.context.getTime(clientX)
+			x: vertical ? clientX : clientX,
+			y: vertical ? this.context.height : this.context.height,
+			time: this.context.getTime(clientX),
+			vertical: vertical
 		})
 		
 		this.context.updateContext({

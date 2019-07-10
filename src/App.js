@@ -94,7 +94,7 @@ function App() {
         }
     ]
 
-    const vertical = true;
+    const vertical = false;
 	
     return (
         <div className={'app'}>

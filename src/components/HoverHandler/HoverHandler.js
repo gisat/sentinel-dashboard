@@ -62,6 +62,7 @@ class HoverHandler extends React.PureComponent {
 			x={this.state.popup.x}
 			y={this.state.popup.y}
 			content={this.state.popup.content}
+			getStyle={this.props.getStyle}
 		/>
 	}
 }

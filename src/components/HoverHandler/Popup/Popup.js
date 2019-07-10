@@ -12,7 +12,8 @@ class Popup extends React.PureComponent {
 		x: PropTypes.number,
 		y: PropTypes.number,
 		maxX: PropTypes.number,
-		content: PropTypes.element
+		content: PropTypes.element,
+		getStyle: PropTypes.func,
 	};
 
 	constructor(props) {
@@ -24,46 +25,45 @@ class Popup extends React.PureComponent {
 	render() {
 		let maxX = window.innerWidth;
 		let maxY = window.innerHeight;
-		let x = this.props.x;
-
-		// timeline fix
-		// let y = this.props.y + 20;
-		let y = this.props.y;
+		let posX = this.props.x;
+		let posY = this.props.y;
 
 		let width = this.ref.current && this.ref.current.offsetWidth ? this.ref.current.offsetWidth : WIDTH;
 		let height = this.ref.current && this.ref.current.offsetHeight ? this.ref.current.offsetHeight : HEIGHT;
 
-		x = x - width / 2
+		let style;
 
-		// positioning
-		if ((x + width)> (maxX - 5)) {
-			x = maxX - 5 - (width);
+		if(typeof this.props.getStyle === 'function') {
+			style = this.props.getStyle(posX, posY, maxX, maxY, width, height);
+		} else {
+			// positioning
+			posX = posX + 15;
+			posY = posY + 20;
+			if ((posX + width) > (maxX - 5)) {
+				posX = this.props.x - width - 5;
+			}
+
+			if (posX < 0) {
+				posX = 0;
+			}
+
+			// positioning
+			if ((posY + height) > (maxY - 5)) {
+				posY = this.props.y - height - 5;
+			}
+
+			if (posY < 0) {
+				posY = 0;
+			}
+
+			style = {
+				top: posY,
+				left: posX,
+				width
+			};
+
+			// TODO calculate y
 		}
-
-		if (x < 5) {
-			x = 5;
-		}
-
-		// positioning
-		// if ((y + height) > (maxY - 5)) {
-		// 	y = this.props.y - height - 5;
-		// }
-		// timeline fix
-		// y = this.props.y - height;
-		y = this.props.y;
-
-		// timeline fix
-		// if (y < 0) {
-		// 	y = 0;
-		// }
-
-		// TODO calculate y
-
-		let style = {
-			bottom: y,
-			left: x,
-			width
-		};
 
 		return (
 			<div style={style} className={"ptr-popup"} ref={this.ref}>
