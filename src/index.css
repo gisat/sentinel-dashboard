@@ -44,6 +44,13 @@ code {
 .timelineWrapper{
   z-index: 100;
   position: absolute;
+}
+
+.timelineWrapper.vertical{
+  right: 0px;
+  height: 100%;
+}
+.timelineWrapper.horizontal{
   bottom: 0px;
   width: 100%;
 }

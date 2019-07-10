@@ -38,11 +38,14 @@ class TimelineContent extends React.PureComponent {
 	}
 
 	render() {
-		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel, maxDayWidth, overlays, periodLimitVisible} = this.context;
+		const {period, initialPeriod, height, width, pickDateByCenter,dayWidth, periodLimit, mouseX, activeLevel, maxDayWidth, overlays, periodLimitVisible, vertical} = this.context;
 		let content = null;
 
 		const LevelElement = this.getLevelElement(activeLevel);
 
+		const elementWidth = vertical ? height : width;
+		const elementHeight = vertical ? width : height;
+		const transform = vertical ? `rotate(90) translate(0,${-height})` : '';
 		return (
 				<TimelineEventsWrapper
 					width={width}
@@ -56,19 +59,22 @@ class TimelineContent extends React.PureComponent {
 					>
 						{content}
 						<svg
-							width={width}
-							height={height}
+							width={elementWidth}
+							height={elementHeight}
 						>
-							{periodLimitVisible ? <PeriodLimit period={period} periodLimit={periodLimit} getX={(dayWidth) => this.context.getX(dayWidth)} height={height}/> : null}
-							{overlays ? <Overlays overlays={overlays} period={periodLimit} getX={(dayWidth) => this.context.getX(dayWidth)}/> : null}
-							<LevelElement
-								period={periodLimit}
-								getX={(dayWidth) => this.context.getX(dayWidth)}
-								height={height}
-								dayWidth={dayWidth}
-							/>
-							{pickDateByCenter ? <Picker position={width / 2} height={height}/> : null}
-							{mouseX ? <Mouse mouseX={mouseX} mouseBufferWidth={20} height={height} /> : null}
+							<g transform={transform} >
+								{periodLimitVisible ? <PeriodLimit period={period} periodLimit={periodLimit} getX={(dayWidth) => this.context.getX(dayWidth)} height={height} vertical/> : null}
+								{overlays ? <Overlays overlays={overlays} period={periodLimit} getX={(dayWidth) => this.context.getX(dayWidth)} vertical/> : null}
+								<LevelElement
+									period={periodLimit}
+									getX={(dayWidth) => this.context.getX(dayWidth)}
+									height={height}
+									dayWidth={dayWidth}
+									vertical
+								/>
+								{pickDateByCenter ? <Picker position={width / 2} height={height} vertical/> : null}
+								{mouseX ? <Mouse mouseX={mouseX} mouseBufferWidth={20} height={height} vertical/> : null}
+							</g>
 						</svg>
 					</div>
 				</TimelineEventsWrapper>

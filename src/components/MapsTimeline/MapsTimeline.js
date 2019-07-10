@@ -36,9 +36,11 @@ class MapsTimeline extends React.PureComponent {
 		dayWidth: PropTypes.number, //1.5
 		// layers: , //for tooltip
 		containerWidth: PropTypes.number,
+		containerHeight: PropTypes.number,
 		onChange: PropTypes.func,
 		activeLevel: PropTypes.string,
 		onTimeClick: PropTypes.func,
+		vertical: PropTypes.bool,
 	};
 
 	onClick(evt) {
@@ -91,7 +93,7 @@ class MapsTimeline extends React.PureComponent {
 
 	render() {
 		const children = [];
-		const {activeLevel, time, overlays, LEVELS, containerWidth, dayWidth, period, initialPeriod} = this.props; // consume unneeded props (though we'll probably use them in the future)
+		const {activeLevel, time, overlays, LEVELS, containerWidth, containerHeight, dayWidth, period, initialPeriod, vertical} = this.props; // consume unneeded props (though we'll probably use them in the future)
 		const contentProps = {
 			key: 'mapsTimelineContent',
 			dayWidth,
@@ -106,8 +108,10 @@ class MapsTimeline extends React.PureComponent {
 			time,
 			overlays,
 			LEVELS,
-			containerWidth, 
+			containerWidth,
+			containerHeight,
 			onClick: this.onClick,
+			vertical,
 		};
 		children.push(React.createElement(Timeline, contentProps));
 

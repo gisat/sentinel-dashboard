@@ -45,6 +45,7 @@ class Timeline extends React.PureComponent {
 		dayWidth: PropTypes.number,
 		height: PropTypes.number,
 		containerWidth: PropTypes.number,
+		containerHeight: PropTypes.number,
 		onWheel: PropTypes.func,
 		getX: PropTypes.func,
 
@@ -57,6 +58,7 @@ class Timeline extends React.PureComponent {
 		})),										//ordered levels by higher level.end 
 		onChange: PropTypes.func,
 		onTimeClick: PropTypes.func,
+		vertical: PropTypes.bool,
 	};
 
 	static defaultProps = {
@@ -105,8 +107,8 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
-	getPeriodLimitByTime(time, containerWidth = this.props.containerWidth, period = this.state.period, dayWidth = this.state.dayWidth) {
-		const allDays = containerWidth / dayWidth;
+	getPeriodLimitByTime(time, axesWidth = this.getXAxisWidth(), period = this.state.period, dayWidth = this.state.dayWidth) {
+		const allDays = axesWidth / dayWidth;
 		let setTime = moment(time);
 
 		//check if setTime is in period
@@ -146,14 +148,14 @@ class Timeline extends React.PureComponent {
 	}
 
 
-	getDayWidthForPeriod(period, containerWidth, maxDayWidth = this.getMaxDayWidth()) {
+	getDayWidthForPeriod(period, axesWidth, maxDayWidth = this.getMaxDayWidth()) {
 		const start = moment(period.start);
 		const end = moment(period.end);
 
 		const diff = end.diff(start, 'ms');
 		const diffDays = diff / (60 * 60 * 24 * 1000);
 
-		let dayWidth = (containerWidth - CONTROLS_WIDTH) / diffDays;
+		let dayWidth = (axesWidth - CONTROLS_WIDTH) / diffDays;
 		if(dayWidth > maxDayWidth) {
 			dayWidth = maxDayWidth;
 		}
@@ -162,10 +164,9 @@ class Timeline extends React.PureComponent {
 	}
 
 	getPeriodLimitByDayWidth(dayWidth) {
-		const {containerWidth} = this.props;
 		const {centerTime} = this.state;
 
-		const allDays = containerWidth / dayWidth;
+		const allDays = this.getXAxisWidth() / dayWidth;
 		const halfMouseDays = allDays / 2;
 
 		const start = moment(centerTime).subtract(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms'));
@@ -199,7 +200,7 @@ class Timeline extends React.PureComponent {
 			
 			//on change periodLimit calculate dayWidth
 			if(options.periodLimit) {
-				Object.assign(updateContext, {dayWidth: this.getDayWidthForPeriod(options.periodLimit, this.props.containerWidth)})
+				Object.assign(updateContext, {dayWidth: this.getDayWidthForPeriod(options.periodLimit, this.getXAxisWidth())})
 			}
 
 			if(updateContext.dayWidth) {
@@ -207,11 +208,11 @@ class Timeline extends React.PureComponent {
 			}
 
 			if(updateContext.dayWidth && !options.centerTime) {
-				Object.assign(updateContext, {centerTime: this.getTime(this.props.containerWidth / 2, updateContext.dayWidth, updateContext.periodLimit.start).toDate()})
+				Object.assign(updateContext, {centerTime: this.getTime(this.getXAxisWidth() / 2, updateContext.dayWidth, updateContext.periodLimit.start).toDate()})
 			}
 
 			if(options.centerTime) {
-				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.props.containerWidth, this.props.period, updateContext.dayWidth)})
+				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.getXAxisWidth(), this.props.period, updateContext.dayWidth)})
 			}
 			
 			return updateContext
@@ -232,19 +233,29 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
+	getXAxisWidth() {
+		const {containerWidth, containerHeight, vertical} = this.props;
+		return vertical ? containerHeight : containerWidth;
+	}
+
+	getXAxisHeight() {
+		const {containerWidth, containerHeight, vertical} = this.props;
+		return vertical ? containerWidth : containerHeight;
+	}
+
 	render() {
-		const {levels, period, height, containerWidth, pickDateByCenter, overlays, onHover} = this.props;
+		const {levels, period, height, pickDateByCenter, overlays, onHover, vertical} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		const maxDayWidth = this.getMaxDayWidth();
 		const activeDayWidth = dayWidth >= maxDayWidth ? maxDayWidth : dayWidth;
 		const activeLevel = this.getActiveLevel(activeDayWidth, levels).level;
-		const minDayWidth = this.getDayWidthForPeriod(period,containerWidth)
+		const minDayWidth = this.getDayWidthForPeriod(period, this.getXAxisWidth())
 		return (
 			<ContextProvider value={{
 				updateContext: this.updateContext,
-				width: containerWidth,
-				height,
+				width: this.getXAxisWidth(),
+				height: height,
 				getX: this.getX,
 				getTime: this.getTime,
 				centerTime: this.state.centerTime,
@@ -260,7 +271,10 @@ class Timeline extends React.PureComponent {
 				overlays,
 				periodLimitVisible: true,
 				onClick: this.onClick,
-				onHover
+				onHover,
+				vertical,
+				getXAxisWidth: this.getXAxisHeight,
+				getXAxisHeight: this.getXAxisHeight,
 				}}>
 				<TimelineContent />
 			</ContextProvider>

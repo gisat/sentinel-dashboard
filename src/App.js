@@ -6,6 +6,7 @@ import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
+import className from 'classnames';
 
 import period from './utils/period'
 import moment from 'moment';
@@ -92,22 +93,30 @@ function App() {
             top: 20,
         }
     ]
+
+    const vertical = false;
 	
     return (
         <div className={'app'}>
             <SatellitePanel />
-            <div className={'timelineWrapper'}>
+            <div className={className('timelineWrapper', {
+                vertical: vertical,
+                horizontal: !vertical,
+            })}>
                 <ReactResizeDetector
                     key="11"
                     handleWidth
-                    render={({ width }) => {
-                        if (width) {
+                    render={({ width, height }) => {
+                        
+                        if ((vertical && height) || (!vertical && width)) {
                             return (
                                 <MapsTimeline
+                                    vertical = {vertical}
                                     period = {timelinePeriod}
                                     initialPeriod = {timelinePeriod}
                                     // onLayerPeriodClick: this.onLayerPeriodClick,
                                     containerWidth = {width}
+                                    containerHeight = {height}
                                     onChange = {onTimeChange}
                                     time={state.currentTime}
                                     overlays={overlays}
