@@ -131,7 +131,10 @@ function App() {
                     }}
                     />
             </div>
-            <div className={'time-widget-wrapper horizontal'}>
+            <div className={className('time-widget-wrapper', {
+                vertical: vertical,
+                horizontal: !vertical,
+            })}>
                 <TimeWidget
                     time={state.currentTime}
                     active={state.activeTimeLevel}

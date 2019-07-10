@@ -64,7 +64,7 @@ class TimelineContent extends React.PureComponent {
 									getX={(dayWidth) => this.context.getX(dayWidth)}
 									height={height}
 									dayWidth={dayWidth}
-									vertical
+									vertical={vertical}
 								/>
 								{pickDateByCenter ? <Picker position={width / 2} height={height} vertical/> : null}
 								{mouseX ? <Mouse mouseX={mouseX} mouseBufferWidth={20} height={height} vertical/> : null}
