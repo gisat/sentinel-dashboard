@@ -30,6 +30,9 @@ export const LEVELS = [
 	}
 ]
 
+const DEFAULT_VERTICAL_HEIGHT = 70;
+const DEFAULT_HORIZONTAL_HEIGHT = 45;
+
 class Timeline extends React.PureComponent {
 
 	static propTypes = {
@@ -62,7 +65,6 @@ class Timeline extends React.PureComponent {
 	};
 
 	static defaultProps = {
-		height: 45,
 		dayWidth: 1.5,
 		levels: LEVELS,
 	}
@@ -255,7 +257,7 @@ class Timeline extends React.PureComponent {
 			<ContextProvider value={{
 				updateContext: this.updateContext,
 				width: this.getXAxisWidth(),
-				height: height,
+				height: height || (vertical ? DEFAULT_VERTICAL_HEIGHT : DEFAULT_HORIZONTAL_HEIGHT),
 				getX: this.getX,
 				getTime: this.getTime,
 				centerTime: this.state.centerTime,

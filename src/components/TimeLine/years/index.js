@@ -15,7 +15,7 @@ class Years extends React.PureComponent {
 	};
 
 	render() {
-		const {period, getX, dayWidth, height} = this.props;
+		const {period, getX, dayWidth, height, vertical} = this.props;
 		const periodStart = moment(period.start);
 		const periodEnd = moment(period.end);
 		const yearsCfg = getYears(periodStart, periodEnd);
@@ -25,8 +25,10 @@ class Years extends React.PureComponent {
 			// let end = this.props.getX(year.end);
 			let label = null;
 			if (this.props.dayWidth < 1.5) {
+				const transform = vertical ? `rotate(270, ${start + 0.5}, ${this.props.height})` : ''
 				label = (
 					<text
+						transform={transform}
 						x={start + 3}
 						y={this.props.height - 2}
 						className="ptr-timeline-year-label"

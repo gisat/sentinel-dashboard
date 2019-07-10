@@ -3,21 +3,24 @@ import PropTypes from 'prop-types';
 import moment from 'moment';
 import {Context as TimeLineContext} from './context';
 
-const getClientXFromEvent = (evt) => {
+/**
+ * 
+ * @param {Event} evt 
+ * @param {boolean} vertical 
+ */
+const getClientXFromEvent = (evt, vertical = false) => {
 	let clientX;
 	const touch = evt.touches && evt.touches[0] || evt.changedTouches && evt.changedTouches[0]
 	if(touch) {
-		clientX = touch.clientX;
+		clientX = vertical ? touch.clientY : touch.clientX;
 	} else {
-		clientX = evt.clientX;
+		clientX = vertical ? evt.clientY : evt.clientX;
 	}
 	return clientX;
 }
 
 
 class TimelineEventsWrapper extends React.PureComponent {
-	static defaultProps = {}
-
 	static contextType = TimeLineContext;
 	constructor(props){
 		super(props);
@@ -61,7 +64,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 	onMouseUp(e) {		
-		const clientX = getClientXFromEvent(e);
+		const {vertical} = this.context;
+		const clientX = getClientXFromEvent(e, vertical);
 		const isClick = Math.abs(this._mouseDownX - clientX) < 1;
 		this._drag = false;
 		this._lastX = null;
@@ -74,17 +78,18 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 	onMouseDown(e) {
+		const {vertical} = this.context;
 		this._drag = true;
 		this.trackingPoints = [];
-		this._lastX = getClientXFromEvent(e);
-		this._pointerLastX = getClientXFromEvent(e);
-		this._mouseDownX = getClientXFromEvent(e);
+		this._lastX = getClientXFromEvent(e, vertical);
+		this._pointerLastX = getClientXFromEvent(e, vertical);
+		this._mouseDownX = getClientXFromEvent(e, vertical);
 		this.addTrackingPoint(this._pointerLastX);
 	}
 
 	onClick(e) {
-		const {onClick, getTime} = this.context;
-		const clickX = getClientXFromEvent(e);
+		const {onClick, getTime, vertical} = this.context;
+		const clickX = getClientXFromEvent(e, vertical);
 
 		onClick({
 			type: 'time',
@@ -114,7 +119,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 	
 	onMouseMove(e) {
-		const clientX = getClientXFromEvent(e);
+		const {vertical} = this.context;
+		const clientX = getClientXFromEvent(e, vertical);
 		this.context.onHover({
 			x: clientX,
 			y: this.context.height + 10,

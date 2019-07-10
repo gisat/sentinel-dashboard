@@ -47,13 +47,7 @@ class TimelineContent extends React.PureComponent {
 		const elementHeight = vertical ? width : height;
 		const transform = vertical ? `rotate(90) translate(0,${-height})` : '';
 		return (
-				<TimelineEventsWrapper
-					width={width}
-					maxDayWidth={maxDayWidth}
-					period={period}
-					periodLimit={initialPeriod}
-					onChange={this.onChange}
-					>
+				<TimelineEventsWrapper>
 					<div
 						className="ptr-timeline-content"
 					>
