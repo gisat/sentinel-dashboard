@@ -103,6 +103,7 @@ export const getPeriodLimits = (periodStart, periodEnd, periodLimitStart, period
 
     if(periodLimitStartMom.isBefore(periodStartMom)) {
         periodLimitsCfg.push({
+            key: 'before',
             start: periodLimitStartMom,
             end: periodStartMom,
         })
@@ -110,6 +111,7 @@ export const getPeriodLimits = (periodStart, periodEnd, periodLimitStart, period
 
     if(periodLimitEndMom.isAfter(periodEndMom)) {
         periodLimitsCfg.push({
+            key: 'after',
             start: periodEndMom,
             end: periodLimitEndMom,
         })

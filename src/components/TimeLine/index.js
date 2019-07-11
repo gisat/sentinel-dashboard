@@ -107,6 +107,14 @@ class Timeline extends React.PureComponent {
 			//zoom to dayWidth
 			this.updateContext({periodLimit})
 		}
+
+		//if parent component set time
+		if(prevProps.containerWidth !== this.props.containerWidth) {
+			const periodLimit = this.getPeriodLimitByTime(this.props.time);
+
+			//zoom to dayWidth
+			this.updateContext({periodLimit})
+		}
 	}
 
 	getPeriodLimitByTime(time, axesWidth = this.getXAxisWidth(), period = this.state.period, dayWidth = this.state.dayWidth) {

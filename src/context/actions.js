@@ -142,3 +142,14 @@ export const stopTimer = () => {
   clearInterval(timer);
   return setFollowNow(false);
 }
+
+/**
+ * 
+ * @param {bool} landscape 
+ */
+export const setOrientation = (landscape) => {
+    return {
+        type: types.CHANGE_LANDSCAPE,
+        payload: landscape
+    }
+}

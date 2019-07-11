@@ -27,7 +27,8 @@ const initialState = {
     timeLine: {
         mouseTime: null,
         dayWidth: null
-    }
+    },
+    landscape: true,
 };
 
 export const ContextProvider = (props) => {

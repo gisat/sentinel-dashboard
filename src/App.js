@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
+import {setOrientation, setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -61,6 +61,17 @@ function App() {
         }
     }
 
+    const onResize = () => {
+        let landscape = true;
+        if(window.innerHeight > window.innerWidth){
+            landscape = false;
+        }
+        
+        if (state.landscape !== landscape) {
+            dispatch(setOrientation(landscape));
+        }
+    }
+
     const overlays = [
         {
             key: 'overlay1',
@@ -93,21 +104,23 @@ function App() {
             top: 20,
         }
     ]
+    let vertical = !state.landscape;
 
-    const vertical = false;
-	
     return (
         <div className={'app'}>
+            <ReactResizeDetector
+                onResize = {onResize}
+                handleWidth
+                handleHeight />
             <SatellitePanel />
             <div className={className('timelineWrapper', {
                 vertical: vertical,
                 horizontal: !vertical,
             })}>
                 <ReactResizeDetector
-                    key="11"
                     handleWidth
+                    handleHeight
                     render={({ width, height }) => {
-                        
                         if ((vertical && height) || (!vertical && width)) {
                             return (
                                 <MapsTimeline

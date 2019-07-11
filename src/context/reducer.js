@@ -56,6 +56,13 @@ const setTimeLineMouseTime = (state, action) => {
     };
 }
 
+const setLandscape = (state, action) => {
+    return {
+        ...state,
+        landscape: action.payload
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -80,6 +87,8 @@ export default (state, action) => {
             return setTimeLineDayWidth(state, action);
         case types.TIME_LINE_SET_MOUSE_TIME:
             return setTimeLineMouseTime(state, action);
+        case types.CHANGE_LANDSCAPE:
+            return setLandscape(state, action);
         default:
             return state;
     }
