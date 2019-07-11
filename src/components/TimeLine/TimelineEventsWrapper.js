@@ -407,12 +407,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 
 	render() {
 		const {children} = this.props;
-		const {periodLimit, dayWidth} = this.context;
-		
-		const childrenWithProps = React.cloneElement(children, {
-			period: periodLimit,
-			dayWidth
-		  })
+
 		return (
 			<div
 				ref={this.node}
@@ -423,7 +418,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 				onMouseUp={this.onMouseUp}
 				onMouseMove={this.onMouseMove}
 			>
-				{childrenWithProps}
+				{children}
 			</div>
 		);
 	}

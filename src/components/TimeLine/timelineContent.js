@@ -40,9 +40,7 @@ class TimelineContent extends React.PureComponent {
 
 		return (
 				<TimelineEventsWrapper>
-					<div
-						className="ptr-timeline-content"
-					>
+					<div className="ptr-timeline-content">
 						{content}
 						<svg
 							width={elementWidth}
