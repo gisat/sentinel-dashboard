@@ -41,7 +41,7 @@ class Timeline extends React.PureComponent {
 			start: PropTypes.object,
 			end: PropTypes.object
 		}),
-		initialPeriod: PropTypes.shape({
+		periodLimit: PropTypes.shape({
 			start: PropTypes.object,
 			end: PropTypes.object
 		}),

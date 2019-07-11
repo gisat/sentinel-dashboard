@@ -3,70 +3,80 @@ import moment from 'moment';
 import classnames from 'classnames';
 import './style.css';
 
-const TimeWidget = (props) => {
-    const currentTime = props.time ? moment(props.time) : null;
-    const mouseTime = props.mouseTime ? moment(props.mouseTime) : null;
-    const time = mouseTime || currentTime;
-    const classes = classnames('time-widget', {
-        'mouse-time': mouseTime
-    })
-    return (
-        <div className={classes}>
-            {time ?
-            <>
-                <div onClick={() => props.onStartTimer()} className={`time-cell ${props.nowActive ? 'active' : '' }`}>
-                    NOW
-                    <span className={'indicator'}>
-                    </span>
-                </div>
-                <div className={`time-cell ${props.active === 'month' ? 'active' : '' }`} onClick={() => props.onSelectActive('month')}>
-                    <span className={'month'}>
-                        {time.format('MMMM')}
-                    </span>
-                    <span className={'indicator'}>
-                    </span>
-                </div>
+class TimeWidget extends React.PureComponent{
 
-                <div className={`time-cell ${props.active === 'day' ? 'active' : '' }`} onClick={() => props.onSelectActive('day')}>
-                    <span className={'day'}>
-                        {time.format('DD')}
-                    </span>
-                    <span className={'indicator'}>
-                    </span>
-                </div>
+    componentDidMount() {
+        if(this.props.nowActive) {
+            this.props.onStartTimer();
+        }
+    }
 
-                <div className={`time-cell ${props.active === 'year' ? 'active' : '' }`} onClick={() => props.onSelectActive('year')}>
-                    <span className={'year'}>
-                        {time.format('YYYY')}
-                    </span>
-                    <span className={'indicator'}>
-                    </span>
-                </div>
+    render() {
+        const {time, mouseTime, nowActive, onStartTimer, onStopTimer, active, onSelectActive} = this.props;
+        const currentTime = time ? moment(time) : null;
+        const mouseTimeMom = mouseTime ? moment(mouseTime) : null;
+        const timeMom = mouseTimeMom || currentTime;
+        const classes = classnames('time-widget', {
+            'mouse-time': mouseTimeMom
+        })
+        return (
+            <div className={classes}>
+                {timeMom ?
+                <>
+                    <div onClick={() => nowActive ? onStopTimer() : onStartTimer()} className={`time-cell ${nowActive ? 'active' : '' }`}>
+                        NOW
+                        <span className={'indicator'}>
+                        </span>
+                    </div>
+                    <div className={`time-cell ${active === 'month' ? 'active' : '' }`} onClick={() => onSelectActive('month')}>
+                        <span className={'month'}>
+                            {timeMom.format('MMMM')}
+                        </span>
+                        <span className={'indicator'}>
+                        </span>
+                    </div>
 
-                <div className={`time-cell ${props.active === 'hour' ? 'active' : '' }`} onClick={() => props.onSelectActive('hour')}>
-                    <span>
-                        {time.format('HH')}
-                    </span>
-                    <span className={'indicator'}>
-                    </span>
-                </div>:
+                    <div className={`time-cell ${active === 'day' ? 'active' : '' }`} onClick={() => onSelectActive('day')}>
+                        <span className={'day'}>
+                            {timeMom.format('DD')}
+                        </span>
+                        <span className={'indicator'}>
+                        </span>
+                    </div>
 
-                <div className={`time-cell ${props.active === 'minute' ? 'active' : '' }`} onClick={() => props.onSelectActive('minute')}>
-                    <span>
-                        {time.format('mm')}
-                    </span>
-                    <span className={'indicator'}>
-                    </span>
-                </div>:
+                    <div className={`time-cell ${active === 'year' ? 'active' : '' }`} onClick={() => onSelectActive('year')}>
+                        <span className={'year'}>
+                            {timeMom.format('YYYY')}
+                        </span>
+                        <span className={'indicator'}>
+                        </span>
+                    </div>
 
-                <div>
-                    <span>
-                        {time.format('ss')}
-                    </span>
-                </div>
-            </> : null}
-        </div>
-    )
+                    <div className={`time-cell ${active === 'hour' ? 'active' : '' }`} onClick={() => onSelectActive('hour')}>
+                        <span>
+                            {timeMom.format('HH')}
+                        </span>
+                        <span className={'indicator'}>
+                        </span>
+                    </div>:
+
+                    <div className={`time-cell ${active === 'minute' ? 'active' : '' }`} onClick={() => onSelectActive('minute')}>
+                        <span>
+                            {timeMom.format('mm')}
+                        </span>
+                        <span className={'indicator'}>
+                        </span>
+                    </div>:
+
+                    <div>
+                        <span>
+                            {timeMom.format('ss')}
+                        </span>
+                    </div>
+                </> : null}
+            </div>
+        )
+    }
 }
 
 export default TimeWidget;

@@ -11,11 +11,18 @@ import className from 'classnames';
 import period from './utils/period'
 import moment from 'moment';
 
+//todo - to state
+const timelinePeriod = period('2010/2025');
+
+const now = moment(new Date());
+const start = now.clone().subtract(1, 'w');
+const end = now.clone().add(1, 'w');
+
+
 function App() {
     const {state, dispatch} = useContext(Context);
 
-    //todo - to state
-    const timelinePeriod = period('2010/2025');
+    const initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
 
     const onTimeChange = (timelineState) => {
         if(timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
@@ -51,14 +58,14 @@ function App() {
     }
 
     const onStartTimer = () => {
-        if(state.followNow){
-            dispatch(stopTimer());
-        } else {
-            dispatch(setFollowNow(true));
-            scrollToTime(dispatch, state.currentTime, moment(new Date()), timelinePeriod, () => {
-                startTimer(dispatch);
-            });
-        }
+        dispatch(setFollowNow(true));
+        scrollToTime(dispatch, state.currentTime, moment(new Date()), timelinePeriod, () => {
+            startTimer(dispatch);
+        });
+    }
+
+    const onStopTimer = () => {
+        dispatch(stopTimer());
     }
 
     const onResize = () => {
@@ -74,37 +81,27 @@ function App() {
 
     const overlays = [
         {
-            key: 'overlay1',
-            start: moment(2018, 'YYYY'),
-            end: moment(2020, 'YYYY'),
+            key: 'Mission',
+            start: now.clone(),
+            end: now.clone().add(6, 'hour'),
             backdroundColor: 'rgba(77, 77, 239, 0.7)',
-            label: 'label1',
+            label: 'Mission',
             classes: 'overlay1',
             height: 20,
             top: 0,
         },
         {
-            key: 'overlay2',
-            start: moment(2019, 'YYYY'),
-            end: moment(2035, 'YYYY'),
+            key: 'Data',
+            start: now.clone().subtract(6, 'week'),
+            end: now.clone(),
             backdroundColor: 'rgba(255, 237, 66, 0.7)',
-            label: 'label2',
+            label: 'Data',
             classes: 'overlay2',
-            height: 10,
+            height: 20,
             top: 0,
-        },
-        {
-            key: 'overlay3',
-            start: moment(2005, 'YYYY'),
-            end: moment(2018, 'YYYY'),
-            backdroundColor: 'rgba(255, 69, 69, 0.7)',
-            label: 'label3',
-            classes: 'overlay3',
-            height: 10,
-            top: 20,
         }
     ]
-    let vertical = !state.landscape;
+    let vertical = state.landscape;
 
     return (
         <div className={'app'}>
@@ -127,7 +124,7 @@ function App() {
                                     activeLevel={state.activeTimeLevel}
                                     vertical = {vertical}
                                     period = {timelinePeriod}
-                                    initialPeriod = {timelinePeriod}
+                                    initialPeriod = {initialTimelinePeriod}
                                     // onLayerPeriodClick: this.onLayerPeriodClick,
                                     containerWidth = {width}
                                     containerHeight = {height}
@@ -155,6 +152,7 @@ function App() {
                     onSelectActive={onSetActiveTimeLevel}
                     onSetTime={onSetTime}
                     onStartTimer={onStartTimer}
+                    onStopTimer={onStopTimer}
                     nowActive={state.followNow}
                     mouseTime={state.timeLine.mouseTime}
                     />

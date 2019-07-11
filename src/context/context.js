@@ -6,7 +6,8 @@ export const Context = createContext({
     selected: null,
     focus: null,
     currentTime: null,
-    timeLine: null
+    timeLine: null,
+    followNow: null,
 });
 
 const initialState = {
@@ -23,12 +24,13 @@ const initialState = {
     focus: null, // Focus represents the type of focus {type: 'satellite', value: 'S-2A'} or
         // {type: 'product', value: 'S-2A'} No focus mean the default selection.
     currentTime: new Date(),
-    activeTimeLevel: 'years',
+    activeTimeLevel: 'month',
     timeLine: {
         mouseTime: null,
         dayWidth: null
     },
     landscape: true,
+    followNow: true,
 };
 
 export const ContextProvider = (props) => {
