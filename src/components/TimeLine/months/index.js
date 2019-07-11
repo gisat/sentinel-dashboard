@@ -10,7 +10,7 @@ import './style.css';
 class Months extends React.PureComponent {
 
 	static propTypes = {
-		period: PropTypes.shape({
+		periodLimit: PropTypes.shape({
 			start: PropTypes.object,
 			end: PropTypes.object
 		}),
@@ -20,9 +20,9 @@ class Months extends React.PureComponent {
 	};
 
 	render() {
-		const {period, getX, dayWidth, height} = this.props;
-		const periodStart = moment(period.start);
-		const periodEnd = moment(period.end);
+		const {periodLimit, getX, dayWidth, height} = this.props;
+		const periodStart = moment(periodLimit.start);
+		const periodEnd = moment(periodLimit.end);
 		const monthsCfg = getMonths(periodStart, periodEnd);
 
 		const yearsCfg = getYears(periodStart, periodEnd);

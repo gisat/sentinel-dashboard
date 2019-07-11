@@ -5,27 +5,29 @@ import PropTypes from 'prop-types';
 class Picker extends React.PureComponent {
 
 	static propTypes = {
-
+		width: PropTypes.number
 	};
 
 	render() {
+		const {width, height} = this.props;
 		const indicatorWidth = 10;
-		if (this.props.position) {
+		if (width) {
+			const position = width / 2;
 			return (
 				<g
 					className="ptr-timeline-picker"
 				>
 					<rect
-						x={this.props.position - indicatorWidth}
+						x={position - indicatorWidth}
 						width={indicatorWidth * 2 + 1}
 						y={0}
-						height={this.props.height}
+						height={height}
 					/>
 					<line
-						x1={this.props.position + 0.5}
-						x2={this.props.position + 0.5}
+						x1={position + 0.5}
+						x2={position + 0.5}
 						y1={0}
-						y2={this.props.height}
+						y2={height}
 					/>
 				</g>
 			);

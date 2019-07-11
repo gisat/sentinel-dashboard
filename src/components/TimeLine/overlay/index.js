@@ -10,7 +10,7 @@ import './style.css';
 class Overlay extends React.PureComponent {
 
 	static propTypes = {
-		period: PropTypes.shape({
+		periodLimit: PropTypes.shape({
 			start: PropTypes.object,
 			end: PropTypes.object
 		}),
@@ -21,9 +21,9 @@ class Overlay extends React.PureComponent {
 	};
 
 	render() {
-		const {period, overlays, getX} = this.props;
-		const periodStart = moment(period.start);
-        const periodEnd = moment(period.end);
+		const {periodLimit, overlays, getX} = this.props;
+		const periodStart = moment(periodLimit.start);
+        const periodEnd = moment(periodLimit.end);
         
 		const overlaysCfg = getOverlays(periodStart, periodEnd, overlays);
 

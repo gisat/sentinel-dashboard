@@ -19,9 +19,9 @@ class Hours extends React.PureComponent {
 	};
 
 	render() {
-		const {period, getX, dayWidth, height} = this.props;
-		const periodStart = moment(period.start);
-		const periodEnd = moment(period.end);
+		const {periodLimit, getX, dayWidth, height} = this.props;
+		const periodStart = moment(periodLimit.start);
+		const periodEnd = moment(periodLimit.end);
 		const monthsCfg = getMonths(periodStart, periodEnd);
 		const daysCfg = getDays(periodStart, periodEnd);
 		const hoursCfg = getHours(periodStart, periodEnd);
@@ -64,7 +64,7 @@ class Hours extends React.PureComponent {
 			
 			return (
 				<g
-					key={day.day}
+					key={`${day.year}-${day.month}-${day.day}`}
 					className={classNames("ptr-timeline-month", (+day.start.format('H') % 2) ? 'odd' : 'even')}
 				>
 					{label}

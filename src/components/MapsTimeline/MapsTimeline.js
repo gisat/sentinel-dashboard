@@ -8,6 +8,19 @@ import TimeLineHover from './TimeLineHover';
 import HoverHandler from '../HoverHandler/HoverHandler';
 import {isInside} from '../../utils/period';
 
+import Picker from '../TimeLine/centerPicker';
+import Mouse from '../TimeLine/mouse';
+import Overlays from '../TimeLine/overlay';
+import PeriodLimit from '../TimeLine/periodLimit';
+
+import Years from '../TimeLine/years';
+import Months from '../TimeLine/months';
+import Days from '../TimeLine/days';
+import Hours from '../TimeLine/hours';
+import Minutes from '../TimeLine/minutes';
+
+
+
 import Timeline, {LEVELS} from '../TimeLine';
 
 const CONTROLS_WIDTH = 0;
@@ -132,35 +145,55 @@ class MapsTimeline extends React.PureComponent {
 		};
 	}
 
-	render() {
-		const children = [];
-		const {activeLevel, time, overlays, LEVELS, containerWidth, containerHeight, dayWidth, period, initialPeriod, vertical} = this.props; // consume unneeded props (though we'll probably use them in the future)
-		const contentProps = {
-			key: 'mapsTimelineContent',
-			dayWidth,
-			period,
-			initialPeriod,
-			mouseBufferWidth: MOUSE_BUFFER_WIDTH,
+	getLevelElement(levelKey) {
+		switch (levelKey) {
+			case 'year':
+				return Years;
+			case 'month':
+				return Months;
+			case 'day':
+				return Days;
+			case 'hour':
+				return Hours;
+			case 'minute':
+				return Minutes;
+			default:
+				return Years;
+		}
+	}
 
-			pickDateByCenter: true,
-			selectedDate: null,
-			onChange: (timelineState) => {this.onTimelineChange(timelineState)},
-			activeLevel,
-			time,
-			overlays,
-			LEVELS,
-			containerWidth,
-			containerHeight,
-			onClick: this.onClick,
-			vertical,
-		};
-		children.push(React.createElement(Timeline, contentProps));
+	render() {
+		const {activeLevel, time, overlays, LEVELS, containerWidth, containerHeight, dayWidth, period, initialPeriod, vertical} = this.props; // consume unneeded props (though we'll probably use them in the future)
+
+		const LevelElement = this.getLevelElement(activeLevel);
 
 		return (
 			<div className={'ptr-timeline-container'}>
 				<HoverHandler getStyle={this.getTootlipStyle}>
 					<TimeLineHover getHoverContent={this.getHoverContent}>
-						{children}
+						<Timeline 
+							dayWidth={dayWidth}
+							period={period}
+							initialPeriod={initialPeriod}
+							mouseBufferWidth= {MOUSE_BUFFER_WIDTH}
+							pickDateByCenter= {true}
+							selectedDate= {null}
+							onChange= {(timelineState) => {this.onTimelineChange(timelineState)}}
+							activeLevel={activeLevel}
+							time={time}
+							overlays={overlays}
+							LEVELS={LEVELS}
+							containerWidth={containerWidth}
+							containerHeight={containerHeight}
+							onClick= {this.onClick}
+							vertical={vertical}
+						>
+							<PeriodLimit key="periodLimit"/>
+							<Overlays overlays={overlays} key="overlays"/>
+							<LevelElement key={activeLevel}/>
+							<Picker key="picker"/>
+							<Mouse mouseBufferWidth={20} key="mouse"/>
+						</Timeline>
 					</TimeLineHover>
 				</HoverHandler>				
 			</div>

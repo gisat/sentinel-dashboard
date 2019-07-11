@@ -111,6 +111,7 @@ function App() {
                         if ((vertical && height) || (!vertical && width)) {
                             return (
                                 <MapsTimeline
+                                    activeLevel={state.activeTimeLevel}
                                     vertical = {vertical}
                                     period = {timelinePeriod}
                                     initialPeriod = {timelinePeriod}

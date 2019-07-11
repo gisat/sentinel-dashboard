@@ -15,9 +15,9 @@ class Years extends React.PureComponent {
 	};
 
 	render() {
-		const {period, getX, dayWidth, height, vertical} = this.props;
-		const periodStart = moment(period.start);
-		const periodEnd = moment(period.end);
+		const {periodLimit, getX, dayWidth, height, vertical} = this.props;
+		const periodStart = moment(periodLimit.start);
+		const periodEnd = moment(periodLimit.end);
 		const yearsCfg = getYears(periodStart, periodEnd);
 		
 		const years = _.map(yearsCfg, year => {
