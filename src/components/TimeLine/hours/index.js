@@ -5,6 +5,7 @@ import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
 import {getMonths, getDays, getHours} from '../utils/interval';
+import Label from '../utils/textLabel';
 import './style.css';
 
 const DAYWIDTHTRASHOLD = 100;
@@ -19,47 +20,17 @@ class Hours extends React.PureComponent {
 	};
 
 	render() {
-		const {periodLimit, getX, dayWidth, height} = this.props;
+		const {periodLimit, getX, dayWidth, height, vertical, background} = this.props;
 		const periodStart = moment(periodLimit.start);
 		const periodEnd = moment(periodLimit.end);
 		const monthsCfg = getMonths(periodStart, periodEnd);
 		const daysCfg = getDays(periodStart, periodEnd);
 		const hoursCfg = getHours(periodStart, periodEnd);
 
-		// const months = _.map(monthsCfg, month => {
-		// 	const start = getX(month.start);
-		// 	const label = (
-		// 		<text
-		// 			x={start + 3}
-		// 			y={height - 2}
-		// 			className="ptr-timeline-month-label"
-		// 		>
-		// 			{month.month}
-		// 		</text>
-		// 	);
-
-		// 	return (
-		// 		<g
-		// 			key={month.month}
-		// 			className={classNames("ptr-timeline-month", (+month.start.format('M') % 2) ? 'odd' : 'even')}
-		// 		>
-		// 			{label}
-		// 		</g>
-		// 	);
-		// });
-
 		let days = _.map(daysCfg, day => {
-			
-
 			const start = getX(day.start);
 			const label = (
-				<text
-					x={start + 3}
-					y={height - 2}
-					className="ptr-timeline-month-label"
-				>
-					{day.day}
-				</text>
+				<Label label={day.day} vertical={vertical} x={start} height={height} className={'ptr-timeline-month-label'} />
 			);
 			
 			return (
@@ -73,18 +44,14 @@ class Hours extends React.PureComponent {
 		});
 
 		let hours = _.map(hoursCfg, hour => {
-			let start = this.props.getX(hour.start);
-			// let end = this.props.getX(day.end);
-			// let monday = hour.start.format('dddd') === 'Monday';
-			let height = this.props.height;
-			if (!this.props.background) {
-				height = height - 20
-			}
+			let start = getX(hour.start);
 
 			let label = null
-			if (this.props.dayWidth > 900) {
+			if (dayWidth > 900) {
+				const transform = vertical ? `rotate(270, ${start + 0.5}, ${height})` : ''
 				label = (
 					<text
+						transform={transform}
 						x={start + 3}
 						y={height - 2}
 						className="ptr-timeline-hour-label"
@@ -105,7 +72,7 @@ class Hours extends React.PureComponent {
 						x2={start + 0.5}
 						y1={0}
 						y2={height}
-						className={classNames("ptr-timeline-hour", {background: this.props.background})}
+						className={classNames("ptr-timeline-hour", {background: background})}
 					/>
 					{label}
 				</g>

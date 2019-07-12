@@ -23,17 +23,21 @@ class PeriodLimit extends React.PureComponent {
 	};
 
 	render() {
-		const {period, periodLimit, getX, height} = this.props;
+		const {period, periodLimit, getX, height, vertical} = this.props;
 		const periodStart = moment(period.start);
         const periodEnd = moment(period.end);
 		const periodLimitStart = moment(periodLimit.start);
         const periodLimitEnd = moment(periodLimit.end);
         
 		const periodLimitCfg = getPeriodLimits(periodStart, periodEnd, periodLimitStart, periodLimitEnd);
-
 		const periodLimitsElms = _.map(periodLimitCfg, limit => {
 			const start = getX(limit.start);
 			const end = getX(limit.end);
+			
+			const x = vertical ? 0 : start;
+			const y = vertical ? start : 0;
+			const eHeight = vertical ? end-start : height;
+			const width = vertical ? height : end-start;
             
 			return (
 				<g
@@ -41,10 +45,10 @@ class PeriodLimit extends React.PureComponent {
 					className={classNames("ptr-timeline-period-limit")}
 				>
 					<rect
-						x={start}
-						width={end-start}
-						y={0}
-						height={height}
+						x={x}
+						width={width}
+						y={y}
+						height={eHeight}
 					/>
 				</g>
 			);

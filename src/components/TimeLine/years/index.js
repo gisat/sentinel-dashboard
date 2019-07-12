@@ -1,61 +1,49 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import {getYears} from '../utils/interval';
+import Label from '../utils/textLabel';
+import {D1} from '../utils/dash';
+import YearDash from './YearDash';
+import MonthDash from '../months/MonthDash';
+import {getYears, getMonths} from '../utils/interval';
 import './style.css';
 
 import _ from 'lodash';
 import classNames from 'classnames';
 import moment from 'moment';
 
-class Years extends React.PureComponent {
+export const Years = (props) => {
+	const {periodLimit, getX, dayWidth, height, vertical} = props;
+	const periodStart = moment(periodLimit.start);
+	const periodEnd = moment(periodLimit.end);
+	const yearsCfg = getYears(periodStart, periodEnd);
+	
+	const years = _.map(yearsCfg, year => {
+		let x = getX(year.start);
+		let label = <Label label={year.year} vertical={vertical} x={x} height={height} className={'ptr-timeline-year-label'} />
+		return (<YearDash key={year.year} label={label} x={x} vertical={vertical}/>);
+	});
 
-	static propTypes = {
 
-	};
+	let months = [];
 
-	render() {
-		const {periodLimit, getX, dayWidth, height, vertical} = this.props;
-		const periodStart = moment(periodLimit.start);
-		const periodEnd = moment(periodLimit.end);
-		const yearsCfg = getYears(periodStart, periodEnd);
-		
-		const years = _.map(yearsCfg, year => {
-			let start = this.props.getX(year.start);
-			// let end = this.props.getX(year.end);
-			let label = null;
-			if (this.props.dayWidth < 1.5) {
-				const transform = vertical ? `rotate(270, ${start + 0.5}, ${this.props.height})` : ''
-				label = (
-					<text
-						transform={transform}
-						x={start + 3}
-						y={this.props.height - 2}
-						className="ptr-timeline-year-label"
-					>
-						{year.year}
-					</text>
-				);
+	//render every sixth month without label
+	if(dayWidth > 0.7) {
+		const monthsCfg = getMonths(periodStart, periodEnd);
+		months = _.map(monthsCfg, month => {
+			if(month.month === '07') {
+				let x = getX(month.start);
+				return (<MonthDash key={`${month.year}-${month.month}`} x={x} vertical={vertical}/>);
+			} else {
+				return null;
 			}
-			return (
-				<g
-					key={year.year}
-					className={classNames("ptr-timeline-year", {background: this.props.background})}
-				>
-					<line
-						x1={start + 0.5}
-						x2={start + 0.5}
-						y1={0}
-						y2={this.props.height}
-					/>
-					{label}
-				</g>
-			);
 		});
-
-		return React.createElement('g', null, years);
 	}
 
+	return (
+		<g>
+			{years}{months}
+		</g>
+	)
 }
 
 export default Years;

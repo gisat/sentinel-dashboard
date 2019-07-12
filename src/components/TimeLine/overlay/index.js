@@ -7,61 +7,56 @@ import classNames from 'classnames';
 import moment from 'moment';
 import './style.css';
 
-class Overlay extends React.PureComponent {
+export default (props) => {
+	const {periodLimit, overlays, getX, vertical} = props;
+	const periodStart = moment(periodLimit.start);
+	const periodEnd = moment(periodLimit.end);
+	
+	const overlaysCfg = getOverlays(periodStart, periodEnd, overlays);
 
-	static propTypes = {
-		periodLimit: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-		getX: PropTypes.func,
-		dayWidth: PropTypes.number,
-        height: PropTypes.number,
-        overlays: PropTypes.array,
-	};
+	const overlaysElms = _.map(overlaysCfg, overlay => {
+		const start = getX(overlay.start);
+		const end = getX(overlay.end);
+		let label = null
+		
+		const x = vertical ? overlay.top : (start + 3);
+		const yL = vertical ? start : (overlay.top + overlay.height - 2);
+		const yR = vertical ? start : overlay.top;
+		const eHeight = vertical ? end-start : overlay.height;
+		const width = vertical ? overlay.height : end-start;
 
-	render() {
-		const {periodLimit, overlays, getX} = this.props;
-		const periodStart = moment(periodLimit.start);
-        const periodEnd = moment(periodLimit.end);
-        
-		const overlaysCfg = getOverlays(periodStart, periodEnd, overlays);
-
-		const overlaysElms = _.map(overlaysCfg, overlay => {
-			const start = getX(overlay.start);
-			const end = getX(overlay.end);
-            let label = null
-            if(overlay.label) {
-                label = (
-                    <text
-                        x={start + 3}
-                        y={overlay.top + overlay.height - 2}
-                        className="ptr-timeline-overlay-label"
-                    >
-                        {overlay.label}
-                    </text>
-                );
-            }
-			return (
-				<g
-					key={`${overlay.key}`}
-					className={classNames("ptr-timeline-overlay", overlay.classes)}
+		//TODO - solve label in vertical
+		if(overlay.label && !vertical) {
+			label = (
+				<text
+					x={x}
+					y={yL}
+					className="ptr-timeline-overlay-label"
 				>
-					<rect
-						x={start}
-						width={end-start}
-						y={overlay.top}
-                        height={overlay.height}
-                        fill={overlay.backgound}
-					/>
-					{label}
-				</g>
+					{overlay.label}
+				</text>
 			);
-		});
+		}
+		return (
+			<g
+				key={`${overlay.key}`}
+				className={classNames("ptr-timeline-overlay", overlay.classes)}
+			>
+				<rect
+					x={x}
+					width={width}
+					y={yR}
+					height={eHeight}
+					fill={overlay.backgound}
+				/>
+				{label}
+			</g>
+		);
+	});
 
-		return React.createElement('g', null, (<>{overlaysElms}</>));
-	}
-
-}
-
-export default Overlay;
+	return (
+		<g>
+			{overlaysElms}
+		</g>
+	);
+};

@@ -17,7 +17,7 @@ class TimelineContent extends React.PureComponent {
 
 		const elementWidth = vertical ? height : width;
 		const elementHeight = vertical ? width : height;
-		const transform = vertical ? `rotate(90) translate(0,${-height})` : '';
+		const transform = vertical ? `scale(-1,1)` : '';
 
 		const childrenWithProps = [];
 		if(children && children.length > 0) {
@@ -45,8 +45,9 @@ class TimelineContent extends React.PureComponent {
 						<svg
 							width={elementWidth}
 							height={elementHeight}
+							transform={transform}
 							>
-							<g transform={transform} >
+							<g>
 								{childrenWithProps}
 							</g>
 						</svg>

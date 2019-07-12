@@ -1,37 +1,32 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import './style.css'
-class Mouse extends React.PureComponent {
+export default (props) => {
+	const {mouseX, mouseBufferWidth, height, vertical} = props;
+	if (mouseX) {
+		const x = vertical ? 0 : mouseX - mouseBufferWidth;
+		const y = vertical ? mouseX - mouseBufferWidth : 0;
+		const eHeight = vertical ? mouseBufferWidth * 2 + 1 : height;
+		const width = vertical ? height : mouseBufferWidth * 2 + 1;
 
-	static propTypes = {
-
-	};
-
-	render() {
-		if (this.props.mouseX) {
-			return (
-				<g
-					className="ptr-timeline-mouse"
-				>
-					<rect
-						x={this.props.mouseX - this.props.mouseBufferWidth}
-						width={this.props.mouseBufferWidth * 2 + 1}
-						y={0}
-						height={this.props.height}
-					/>
-					<line
-						x1={this.props.mouseX + 0.5}
-						x2={this.props.mouseX + 0.5}
-						y1={0}
-						y2={this.props.height}
-					/>
-				</g>
-			);
-		} else {
-			return null;
-		}
+		return (
+			<g
+				className="ptr-timeline-mouse"
+			>
+				<rect
+					x={x}
+					width={width}
+					y={y}
+					height={eHeight}
+				/>
+				<line
+					x1={vertical ? 0 : mouseX + 0.5}
+					x2={vertical ? height : mouseX + 0.5}
+					y1={vertical ? mouseX + 0.5 : 0}
+					y2={vertical ? mouseX + 0.5 : height}
+				/>
+			</g>
+		);
+	} else {
+		return null;
 	}
-
-}
-
-export default Mouse;
+};

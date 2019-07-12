@@ -18,7 +18,7 @@ class Hours extends React.PureComponent {
 	};
 
 	render() {
-		const {periodLimit, getX, dayWidth, height} = this.props;
+		const {periodLimit, getX, dayWidth, height, vertical} = this.props;
 		const periodStart = moment(periodLimit.start);
 		const periodEnd = moment(periodLimit.end);
 		const monthsCfg = getMonths(periodStart, periodEnd);
@@ -121,8 +121,10 @@ class Hours extends React.PureComponent {
 
 			let label = null
 			if (this.props.dayWidth > 2500) {
+				const transform = vertical ? `rotate(270, ${start + 0.5}, ${height})` : ''
 				label = (
 					<text
+						transform={transform}
 						x={start + 3}
 						y={height - 2}
 						className="ptr-timeline-minute-label"
