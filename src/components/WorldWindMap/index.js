@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import WorldWind from 'webworldwind-esa';
+import './style.css';
 
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
@@ -31,13 +32,7 @@ class Map extends Component {
 
     render(){
         return (
-            <div id="map" style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0
-            }}>
+            <div id="map">
                 <canvas id="wwd-results" style={{
                     width: "100%",
                     height: "100%"
