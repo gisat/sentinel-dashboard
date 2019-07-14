@@ -1,160 +1,42 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import _ from 'lodash';
-import classNames from 'classnames';
+import map from 'lodash/map';
 import moment from 'moment';
-import {getMonths, getDays, getHours, getMinutes} from '../utils/interval';
+import {getMinutes, getHours} from '../utils/interval';
+import Label from '../utils/textLabel';
+import MinuteDash from './MinuteDash';
+import HourDash from '../hours/HourDash';
 import './style.css';
 
-class Hours extends React.PureComponent {
-	static propTypes = {
-		periodLimit: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-		getX: PropTypes.func,
-		dayWidth: PropTypes.number,
-	};
+const Minutes = (props) => {
+	const {periodLimit, getX, dayWidth, height, vertical} = props;
+	const periodStart = moment(periodLimit.start);
+	const periodEnd = moment(periodLimit.end);
+	const hoursCfg = getHours(periodStart, periodEnd);
+	const minutesCfg = getMinutes(periodStart, periodEnd);
 
-	render() {
-		const {periodLimit, getX, dayWidth, height, vertical} = this.props;
-		const periodStart = moment(periodLimit.start);
-		const periodEnd = moment(periodLimit.end);
-		const monthsCfg = getMonths(periodStart, periodEnd);
-		const daysCfg = getDays(periodStart, periodEnd);
-		const hoursCfg = getHours(periodStart, periodEnd);
-		const minutesCfg = getMinutes(periodStart, periodEnd);
-
-		// const months = _.map(monthsCfg, month => {
-		// 	const start = getX(month.start);
-		// 	const label = (
-		// 		<text
-		// 			x={start + 3}
-		// 			y={height - 2}
-		// 			className="ptr-timeline-month-label"
-		// 		>
-		// 			{month.month}
-		// 		</text>
-		// 	);
-
-		// 	return (
-		// 		<g
-		// 			key={month.month}
-		// 			className={classNames("ptr-timeline-month", (+month.start.format('M') % 2) ? 'odd' : 'even')}
-		// 		>
-		// 			{label}
-		// 		</g>
-		// 	);
-		// });
-
-		let days = _.map(daysCfg, day => {
-			
-
-			const start = getX(day.start);
-			const label = (
-				<text
-					x={start + 3}
-					y={height - 2}
-					className="ptr-timeline-month-label"
-				>
-					{day.day}
-				</text>
+	let hours = map(hoursCfg, hour => {
+		let x = getX(hour.start);
+		const label = (
+				<Label label={hour.hour} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
 			);
-			
-			return (
-				<g
-					key={day.day}
-					className={classNames("ptr-timeline-month", (+day.start.format('H') % 2) ? 'odd' : 'even')}
-				>
-					{label}
-				</g>
+		return (<HourDash key={`minutes-${hour.year}-${hour.month}-${hour.day}-${hour.hour}`} label={label} x={x} vertical={vertical} height={1}/>);
+	});
+
+	const minutes = map(minutesCfg, minute => {
+		let x = getX(minute.start);
+		let label = null
+		
+		if(dayWidth > 20000) {
+			label = (
+				<Label label={minute.minute} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
 			);
-		});
+		}
 
-		let hours = _.map(hoursCfg, hour => {
-			let start = this.props.getX(hour.start);
-			// let end = this.props.getX(day.end);
-			// let monday = hour.start.format('dddd') === 'Monday';
-			let height = this.props.height;
-			if (!this.props.background) {
-				height = height - 20
-			}
+		return (<MinuteDash key={`minutes-${minute.year}-${minute.month}-${minute.day}-${minute.hour}-${minute.minute}`} label={label} x={x} vertical={vertical} height={3}/>);
+	});
 
-			let label = null
-			// if (this.props.dayWidth > 900) {
-			// 	label = (
-			// 		<text
-			// 			x={start + 3}
-			// 			y={height - 2}
-			// 			className="ptr-timeline-hour-label"
-			// 		>
-			// 			{hour.hour}
-			// 		</text>
-			// 	);
-			// }
-
-			return (
-				<g
-				key={`${hour.year}-${hour.month}-${hour.day}-${hour.hour}`}
-				className={classNames("ptr-timeline-hour")}
-				>
-					<line
-						key={`${hour.start.toISOString()}+${hour.hour}`}
-						x1={start + 0.5}
-						x2={start + 0.5}
-						y1={0}
-						y2={height}
-						className={classNames("ptr-timeline-hour", {background: this.props.background})}
-					/>
-					{label}
-				</g>
-			);
-		});
-
-		let minutes = _.map(minutesCfg, minute => {
-			let start = this.props.getX(minute.start);
-			let height = this.props.height;
-			if (!this.props.background) {
-				height = height - 20
-			}
-
-			let label = null
-			if (this.props.dayWidth > 2500) {
-				const transform = vertical ? `rotate(270, ${start + 0.5}, ${height})` : ''
-				label = (
-					<text
-						transform={transform}
-						x={start + 3}
-						y={height - 2}
-						className="ptr-timeline-minute-label"
-					>
-						{minute.minute}
-					</text>
-				);
-			}
-
-			return (
-				<g
-				key={`${minute.year}-${minute.month}-${minute.day}-${minute.hour}-${minute.minute}`}
-				className={classNames("ptr-timeline-minute")}
-				>
-					<line
-						key={`${minute.start.toISOString()}+${minute.minute}`}
-						x1={start + 0.5}
-						x2={start + 0.5}
-						y1={0}
-						y2={height}
-						className={classNames("ptr-timeline-minute", {background: this.props.background})}
-					/>
-					{label}
-				</g>
-			);
-		})
-
-		return React.createElement('g', null, (<>{days}{hours}{minutes}</>));
-	}
-
+	return React.createElement('g', null, (<>{hours}{minutes}</>));
 }
 
-export default Hours;
+export default Minutes;

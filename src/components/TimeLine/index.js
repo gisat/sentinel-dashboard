@@ -21,7 +21,7 @@ export const LEVELS = [
 		level: 'day',
 	},
 	{
-		end: 9000,
+		end: 15000,
 		level: 'hour',
 	},
 	{
