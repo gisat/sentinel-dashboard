@@ -1,87 +1,62 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import _ from 'lodash';
-import classNames from 'classnames';
+import map from 'lodash/map';
 import moment from 'moment';
-import {getMonths, getDays, getHours} from '../utils/interval';
+import {getMinutes, getDays, getHours} from '../utils/interval';
 import Label from '../utils/textLabel';
+import MinuteDash from '../minutes/MinuteDash';
+import HourDash from './HourDash';
+import DayDash from '../days/DayDash';
 import './style.css';
 
-const DAYWIDTHTRASHOLD = 100;
-class Hours extends React.PureComponent {
-	static propTypes = {
-		period: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-		getX: PropTypes.func,
-		dayWidth: PropTypes.number,
-	};
+const Hours = (props) => {
+	const {periodLimit, getX, dayWidth, height, vertical} = props;
+	const periodStart = moment(periodLimit.start);
+	const periodEnd = moment(periodLimit.end);
+	const hoursCfg = getHours(periodStart, periodEnd);
+	const daysCfg = getDays(periodStart, periodEnd);
+	// const monthsCfg = getMonths(periodStart, periodEnd);
+	// const yearsCfg = getYears(periodStart, periodEnd);
 
-	render() {
-		const {periodLimit, getX, dayWidth, height, vertical, background} = this.props;
-		const periodStart = moment(periodLimit.start);
-		const periodEnd = moment(periodLimit.end);
-		const monthsCfg = getMonths(periodStart, periodEnd);
-		const daysCfg = getDays(periodStart, periodEnd);
-		const hoursCfg = getHours(periodStart, periodEnd);
 
-		let days = _.map(daysCfg, day => {
-			const start = getX(day.start);
+		let days = map(daysCfg, day => {
+			const x = getX(day.start);
 			const label = (
-				<Label label={day.day} vertical={vertical} x={start} height={height} className={'ptr-timeline-month-label'} />
+				<Label label={day.day} vertical={vertical} x={x} height={height} className={'ptr-timeline-month-label'} />
 			);
-			
-			return (
-				<g
-					key={`${day.year}-${day.month}-${day.day}`}
-					className={classNames("ptr-timeline-month", (+day.start.format('H') % 2) ? 'odd' : 'even')}
-				>
-					{label}
-				</g>
-			);
+			return (<DayDash key={`${day.year}-${day.month}-${day.day}`} label={label} x={x} vertical={vertical} height={1}/>);
 		});
 
-		let hours = _.map(hoursCfg, hour => {
-			let start = getX(hour.start);
+		let hours = map(hoursCfg, hour => {
+			let x = getX(hour.start);
 
 			let label = null
-			if (dayWidth > 900) {
-				const transform = vertical ? `rotate(270, ${start + 0.5}, ${height})` : ''
+			if (dayWidth > 580) {
 				label = (
-					<text
-						transform={transform}
-						x={start + 3}
-						y={height - 2}
-						className="ptr-timeline-hour-label"
-					>
-						{hour.hour}
-					</text>
+					<Label label={hour.hour} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
 				);
 			}
 
-			return (
-				<g
-				key={`${hour.year}-${hour.month}-${hour.day}-${hour.hour}`}
-				className={classNames("ptr-timeline-hour")}
-				>
-					<line
-						key={`${hour.start.toISOString()}+${hour.hour}`}
-						x1={start + 0.5}
-						x2={start + 0.5}
-						y1={0}
-						y2={height}
-						className={classNames("ptr-timeline-hour", {background: background})}
-					/>
-					{label}
-				</g>
-			);
+			return (<HourDash key={`${hour.year}-${hour.month}-${hour.day}-${hour.hour}`} label={label} x={x} vertical={vertical} height={2}/>);
 		});
 
-		return React.createElement('g', null, (<>{days}{hours}</>));
-	}
+		let minutes = null;
+		if (dayWidth > 4000) {
+			const minutesCfg = getMinutes(periodStart, periodEnd);
+			minutes = map(minutesCfg, minute => {
+				if(minute.minute === '30') {
+					let x = getX(minute.start);
+					return (<MinuteDash key={`${minute.year}-${minute.month}-${minute.day}-${minute.hour}-${minute.minute}`} x={x} vertical={vertical} height={3}/>);
+				} else if(dayWidth > 6000 && (minute.minute === '15' || minute.minute === '45')) {
+					let x = getX(minute.start);
+					return (<MinuteDash key={`${minute.year}-${minute.month}-${minute.day}-${minute.hour}-${minute.minute}`} x={x} vertical={vertical} height={3}/>);
+				} else {
+					return null;
+				}
+			});
+		}
 
+		return React.createElement('g', null, (<>{days}{hours}{minutes}</>));
 }
 
 export default Hours;
