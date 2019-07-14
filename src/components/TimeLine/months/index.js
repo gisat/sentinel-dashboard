@@ -8,7 +8,7 @@ import './style.css';
 import map from 'lodash/map';
 import moment from 'moment';
 
-export const Months = (props) => {
+const Months = (props) => {
 	const {periodLimit, getX, dayWidth, height, vertical} = props;
 	const periodStart = moment(periodLimit.start);
 	const periodEnd = moment(periodLimit.end);
@@ -25,14 +25,12 @@ export const Months = (props) => {
 				);
 			}
 	
-			return (<MonthDash key={`${month.year}-${month.month}`} x={x} label={label} vertical={vertical}/>);
+			return (<MonthDash key={`${month.year}-${month.month}`} x={x} label={label} vertical={vertical} height={2}/>);
 		} else {
 			return null;
 		}
 	});
 
-	
-	
 	const years = map(yearsCfg, year => {
 		let x = getX(year.start);
 		let label = <Label label={year.year} vertical={vertical} x={x} height={height} className={'ptr-timeline-year-label'} />

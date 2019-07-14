@@ -13,11 +13,11 @@ export const LEVELS = [
 		level: 'year',
 	},
 	{
-		end: 20,
+		end: 10,
 		level: 'month',
 	},
 	{
-		end: 200,
+		end: 250,
 		level: 'day',
 	},
 	{

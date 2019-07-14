@@ -1,99 +1,64 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import './style.css';
-import _ from 'lodash';
-import classNames from 'classnames';
+import map from 'lodash/map';
 import moment from 'moment';
-import {getMonths, getDays} from '../utils/interval';
+import {getYears, getMonths, getDays, getHours} from '../utils/interval';
+import Label from '../utils/textLabel';
+import HourDash from '../hours/HourDash';
+import DayDash from './DayDash';
+import MonthDash from '../months/MonthDash';
+import YearDash from '../years/YearDash';
 
-class Days extends React.PureComponent {
+const Days = (props) => {
+	const {periodLimit, getX, dayWidth, height, vertical} = props;
+	const periodStart = moment(periodLimit.start);
+	const periodEnd = moment(periodLimit.end);
+	const daysCfg = getDays(periodStart, periodEnd);
+	const monthsCfg = getMonths(periodStart, periodEnd);
+	const yearsCfg = getYears(periodStart, periodEnd);
 
+	const months = map(monthsCfg, month => {
+		if(month.month !== '01') {
+			let x = getX(month.start);
+			let label = (<Label label={month.month} vertical={vertical} x={x} height={height} className={'ptr-timeline-month-label'} />);
+			return (<MonthDash key={`${month.year}-${month.month}`} x={x} label={label} vertical={vertical} height={1}/>);
+		} else {
+			return null;
+		}
+	});
 
-	static propTypes = {
-		periodLimit: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
-		}),
-		getX: PropTypes.func,
-		dayWidth: PropTypes.number,
-	};
+	const years = map(yearsCfg, year => {
+		let x = getX(year.start);
+		let label = <Label label={year.year} vertical={vertical} x={x} height={height} className={'ptr-timeline-year-label'} />
+		return (<YearDash key={year.year} label={label} x={x} vertical={vertical}/>);
+	});
 
-	render() {
-		const {periodLimit, getX, dayWidth, height} = this.props;
-		const periodStart = moment(periodLimit.start);
-		const periodEnd = moment(periodLimit.end);
-		const daysCfg = getDays(periodStart, periodEnd);
-		const monthsCfg = getMonths(periodStart, periodEnd);
-
-
-		const months = _.map(monthsCfg, month => {
-			const start = getX(month.start);
-			const label = (
-				<text
-					x={start + 3}
-					y={height - 2}
-					className="ptr-timeline-month-label"
-				>
-					{month.year}-{month.month}
-				</text>
+	const days = map(daysCfg, day => {
+		let x = getX(day.start);
+		let label = null;
+		if (dayWidth > 17) {
+			label = (
+				<Label label={day.day} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
 			);
-
-			return (
-				<g
-					key={`${month.year}-${month.month}`}
-					className={classNames("ptr-timeline-month", (+month.start.format('M') % 2) ? 'odd' : 'even')}
-				>
-					{label}
-				</g>
-			);
-		});
-
-		let days = _.map(daysCfg, day => {
-			let start = this.props.getX(day.start);
-			// let end = this.props.getX(day.end);
-			let monday = day.start.format('dddd') === 'Monday';
-
-			let label = null
-			if (this.props.dayWidth > 30) {
-				label = (
-					<text
-						x={start + 3}
-						y={height - 2}
-						className="ptr-timeline-day-label"
-					>
-						{day.day}
-					</text>
-				);
-			}
-
-			if (this.props.dayWidth > 2 || (this.props.dayWidth > 0.3 && monday)) {
-				let height = this.props.height;
-				if (!this.props.background) {
-					height = monday ? height - 12 : height - 15
-				}
-				return (
-					<g
-						key={`${day.year}-${day.month}-${day.day}`}
-						className={classNames("ptr-timeline-day", {background: this.props.background})}
-						>
-						<line
-							x1={start + 0.5}
-							x2={start + 0.5}
-							y1={0}
-							y2={height}
-							className={classNames(day.start.format('dddd'), {background: this.props.background})}
-						/>
-						{label}
-					</g>
-				);
+		}
+		return (<DayDash key={`${day.year}-${day.month}-${day.day}`} label={label} x={x} vertical={vertical} height={2}/>);
+	});
+	
+	let hours = null;
+	if (dayWidth > 150) {
+		const hoursCfg = getHours(periodStart, periodEnd);
+		hours = map(hoursCfg, hour => {
+			if(hour.hour === '12') {
+				let x = getX(hour.start);
+				return (<HourDash key={`${hour.year}-${hour.month}-${hour.day}-${hour.hour}`} x={x} vertical={vertical} height={3}/>);
 			} else {
 				return null;
 			}
 		});
-
-		return React.createElement('g', null, (<>{days}{months}</>));
 	}
 
-}
+	return React.createElement('g', null, (<>{years}{months}{days}{hours}</>));
+};
+
 
 export default Days;
