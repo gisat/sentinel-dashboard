@@ -118,7 +118,7 @@ class MapsTimeline extends React.PureComponent {
 		const overlaysContent = this.getOverlaysContent(x, time);
 		return (
 			<div>
-				time: {time.toString()}
+				time: {` ${time.format("YYYY MM D H:mm:ss")}`}
 				{overlaysContent}
 			</div>
 		)
