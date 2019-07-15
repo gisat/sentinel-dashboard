@@ -31,6 +31,24 @@ const INITIAL_STATE = {
 	// displayTooltip: false
 };
 
+const LevelElement = (props) => {
+	const {activeLevel} = props;
+	switch (activeLevel) {
+		case 'year':
+			return React.createElement(Years, props);
+		case 'month':
+			return React.createElement(Months, props);
+		case 'day':
+			return React.createElement(Days, props);
+		case 'hour':
+			return React.createElement(Hours, props);
+		case 'minute':
+			return React.createElement(Minutes, props);
+		default:
+			return React.createElement(Years, props);
+	}
+}
+
 class MapsTimeline extends React.PureComponent {
 	constructor (props) {
 		super(props);
@@ -145,27 +163,8 @@ class MapsTimeline extends React.PureComponent {
 		};
 	}
 
-	getLevelElement(levelKey) {
-		switch (levelKey) {
-			case 'year':
-				return Years;
-			case 'month':
-				return Months;
-			case 'day':
-				return Days;
-			case 'hour':
-				return Hours;
-			case 'minute':
-				return Minutes;
-			default:
-				return Years;
-		}
-	}
-
 	render() {
 		const {activeLevel, time, overlays, LEVELS, containerWidth, containerHeight, dayWidth, period, initialPeriod, vertical} = this.props; // consume unneeded props (though we'll probably use them in the future)
-
-		const LevelElement = this.getLevelElement(activeLevel);
 
 		return (
 			<div className={'ptr-timeline-container'}>
@@ -191,7 +190,7 @@ class MapsTimeline extends React.PureComponent {
 						>
 							<PeriodLimit key="periodLimit"/>
 							<Overlays overlays={overlays} key="overlays"/>
-							<LevelElement key={activeLevel}/>
+							<LevelElement key="levelElement"/>
 							<Picker key="picker"/>
 							<Mouse mouseBufferWidth={20} key="mouse"/>
 						</Timeline>

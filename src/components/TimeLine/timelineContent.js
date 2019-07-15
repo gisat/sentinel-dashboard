@@ -11,7 +11,7 @@ class TimelineContent extends React.PureComponent {
 	static contextType = TimeLineContext;
 
 	render() {
-		const {period, height, width,dayWidth, periodLimit, mouseX, vertical} = this.context;
+		const {period, height, width,dayWidth, periodLimit, mouseX, vertical, activeLevel} = this.context;
 		const {children} = this.props;
 		let content = null;
 
@@ -33,7 +33,8 @@ class TimelineContent extends React.PureComponent {
 					width: width,
 					dayWidth: dayWidth,
 					vertical: vertical,
-					mouseX: mouseX
+					mouseX: mouseX,
+					activeLevel: activeLevel,
 				}))
 			})
 		}
