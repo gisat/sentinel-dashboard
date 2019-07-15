@@ -55,8 +55,11 @@ const Hours = (props) => {
 			}
 		});
 	}
-
-	return React.createElement('g', null, (<>{days}{hours}{minutes}</>));
+	return (
+		<g className={'levels'}>
+			{minutes}{hours}{days.reverse()}
+		</g>
+	)
 }
 
 export default Hours;

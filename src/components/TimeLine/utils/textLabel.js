@@ -5,17 +5,21 @@ class TextLabel extends React.PureComponent {
 	constructor(props){
         super(props);
 		this.node = React.createRef();
-        this.state = {elHeight: 0};
+        this.state = {
+            elHeight: 0,
+            elWidth: 0,
+        };
     }
     
     componentDidMount() {
         const elHeight = this.node.current.getBoundingClientRect().height;
-        this.setState({elHeight});
+        const elWidth = this.node.current.getBoundingClientRect().width;
+        this.setState({elHeight, elWidth});
     }
 
 	render() {
         const {label, vertical, height, x, className} = this.props;
-        const {elHeight} = this.state;
+        const {elHeight, elWidth} = this.state;
         
         const xTransform = vertical ? -height + 3 : x + 3;
         const yTransform = vertical ? x + elHeight + 3 : height - 2;
@@ -23,14 +27,25 @@ class TextLabel extends React.PureComponent {
         // const xTransform = vertical ? x + elHeight + 3 : x + 3;
         // const transform = vertical ? `rotate(270, ${xTransform}, ${height})` : ''
 		return (
-			<text
-                ref={this.node}
-                transform={transform}
-                x={xTransform}
-                y={yTransform}
-                className={className}>
-                {label}
-            </text>
+            <g>
+                <rect 
+                    transform={transform}
+                    x={xTransform}
+                    y={yTransform - elHeight + 3}
+                    width={elWidth}
+                    height={elHeight}
+                    style={{stroke: 'none'}}
+                    >
+                </rect>
+                <text
+                    ref={this.node}
+                    transform={transform}
+                    x={xTransform}
+                    y={yTransform}
+                    className={className}>
+                    {label}
+                </text>
+            </g>
 		);
 	}
 }

@@ -57,7 +57,11 @@ const Days = (props) => {
 		});
 	}
 
-	return React.createElement('g', null, (<>{years}{months}{days}{hours}</>));
+	return(
+		<g className={'levels'}>
+			{hours}{days}{months}{years.reverse()}
+		</g>
+	);
 };
 
 

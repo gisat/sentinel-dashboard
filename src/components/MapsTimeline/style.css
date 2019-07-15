@@ -12,3 +12,11 @@
     align-items: center;
     display: flex;
 }
+
+g.levels g rect{
+  fill: none;
+}
+
+g.levels g:last-child g rect{
+  fill: rgb(142, 141, 141);
+}

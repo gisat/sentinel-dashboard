@@ -35,8 +35,11 @@ const Minutes = (props) => {
 
 		return (<MinuteDash key={`minutes-${minute.year}-${minute.month}-${minute.day}-${minute.hour}-${minute.minute}`} label={label} x={x} vertical={vertical} height={3}/>);
 	});
-
-	return React.createElement('g', null, (<>{hours}{minutes}</>));
+	return (
+		<g className={'levels'}>
+			{minutes}{hours.reverse()}
+		</g>
+	)
 }
 
 export default Minutes;

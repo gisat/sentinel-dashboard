@@ -38,8 +38,8 @@ const Months = (props) => {
 	});
 
 	return (
-		<g>
-			{years}{months}
+		<g className={'levels'}>
+			{months}{years.reverse()}
 		</g>
 	)
 }

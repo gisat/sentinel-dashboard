@@ -6,7 +6,7 @@ export default (props) => {
 	const dLabel = label || null;
 	return (
 		<g
-			className={'ptr-timeline-day'}
+			className={'ptr-timeline-hour'}
 		>
 			{height === 1 ? <D1 x={x} vertical={vertical}/> : null}
 			{height === 2 ? <D2 x={x} vertical={vertical}/> : null}
