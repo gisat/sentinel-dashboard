@@ -23,7 +23,7 @@ class TimeWidget extends React.PureComponent{
             <div className={classes}>
                 {timeMom ?
                 <>
-                    <div onClick={() => nowActive ? onStopTimer() : onStartTimer()} className={`time-cell ${nowActive ? 'active' : '' }`}>
+                    <div onClick={() => nowActive ? onStopTimer() : onStartTimer()} className={`now time-cell ${nowActive ? 'active' : '' }`}>
                         NOW
                         <span className={'indicator'}>
                         </span>
