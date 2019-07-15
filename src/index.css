@@ -62,18 +62,23 @@ code {
 
 .time-widget-wrapper{
   position: absolute;
-
-  border-top: rgba(123, 123, 123, 0.7) 1px solid;
-  border-left: rgba(123, 123, 123, 0.7) 1px solid;
-  box-shadow: -0.1rem -0.1rem 0.5rem 0.1rem rgba(123, 123, 123, 0.7)
 }
 .time-widget-wrapper.horizontal{
   bottom: 45px;
   right: 0px;
+
+  border-top: rgba(123, 123, 123, 0.7) 1px solid;
+  border-left: rgba(123, 123, 123, 0.7) 1px solid;
+  box-shadow: -0.1rem -0.1rem 0.5rem 0.1rem rgba(123, 123, 123, 0.54);
 }
 .time-widget-wrapper.vertical{
   top: 0px;
   right: 70px;
+
+
+  border-bottom: rgba(123, 123, 123, 0.7) 1px solid;
+  border-left: rgba(123, 123, 123, 0.7) 1px solid;
+  box-shadow: -0.1rem 0.1rem 0.5rem 0.1rem rgba(123, 123, 123, 0.54);
 }
 
 .ptr-timeline-overlay.overlay2 text{

@@ -1,5 +1,6 @@
 .time-widget{
-    background: #FFF;
+    background: rgba(0, 0, 0, 0.39);
+    color: rgb(255, 255, 255);
     font-size: 1.5rem;
     padding: 0.3rem 0.3rem 0rem 0.3rem;
     display: flex;
@@ -12,6 +13,9 @@
     display: flex;
     flex-flow: column;
     cursor: pointer;
+}
+.time-cell.now{
+    margin-right: 0.3rem; 
 }
 
 .time-cell .indicator{
