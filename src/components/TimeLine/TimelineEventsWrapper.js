@@ -19,6 +19,26 @@ const getClientXFromEvent = (evt, vertical = false) => {
 	return clientX;
 }
 
+const calculateEventDistance = (point1, point2) => {
+	return Math.hypot(point1.clientX - point2.clientX, point1.clientY - point2.clientY)
+}
+
+const getPoint = (index, cachedEvents, tpCache, targetTouches) => {
+	const identifier = tpCache[index].identifier;
+	let evIndex = null;
+	for (let i = 0; i < targetTouches.length; i++) {
+		const equals = targetTouches[i].identifier === identifier;
+		if(equals) {
+			evIndex = i;
+		}
+	}
+
+	if(evIndex) {
+		return targetTouches[evIndex]
+	} else {
+		return tpCache[index];
+	}
+}
 
 class TimelineEventsWrapper extends React.PureComponent {
 	static contextType = TimeLineContext;
@@ -43,25 +63,137 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.onDrag = this.onDrag.bind(this);
 		this.onMouseDown = this.onMouseDown.bind(this);
 		this.onClick = this.onClick.bind(this);
-		this.onTouchStart = this.onTouchStart.bind(this);
-		this.onTouchEnd = this.onTouchEnd.bind(this);
 		this.onMouseUp = this.onMouseUp.bind(this);
 		this.onMouseMove = this.onMouseMove.bind(this);
 		this.onMouseLeave = this.onMouseLeave.bind(this);
+		
+		this.start_handler = this.start_handler.bind(this);
+		this.end_handler = this.end_handler.bind(this);
+		this.move_handler = this.move_handler.bind(this);
+
+		// Global vars to cache event state
+		this.tpCache = [];
+		this.prevDiff = -1;
 	}
 	componentDidMount() {
-		this.node.current.addEventListener('gesturechange', this.onPinch);
-		this.node.current.addEventListener('touchstart', this.onTouchStart);
-		this.node.current.addEventListener('touchend', this.onTouchEnd);
-		this.node.current.addEventListener('touchmove', this.onMouseMove);
+		this.node.current.addEventListener('touchstart', this.start_handler);
+		this.node.current.addEventListener('touchmove', this.move_handler);
+		this.node.current.addEventListener('touchend', this.end_handler);
+		this.node.current.addEventListener('touchcancel', this.end_handler);
 	}
 	
 	componentWillUnmount() {
-		this.node.current.removeEventListener('gesturechange', this.onPinch);
-		this.node.current.removeEventListener('touchstart', this.onTouchStart);
-		this.node.current.removeEventListener('touchend', this.onTouchEnd);
-		this.node.current.removeEventListener('touchmove', this.onMouseMove);
+		this.node.current.removeEventListener('touchstart', this.start_handler);
+		this.node.current.removeEventListener('touchmove', this.move_handler);
+		
+		this.node.current.removeEventListener('touchend', this.end_handler);
+		this.node.current.removeEventListener('touchcancel', this.end_handler);
 	}
+
+	end_handler(ev) {
+		ev.preventDefault();
+
+		//remove from cache by identifier		
+		for (let i = 0; i < ev.changedTouches.length; i++) {
+			this.removeTouchEventByIdentifier(ev.changedTouches[i].identifier);
+		}
+
+		//FIX - sometime touchend or touchcancel is not called and touch stick in cache 
+		if(ev.touches.length === 0 && this.tpCache.length > 0) {
+			this.clearTouchEventCache();
+		}
+	}
+
+	clearTouchEventCache() {
+		this.tpCache = [];
+	}
+
+	removeTouchEventByIdentifier(identifier) {
+		this.tpCache = this.tpCache.filter((ev) => {
+			return ev.identifier !== identifier;
+		});
+	}
+
+	cacheEvents(evts) {
+		for (let i=0; i < evts.length; i++) {
+			this.tpCache.push(evts[i]);
+		}
+	}
+
+	start_handler(ev) {
+		// If the user makes simultaneious touches, the browser will fire a 
+		// separate touchstart event for each touch point. Thus if there are 
+		// three simultaneous touches, the first touchstart event will have 
+		// targetTouches length of one, the second event will have a length 
+		// of two, and so on.
+		ev.preventDefault();
+		if(this.tpCache.length > 0) {
+			for (let i = 0; i < ev.touches.length; i++) {
+				this.removeTouchEventByIdentifier(ev.touches[i].identifier);
+			}
+		}
+		// Cache the touch points for later processing of 2-touch pinch/zoom
+		this.cacheEvents(ev.touches);
+	   }
+
+	move_handler(ev) {
+		const {vertical} = this.context;
+		ev.preventDefault();
+
+		if(this.tpCache.length === 2) {
+			this.handle_pinch_zoom(ev.touches);
+		}
+
+		if(this.tpCache.length === 1) {
+			const xDistance = ev.touches[0].clientX - this.tpCache[0].clientX;
+			const yDistance = ev.touches[0].clientY - this.tpCache[0].clientY;
+			let distance;
+			if(vertical) {
+				distance = yDistance;
+			} else {
+				distance = xDistance;
+			}
+			
+			if(distance !== 0) {
+				this.onDrag({
+					distance: Math.abs(distance),
+					direction: distance < 0 ? 'future': 'past'
+				});
+			}
+
+			this.clearTouchEventCache();
+			
+			// Cache the touch points for later processing
+			this.cacheEvents([ev.touches[0]]);
+	   }
+	}
+
+	// This is a very basic 2-touch move/pinch/zoom handler that does not include
+	// error handling, only handles horizontal moves, etc.
+	handle_pinch_zoom(touches) {
+		const cachedEvents = [];
+
+		for(let i = 0; i < touches.length; i++) {
+			const found = this.tpCache.findIndex(e => e.identifier === touches[i].identifier);
+			if(found > -1) {
+				cachedEvents[i] = found;
+			}
+		}
+
+		const prevPoint1 = this.tpCache[0];
+		const prevPoint2 = this.tpCache[1];
+		const point1 = getPoint(0, cachedEvents, this.tpCache, touches);
+		const point2 = getPoint(1, cachedEvents, this.tpCache, touches);
+		const prevDist = calculateEventDistance(prevPoint1, prevPoint2);
+		const dist = calculateEventDistance(point1, point2);
+
+		this.clearTouchEventCache();
+
+		// Cache the touch points for later processing of 2-touch pinch/zoom
+		this.cacheEvents([point1, point2]);
+		const centerPoint = [(point1.clientX + point2.clientX) / 2, (point1.clientY + point2.clientY) / 2];
+		this.onPinch(dist/prevDist, centerPoint)
+   }
 
 	onMouseUp(e) {		
 		const {vertical} = this.context;
@@ -98,26 +230,6 @@ class TimelineEventsWrapper extends React.PureComponent {
 		})
 	}
 
-	onTouchStart = (evt) => {
-		evt.stopPropagation();
-		evt.preventDefault();
-	
-		this.onMouseDown(evt);
-	}
-
-	onTouchEnd = (evt) => {
-		evt.stopPropagation();
-		evt.preventDefault();
-
-		this.context.onHover(null);
-
-		this.context.updateContext({
-			mouseX: null,
-			mouseTime: null
-		});
-		this.onMouseUp(evt);
-	}
-	
 	onMouseMove(e) {
 		const {vertical} = this.context;
 		const clientX = getClientXFromEvent(e, vertical);
@@ -236,7 +348,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 * @param {number} x
 	 */
 	addTrackingPoint(x) {
-		var time = Date.now();
+		const time = Date.now();
 		while (this.trackingPoints.length > 0) {
 			if (time - this.trackingPoints[0].time <= 100) {
 				break;
@@ -347,25 +459,36 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.zoom(newWidth);
 	}
 
-	onPinch(e) {
+	onPinch(scale, point) {
+		const {vertical} = this.context;
+		let zoomX;
+		if(vertical) {
+			zoomX = point[1];
+		} else {
+			zoomX = point[0];
+		}
+		
 		const {dayWidth} = this.context;
-		e.preventDefault();
 		let change;
-		if (e.scale > 1) {
+		if (scale === 1) {
+			change = 1;
+		} else if (scale > 1) {
 			// zoom out
-			change = 1 + e.scale / 10;
+			change = 1 + scale / 10;
 		} else {
 			// zoom in
-			change = 1 - e.scale / 10;
+			change = 1 - scale / 10;
 		}
 
 		let newWidth = dayWidth * change;
-		this.zoom(newWidth);
+		this.zoom(newWidth, zoomX);
 	}
 
-	zoom(newWidth) {
+	zoom(newWidth, x) {
 		const {mouseX, getTime, updateContext, period} = this.context;
-		let mouseTime = getTime(mouseX);
+		const zoomX = x || mouseX;
+		const mouseTime = zoomX ? getTime(zoomX) : getTime(mouseX);
+		
 		if(newWidth > this.context.maxDayWidth) {
 			newWidth = this.context.maxDayWidth;
 		}
@@ -375,7 +498,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 			newWidth = this.context.minDayWidth;
 		}
 
-		let beforeMouseDays = this.context.mouseX / newWidth;
+		let beforeMouseDays = zoomX / newWidth;
 		let allDays = this.context.width / newWidth;
 
 		let start = moment(mouseTime).subtract(moment.duration(beforeMouseDays * (60 * 60 * 24 * 1000), 'ms'));
