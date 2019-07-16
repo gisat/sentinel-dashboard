@@ -64,6 +64,7 @@ code {
   position: absolute;
 }
 .time-widget-wrapper.horizontal{
+  width: 100%;
   bottom: 45px;
   right: 0px;
 
