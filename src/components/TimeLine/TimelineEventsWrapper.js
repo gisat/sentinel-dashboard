@@ -91,7 +91,14 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 	end_handler(ev) {
+		const {vertical} = this.context;
 		ev.preventDefault();
+		const clientX = getClientXFromEvent(ev, vertical);
+		
+		//identify stop touch move by one touch
+		if(ev.changedTouches.length === 1 && this.tpCache.length === 1) {
+			this.onPointerUp(clientX)
+		}
 
 		//remove from cache by identifier		
 		for (let i = 0; i < ev.changedTouches.length; i++) {
@@ -121,6 +128,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 	}
 
 	start_handler(ev) {
+		const {vertical} = this.context;
 		// If the user makes simultaneious touches, the browser will fire a 
 		// separate touchstart event for each touch point. Thus if there are 
 		// three simultaneous touches, the first touchstart event will have 
@@ -134,38 +142,65 @@ class TimelineEventsWrapper extends React.PureComponent {
 		}
 		// Cache the touch points for later processing of 2-touch pinch/zoom
 		this.cacheEvents(ev.touches);
+
+		//identify only one touch
+		this.trackingPoints = [];
+		this._pointerLastX = null;
+		this.resetMouseTouchProps();
+		if(this.tpCache.length === 1) {
+			const clientX = getClientXFromEvent(ev, vertical);
+			this.onPointerDown(clientX);
+		}
 	   }
 
 	move_handler(ev) {
 		const {vertical} = this.context;
 		ev.preventDefault();
-
+		
+		//identify pinch/zoom touch
 		if(this.tpCache.length === 2) {
 			this.handle_pinch_zoom(ev.touches);
 		}
-
+		
+		//identify touch by one touch
 		if(this.tpCache.length === 1) {
-			const xDistance = ev.touches[0].clientX - this.tpCache[0].clientX;
-			const yDistance = ev.touches[0].clientY - this.tpCache[0].clientY;
-			let distance;
-			if(vertical) {
-				distance = yDistance;
-			} else {
-				distance = xDistance;
-			}
-			
-			if(distance !== 0) {
-				this.onDrag({
-					distance: Math.abs(distance),
-					direction: distance < 0 ? 'future': 'past'
-				});
-			}
+			const clientX = getClientXFromEvent(ev, vertical);
+			this.onPointerMove(clientX);
 
 			this.clearTouchEventCache();
-			
 			// Cache the touch points for later processing
 			this.cacheEvents([ev.touches[0]]);
 	   }
+	}
+
+	onPointerMove(clientX) {
+		const distance = clientX - this._lastX;
+		if(distance !== 0) {
+			this.onDrag({
+				distance: Math.abs(distance),
+				direction: distance < 0 ? 'future': 'past'
+			});
+			this.registerMovements(clientX);
+		}
+	}
+
+	onPointerDown(clientX) {
+		this._drag = true;
+		this.trackingPoints = [];
+		this._lastX = clientX;
+		this._pointerLastX = clientX;
+		this._mouseDownX = clientX;
+		this.addTrackingPoint(this._pointerLastX);
+	}
+
+	onPointerUp(clientX) {
+		const isClick = Math.abs(this._mouseDownX - clientX) < 1;
+		this.resetMouseTouchProps()
+		if (isClick) {
+			this.onClick(clientX)
+		}
+
+		this.stopTracking();
 	}
 
 	// This is a very basic 2-touch move/pinch/zoom handler that does not include
@@ -195,38 +230,31 @@ class TimelineEventsWrapper extends React.PureComponent {
 		this.onPinch(dist/prevDist, centerPoint)
    }
 
-	onMouseUp(e) {		
-		const {vertical} = this.context;
-		const clientX = getClientXFromEvent(e, vertical);
-		const isClick = Math.abs(this._mouseDownX - clientX) < 1;
+   resetMouseTouchProps() {
 		this._drag = false;
 		this._lastX = null;
 		this._mouseDownX = null;
-		if (isClick) {
-			this.onClick(e)
-		}
+   }
 
-		this.stopTracking();
+	onMouseUp(e) {		
+		const {vertical} = this.context;
+		const clientX = getClientXFromEvent(e, vertical);
+		this.onPointerUp(clientX);
 	}
 
 	onMouseDown(e) {
 		const {vertical} = this.context;
-		this._drag = true;
-		this.trackingPoints = [];
-		this._lastX = getClientXFromEvent(e, vertical);
-		this._pointerLastX = getClientXFromEvent(e, vertical);
-		this._mouseDownX = getClientXFromEvent(e, vertical);
-		this.addTrackingPoint(this._pointerLastX);
+		const clientX = getClientXFromEvent(e, vertical);
+		this.onPointerDown(clientX);
 	}
 
-	onClick(e) {
-		const {onClick, getTime, vertical} = this.context;
-		const clickX = getClientXFromEvent(e, vertical);
+	onClick(clientX) {
+		const {onClick, getTime} = this.context;
 
 		onClick({
 			type: 'time',
-			x: clickX,
-			time: getTime(clickX)
+			x: clientX,
+			time: getTime(clientX)
 		})
 	}
 
@@ -246,18 +274,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 		});
 		
 		if(this._drag) {
-			let distance = clientX - this._lastX;
-			// debugger
-			if(distance !== 0) {
-				this.onDrag({
-					distance: Math.abs(distance),
-					direction: distance < 0 ? 'future': 'past'
-				});
-
-				this._lastX = clientX;
-
-				this.registerMovements(clientX);
-			}
+			this.onPointerMove(clientX);
 			e.preventDefault();
 		}
 	}
@@ -331,6 +348,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 	 * @param  {clientX} ev Normalized event
 	 */
  	 registerMovements(clientX) {
+		this._lastX = clientX;
 		if (this._drag) {
 			this.addTrackingPoint(this._lastX);
 		}
