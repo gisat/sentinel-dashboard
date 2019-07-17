@@ -5,6 +5,7 @@
     padding: 0.3rem 0.3rem 0rem 0.3rem;
     display: flex;
     justify-content: center;
+    user-select: none;
 }  
 .time-widget.mouse-time{
     color: #808080;
