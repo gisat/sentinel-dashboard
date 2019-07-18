@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import moment from 'moment';
 import './style.css';
 
 
@@ -18,18 +17,10 @@ import Months from '../TimeLine/months';
 import Days from '../TimeLine/days';
 import Hours from '../TimeLine/hours';
 import Minutes from '../TimeLine/minutes';
-
-
-
 import Timeline, {LEVELS} from '../TimeLine';
 
-const CONTROLS_WIDTH = 0;
 const TOOLTIP_PADDING = 5;
 const MOUSE_BUFFER_WIDTH = 5;
-const INITIAL_STATE = {
-	mouseX: null,
-	// displayTooltip: false
-};
 
 const LevelElement = (props) => {
 	const {activeLevel} = props;

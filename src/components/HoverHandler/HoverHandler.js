@@ -6,9 +6,9 @@ import HoverContext from './context';
 import Popup from "./Popup/Popup";
 
 class HoverHandler extends React.PureComponent {
-
 	static propTypes = {
-	};
+		getStyle: PropTypes.func,
+	}
 
 	constructor(props){
 		super(props);
