@@ -187,6 +187,7 @@ class MapsTimeline extends React.PureComponent {
 							onClick= {this.onClick}
 							vertical={vertical}
 							periodLimit={initialPeriod}
+							periodLimitOnCenter={true}
 						>
 							<PeriodLimit key="periodLimit"/>
 							<Overlays overlays={overlays} key="overlays"/>

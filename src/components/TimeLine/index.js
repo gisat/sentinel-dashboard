@@ -250,7 +250,7 @@ class Timeline extends React.PureComponent {
 	}
 
 	render() {
-		const {levels, period, height, pickDateByCenter, overlays, onHover, onClick, vertical, children} = this.props;
+		const {levels, period, height, pickDateByCenter, overlays, onHover, onClick, vertical, children, periodLimitOnCenter} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		const maxDayWidth = this.getMaxDayWidth();
@@ -281,6 +281,7 @@ class Timeline extends React.PureComponent {
 				vertical,
 				getXAxisWidth: this.getXAxisHeight,
 				getXAxisHeight: this.getXAxisHeight,
+				periodLimitOnCenter
 				}}>
 				<TimelineContent>
 					{children}
