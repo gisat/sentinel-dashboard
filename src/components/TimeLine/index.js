@@ -46,8 +46,8 @@ class Timeline extends React.PureComponent {
 		}),
 		dayWidth: PropTypes.number,
 		centerTime: PropTypes.func,
-		containerWidth: PropTypes.number.isRequired,
-		containerHeight: PropTypes.number.isRequired,
+		containerWidth: PropTypes.number,
+		containerHeight: PropTypes.number,
 		height: PropTypes.number,
 		
 		onHover: PropTypes.func,
