@@ -164,14 +164,12 @@ class MapsTimeline extends React.PureComponent {
 						<Timeline 
 							dayWidth={dayWidth}
 							period={period}
-							initialPeriod={initialPeriod}
 							mouseBufferWidth= {MOUSE_BUFFER_WIDTH}
 							pickDateByCenter= {true}
 							selectedDate= {null}
 							onChange= {(timelineState) => {this.onTimelineChange(timelineState)}}
 							activeLevel={activeLevel}
 							time={time}
-							overlays={overlays}
 							LEVELS={LEVELS}
 							containerWidth={containerWidth}
 							containerHeight={containerHeight}
