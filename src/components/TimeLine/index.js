@@ -90,31 +90,41 @@ class Timeline extends React.PureComponent {
 
 		this.state = state;
 
-		if(typeof this.props.onChange === 'function') {
-			this.props.onChange(this.state)
+		if(typeof props.onChange === 'function') {
+			props.onChange(this.state)
 		}
 
 	}
 
 	componentDidUpdate(prevProps) {
+		const {dayWidth, time, width, height, period} = this.props;
 		//if parent component set dayWidth
-		if(prevProps.dayWidth !== this.props.dayWidth && this.state.dayWidth !== this.props.dayWidth) {
-			this.updateContext({dayWidth: this.props.dayWidth})
+		if(prevProps.dayWidth !== dayWidth && this.state.dayWidth !== dayWidth) {
+			this.updateContext({dayWidth: dayWidth})
 		}
 	
 		//if parent component set time
-		if(prevProps.time !== this.props.time && this.state.centerTime !== this.props.time) {
+		if(prevProps.time !== time && this.state.centerTime !== time) {
 
-			const periodLimit = this.getPeriodLimitByTime(this.props.time);
+			const periodLimit = this.getPeriodLimitByTime(time);
 
 			//zoom to dayWidth
 			this.updateContext({periodLimit})
 		}
 
 		//if parent component set time
-		if((prevProps.width !== this.props.width) || (prevProps.height !== this.props.height)) {
+		if((prevProps.width !== width) || (prevProps.height !== height)) {
+			//přepočítat day width aby bylo v periodě
+
 			//todo take time from state
-			const periodLimit = this.getPeriodLimitByTime(this.props.time);
+			// const periodLimit = this.getPeriodLimitByTime(time);
+			const xAxis = this.getXAxisWidth();
+			const minPeriodDayWidth = this.getDayWidthForPeriod(period, xAxis);
+			let dayWidth = this.state.dayWidth;
+			if(minPeriodDayWidth >= this.state.dayWidth) {
+				dayWidth = minPeriodDayWidth;
+			}
+			const periodLimit = this.getPeriodLimitByTime(this.state.centerTime, xAxis, period, dayWidth)
 
 			//zoom to dayWidth
 			this.updateContext({periodLimit})
@@ -158,7 +168,8 @@ class Timeline extends React.PureComponent {
 
 	//Find first level with smaller start level.
 	getActiveLevel(dayWidth) {
-		return this.props.levels.find((l) => dayWidth <= l.end)
+		const {levels} = this.props;
+		return levels.find((l) => dayWidth <= l.end)
 	}
 
 
@@ -202,7 +213,9 @@ class Timeline extends React.PureComponent {
 		}
 	}
 
-	getStateUpdate(options) {	
+	getStateUpdate(options) {
+		const {levels, period} = this.props;
+
 		if (options) {
 			const updateContext = {};
 			Object.assign(updateContext, {...options});
@@ -218,7 +231,7 @@ class Timeline extends React.PureComponent {
 			}
 
 			if(updateContext.dayWidth) {
-				Object.assign(updateContext, {activeLevel: this.getActiveLevel(updateContext.dayWidth, this.props.levels).level})
+				Object.assign(updateContext, {activeLevel: this.getActiveLevel(updateContext.dayWidth, levels).level})
 			}
 
 			if(updateContext.dayWidth && !options.centerTime) {
@@ -226,7 +239,7 @@ class Timeline extends React.PureComponent {
 			}
 
 			if(options.centerTime) {
-				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.getXAxisWidth(), this.props.period, updateContext.dayWidth)})
+				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.getXAxisWidth(), period, updateContext.dayWidth)})
 			}
 			
 			return updateContext
