@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import moment from 'moment';
+import {withResizeDetector} from 'react-resize-detector';
 
 import {ContextProvider} from './context';
 import TimelineContent from './timelineContent';
@@ -46,8 +47,8 @@ class Timeline extends React.PureComponent {
 		}),
 		dayWidth: PropTypes.number,
 		centerTime: PropTypes.func,
-		containerWidth: PropTypes.number,
-		containerHeight: PropTypes.number,
+		contentHeight: PropTypes.number,
+		width: PropTypes.number,
 		height: PropTypes.number,
 		
 		onHover: PropTypes.func,
@@ -68,6 +69,8 @@ class Timeline extends React.PureComponent {
 		levels: LEVELS,
 		onHover: () => {},
 		onClick: () => {},
+		width: 100,
+		height: 100,
 	}
 
 	constructor(props){
@@ -109,7 +112,7 @@ class Timeline extends React.PureComponent {
 		}
 
 		//if parent component set time
-		if(prevProps.containerWidth !== this.props.containerWidth) {
+		if((prevProps.width !== this.props.width) || (prevProps.height !== this.props.height)) {
 			//todo take time from state
 			const periodLimit = this.getPeriodLimitByTime(this.props.time);
 
@@ -239,12 +242,17 @@ class Timeline extends React.PureComponent {
 	}
 
 	getXAxisWidth() {
-		const {containerWidth, containerHeight, vertical} = this.props;
-		return vertical ? containerHeight : containerWidth;
+		const {width, height, vertical} = this.props;
+		return vertical ? height : width;
+	}
+
+	getContentHeight() {
+		const {contentHeight, vertical} = this.props;
+		return contentHeight || (vertical ? DEFAULT_VERTICAL_HEIGHT : DEFAULT_HORIZONTAL_HEIGHT);
 	}
 
 	render() {
-		const {levels, period, height, pickDateByCenter, onHover, onClick, vertical, children, periodLimitOnCenter} = this.props;
+		const {levels, period, onHover, onClick, vertical, children, periodLimitOnCenter} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		const maxDayWidth = this.getMaxDayWidth();
@@ -255,7 +263,7 @@ class Timeline extends React.PureComponent {
 			<ContextProvider value={{
 				updateContext: this.updateContext,
 				width: this.getXAxisWidth(),
-				height: height || (vertical ? DEFAULT_VERTICAL_HEIGHT : DEFAULT_HORIZONTAL_HEIGHT),
+				height: this.getContentHeight(),
 				getX: this.getX,
 				getTime: this.getTime,
 				centerTime: this.state.centerTime,
@@ -283,4 +291,4 @@ class Timeline extends React.PureComponent {
 
 }
 
-export default Timeline;
+export default withResizeDetector(Timeline);

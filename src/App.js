@@ -114,33 +114,19 @@ function App() {
                 vertical: vertical,
                 horizontal: !vertical,
             })}>
-                <ReactResizeDetector
-                    handleWidth
-                    handleHeight
-                    render={({ width, height }) => {
-                        if ((vertical && height) || (!vertical && width)) {
-                            return (
-                                <MapsTimeline
-                                    activeLevel={state.activeTimeLevel}
-                                    vertical = {vertical}
-                                    period = {timelinePeriod}
-                                    initialPeriod = {initialTimelinePeriod}
-                                    // onLayerPeriodClick: this.onLayerPeriodClick,
-                                    containerWidth = {width}
-                                    containerHeight = {height}
-                                    onChange = {onTimeChange}
-                                    time={state.currentTime}
-                                    overlays={overlays}
-                                    LEVELS={LEVELS}
-                                    dayWidth={state.timeLine.dayWidth}
-                                    onTimeClick={onTimeClick}
-                                    />
-                            )
-                        } else {
-                            return(<div></div>)
-                        }
-                    }}
-                    />
+                <MapsTimeline
+                    activeLevel={state.activeTimeLevel}
+                    vertical = {vertical}
+                    period = {timelinePeriod}
+                    initialPeriod = {initialTimelinePeriod}
+                    // onLayerPeriodClick: this.onLayerPeriodClick,
+                    onChange = {onTimeChange}
+                    time={state.currentTime}
+                    overlays={overlays}
+                    LEVELS={LEVELS}
+                    dayWidth={state.timeLine.dayWidth}
+                    onTimeClick={onTimeClick}
+                />
             </div>
             <div className={className('time-widget-wrapper', {
                 vertical: vertical,
