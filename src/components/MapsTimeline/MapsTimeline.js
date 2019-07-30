@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import './style.css';
 
 
-import TimeLineHover from './TimeLineHover';
+import TimeLineHover from '../TimeLine/TimeLineHover';
 import HoverHandler from '../HoverHandler/HoverHandler';
+import {getTootlipPosition} from "../HoverHandler/position";
 import {isInside} from '../../utils/period';
 
 import Picker from '../TimeLine/centerPicker';
@@ -45,7 +46,7 @@ class MapsTimeline extends React.PureComponent {
 		super(props);
 		this.onClick = this.onClick.bind(this);
 		this.getHoverContent = this.getHoverContent.bind(this);
-		this.getTootlipStyle = this.getTootlipStyle.bind(this);
+		this.getTooltipStyle = this.getTooltipStyle.bind(this);
 	}
 
 	static propTypes = {
@@ -115,43 +116,16 @@ class MapsTimeline extends React.PureComponent {
 		)
 	}
 
-	getTootlipStyle(posX, posY, maxX, maxY, width, height) {
-		const {vertical} = this.props;
-		if(!vertical) {
-			posX = posX - width / 2
-	
-			// positioning
-			if ((posX + width)> (maxX - TOOLTIP_PADDING)) {
-				posX = maxX - TOOLTIP_PADDING - (width);
-			}
-	
-			if (posX < TOOLTIP_PADDING) {
-				posX = TOOLTIP_PADDING;
-			}
-
-			posY = posY + TOOLTIP_PADDING;
-		} else {
-			//in vertical posX is on Y axes
-			//in vertical posY is on X axes
-			posY = maxY - posX - height / 2
-		
-			if ((posY + height)> (maxY - TOOLTIP_PADDING)) {
-				posY = maxY - TOOLTIP_PADDING - (height);
-			}
-	
-			if (posY < TOOLTIP_PADDING) {
-				posY = TOOLTIP_PADDING;
-			}
-
-
-			posX = 0 - width - TOOLTIP_PADDING;
+	getTooltipStyle() {
+		const referencePoint = 'center';
+		return () => {
+			const windowScrollTop = window.document.documentElement.scrollTop;
+			const windowScrollLeft = window.document.documentElement.scrollLeft;
+			const windowHeight = window.document.documentElement.clientHeight;
+			const windowWidth = window.document.documentElement.clientWidth;
+			const windowBBox = [windowScrollTop, windowScrollLeft + windowWidth, windowScrollTop + windowHeight, windowScrollLeft];
+			return getTootlipPosition(referencePoint, ['left', 'top', 'right', 'bottom'], windowBBox, TOOLTIP_PADDING)
 		}
-
-		return {
-			bottom: posY,
-			left: posX,
-			width
-		};
 	}
 
 	render() {
@@ -159,7 +133,7 @@ class MapsTimeline extends React.PureComponent {
 
 		return (
 			<div className={'ptr-timeline-container'}>
-				<HoverHandler getStyle={this.getTootlipStyle}>
+				<HoverHandler getStyle={this.getTooltipStyle()}>
 					<TimeLineHover getHoverContent={this.getHoverContent}>
 						<Timeline 
 							dayWidth={dayWidth}

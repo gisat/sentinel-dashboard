@@ -1,10 +1,23 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {getTootlipPosition} from '../position';
 
 import './style.css';
 
 const WIDTH = 250;
 const HEIGHT = 50;
+const TOOLTIP_PADDING = 15;
+
+const getTooltipStyle = () => {
+	// bbox for tooltip default defined by window
+	const windowScrollTop = window.document.documentElement.scrollTop;
+	const windowScrollLeft = window.document.documentElement.scrollLeft;
+	const windowHeight = window.document.documentElement.clientHeight;
+	const windowWidth = window.document.documentElement.clientWidth;
+	const windowBBox = [windowScrollTop, windowScrollLeft + windowWidth, windowScrollTop + windowHeight, windowScrollLeft];
+
+	return getTootlipPosition('corner', ['right', 'left', 'top', 'bottom'], windowBBox, TOOLTIP_PADDING);
+}
 
 class Popup extends React.PureComponent {
 
@@ -14,6 +27,10 @@ class Popup extends React.PureComponent {
 		maxX: PropTypes.number,
 		content: PropTypes.element,
 		getStyle: PropTypes.func,
+		hoveredElemen: PropTypes.oneOfType([
+			PropTypes.element,
+			PropTypes.object,
+		  ]),
 	};
 
 	constructor(props) {
@@ -23,8 +40,6 @@ class Popup extends React.PureComponent {
 	}
 
 	render() {
-		let maxX = window.innerWidth;
-		let maxY = window.innerHeight;
 		let posX = this.props.x;
 		let posY = this.props.y;
 
@@ -33,36 +48,11 @@ class Popup extends React.PureComponent {
 
 		let style;
 
-		if(typeof this.props.getStyle === 'function') {
-			style = this.props.getStyle(posX, posY, maxX, maxY, width, height);
+		if(typeof this.props.getStyle === 'function' && this.props.hoveredElemen) {
+			style = this.props.getStyle()(posX, posY, width, height, this.props.hoveredElemen);
 		} else {
-			// positioning
-			posX = posX + 15;
-			posY = posY + 20;
-			if ((posX + width) > (maxX - 5)) {
-				posX = this.props.x - width - 5;
-			}
-
-			if (posX < 0) {
-				posX = 0;
-			}
-
-			// positioning
-			if ((posY + height) > (maxY - 5)) {
-				posY = this.props.y - height - 5;
-			}
-
-			if (posY < 0) {
-				posY = 0;
-			}
-
-			style = {
-				top: posY,
-				left: posX,
-				width
-			};
-
-			// TODO calculate y
+			//right corner on mouse position
+			style = getTooltipStyle()(posX, posY, width, height);
 		}
 
 		return (
