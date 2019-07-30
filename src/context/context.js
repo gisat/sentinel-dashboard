@@ -23,7 +23,7 @@ const initialState = {
     selected: [], // Selected represents satellites for which we download data
     focus: null, // Focus represents the type of focus {type: 'satellite', value: 'S-2A'} or
         // {type: 'product', value: 'S-2A'} No focus mean the default selection.
-    currentTime: new Date(),
+    currentTime: null,
     activeTimeLevel: 'month',
     timeLine: {
         mouseTime: null,

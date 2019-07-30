@@ -9,12 +9,13 @@ import TimeWidget from './components/TimeWidget/';
 import className from 'classnames';
 
 import period from './utils/period'
+import {getNowUTC} from './utils/date'
 import moment from 'moment';
 
 //todo - to state
 const timelinePeriod = period('2010/2025');
 
-const now = moment(new Date());
+const now = moment(getNowUTC());
 const start = now.clone().subtract(1, 'w');
 const end = now.clone().add(1, 'w');
 
@@ -25,9 +26,8 @@ function App() {
     const initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
 
     const onTimeChange = (timelineState) => {
-        if(timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
+        if(state.currentTime && timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
             dispatch(changeTime(timelineState.centerTime));
-            dispatch(stopTimer());
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
@@ -58,8 +58,9 @@ function App() {
     }
 
     const onStartTimer = () => {
+        const currentTime = state.currentTime || getNowUTC();
         dispatch(setFollowNow(true));
-        scrollToTime(dispatch, state.currentTime, moment(new Date()), timelinePeriod, () => {
+        scrollToTime(dispatch, currentTime, moment(getNowUTC()), timelinePeriod, () => {
             startTimer(dispatch);
         });
     }

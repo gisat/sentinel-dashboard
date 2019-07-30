@@ -1,6 +1,7 @@
 import types from './types';
 import moment from 'moment';
 import {getInside} from '../utils/period';
+import {getNowUTC} from '../utils/date';
 
 let timer = null;
 let intervalKeyZoom = null;
@@ -135,7 +136,7 @@ export const startTimer = (dispatch) => {
 }
 
 const tick = () => {
-    return changeTime(new Date());
+    return changeTime(getNowUTC());
 };
 
 export const stopTimer = () => {
