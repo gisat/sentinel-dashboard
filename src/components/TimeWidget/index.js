@@ -30,7 +30,7 @@ class TimeWidget extends React.PureComponent{
                     </div>
                     <div className={`time-cell ${active === 'month' ? 'active' : '' }`} onClick={() => onSelectActive('month')}>
                         <span className={'month'}>
-                            {timeMom.format('MMMM')}
+                            {timeMom.format('MMM')}
                         </span>
                         <span className={'indicator'}>
                         </span>
