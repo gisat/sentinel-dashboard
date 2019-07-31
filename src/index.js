@@ -18,6 +18,16 @@ ReactDOM.render(
     document.getElementById('root')
 );
 
+const setPageHeight = () => {
+    window.setTimeout(() => {
+        let vh = window.innerHeight * 0.01;
+        document.documentElement.style.setProperty('--vh', `${vh}px`);
+    }, 50)
+}
+
+// We listen to the resize event
+window.addEventListener('resize', setPageHeight)
+
 // If you want your app to work offline and load faster, you can change
 // unregister() to register() below. Note this comes with some pitfalls.
 // Learn more about service workers: https://bit.ly/CRA-PWA
