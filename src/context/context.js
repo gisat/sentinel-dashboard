@@ -1,13 +1,18 @@
 import React, {createContext} from 'react'
 import reducer from './reducer';
+import {getNowUTC} from '../utils/date'
+import moment from 'moment';
+
+const now = moment(getNowUTC());
 
 export const Context = createContext({
     satellites: [],
     selected: null,
     focus: null,
     currentTime: null,
-    timeLine: null,
+    timeLine: {},
     followNow: null,
+    overlays: null,
 });
 
 const initialState = {
@@ -27,7 +32,19 @@ const initialState = {
     activeTimeLevel: 'month',
     timeLine: {
         mouseTime: null,
-        dayWidth: null
+        dayWidth: null,
+        overlays: [
+            {
+                key: 'now',
+                start: now.clone(),
+                end: now.clone().add(1,'second'),
+                backdroundColor: 'rgba(77, 77, 239, 0.7)',
+                label: 'Mission',
+                classes: 'overlay1',
+                height: 70,
+                top: 0,
+            },
+        ]
     },
     landscape: true,
     followNow: true,

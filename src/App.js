@@ -27,6 +27,7 @@ function App() {
 
     const onTimeChange = (timelineState) => {
         if(state.currentTime && timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
+            dispatch(stopTimer());
             dispatch(changeTime(timelineState.centerTime));
         }
 
@@ -80,28 +81,6 @@ function App() {
         }
     }
 
-    const overlays = [
-        {
-            key: 'Mission',
-            start: now.clone(),
-            end: now.clone().add(6, 'hour'),
-            backdroundColor: 'rgba(77, 77, 239, 0.7)',
-            label: 'Mission',
-            classes: 'overlay1',
-            height: 20,
-            top: 0,
-        },
-        {
-            key: 'Data',
-            start: now.clone().subtract(6, 'week'),
-            end: now.clone(),
-            backdroundColor: 'rgba(255, 237, 66, 0.7)',
-            label: 'Data',
-            classes: 'overlay2',
-            height: 20,
-            top: 0,
-        }
-    ]
     let vertical = state.landscape;
 
     return (
@@ -123,7 +102,7 @@ function App() {
                     // onLayerPeriodClick: this.onLayerPeriodClick,
                     onChange = {onTimeChange}
                     time={state.currentTime}
-                    overlays={overlays}
+                    overlays={state.timeLine.overlays}
                     LEVELS={LEVELS}
                     dayWidth={state.timeLine.dayWidth}
                     onTimeClick={onTimeClick}
