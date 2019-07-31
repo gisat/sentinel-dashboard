@@ -100,7 +100,7 @@ class Timeline extends React.PureComponent {
 		const {dayWidth, time, width, height, period} = this.props;
 		//if parent component set dayWidth
 		if(prevProps.dayWidth !== dayWidth && this.state.dayWidth !== dayWidth) {
-			this.updateContext({dayWidth: dayWidth})
+			this.updateContext({dayWidth, centerTime: time})
 		}
 	
 		//if parent component set time
@@ -109,7 +109,7 @@ class Timeline extends React.PureComponent {
 			const periodLimit = this.getPeriodLimitByTime(time);
 
 			//zoom to dayWidth
-			this.updateContext({periodLimit})
+			this.updateContext({periodLimit, centerTime: time})
 		}
 
 		//if parent component set time
@@ -238,7 +238,7 @@ class Timeline extends React.PureComponent {
 				Object.assign(updateContext, {centerTime: this.getTime(this.getXAxisWidth() / 2, updateContext.dayWidth, updateContext.periodLimit.start).toDate()})
 			}
 
-			if(options.centerTime) {
+			if(options.centerTime && !updateContext.periodLimit) {
 				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.getXAxisWidth(), period, updateContext.dayWidth)})
 			}
 			
