@@ -63,6 +63,13 @@ const setLandscape = (state, action) => {
     };
 }
 
+const setOverlays = (state, action) => {
+    return {
+        ...state,
+        timeLine: {...state.timeLine, overlays: action.payload}
+    };
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -89,6 +96,8 @@ export default (state, action) => {
             return setTimeLineMouseTime(state, action);
         case types.CHANGE_LANDSCAPE:
             return setLandscape(state, action);
+        case types.SET_OVERLAYS:
+            return setOverlays(state, action);
         default:
             return state;
     }

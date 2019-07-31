@@ -37,7 +37,7 @@ const initialState = {
             {
                 key: 'now',
                 start: now.clone(),
-                end: now.clone().add(1,'second'),
+                end: now.clone(),
                 backdroundColor: 'rgba(77, 77, 239, 0.7)',
                 label: 'Mission',
                 classes: 'overlay1',

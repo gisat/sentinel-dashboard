@@ -1,7 +1,7 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {setOrientation, setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
+import {startTrackNowOverlay, setOrientation, setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -20,12 +20,31 @@ const start = now.clone().subtract(1, 'w');
 const end = now.clone().add(1, 'w');
 
 
-function App() {
-    const {state, dispatch} = useContext(Context);
+class App extends React.PureComponent {
+    static contextType = Context
 
-    const initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
+    constructor(props) {
+        super(props)
 
-    const onTimeChange = (timelineState) => {
+        this.initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
+
+        this.onTimeChange = this.onTimeChange.bind(this);
+        this.onSetActiveTimeLevel = this.onSetActiveTimeLevel.bind(this);
+        this.onTimeClick = this.onTimeClick.bind(this);
+        this.onSetTime = this.onSetTime.bind(this);
+        this.onStartTimer = this.onStartTimer.bind(this);
+        this.onStopTimer = this.onStopTimer.bind(this);
+        this.onResize = this.onResize.bind(this);
+    }
+
+    componentDidMount() {
+        const {state, dispatch} = this.context;
+        //track now overlay
+        startTrackNowOverlay(state, dispatch);
+    }
+
+    onTimeChange(timelineState) {
+        const {state, dispatch} = this.context;
         if(state.currentTime && timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
             dispatch(stopTimer());
             dispatch(changeTime(timelineState.centerTime));
@@ -44,21 +63,25 @@ function App() {
         }
     }
 
-    const onSetActiveTimeLevel = (level) => {
+    onSetActiveTimeLevel(level) {
+        const {state, dispatch} = this.context;
         const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
         zoomToTimeLevel(dispatch, level, timeLevelDayWidth, state.timeLine.dayWidth);
     }
 
-    const onTimeClick = (evt) => {
+    onTimeClick (evt) {
+        const {state, dispatch} = this.context;
         dispatch(stopTimer());
         scrollToTime(dispatch, state.currentTime, evt.time, timelinePeriod);
     }
 
-    const onSetTime = (time) => {
+    onSetTime (time) {
+        const {state, dispatch} = this.context;
         dispatch(changeTime(time.toString()));
     }
 
-    const onStartTimer = () => {
+    onStartTimer() {
+        const {state, dispatch} = this.context;
         const currentTime = state.currentTime || getNowUTC();
         dispatch(setFollowNow(true));
         scrollToTime(dispatch, currentTime, moment(getNowUTC()), timelinePeriod, () => {
@@ -66,11 +89,13 @@ function App() {
         });
     }
 
-    const onStopTimer = () => {
+    onStopTimer() {
+        const {state, dispatch} = this.context;
         dispatch(stopTimer());
     }
 
-    const onResize = () => {
+    onResize() {
+        const {state, dispatch} = this.context;
         let landscape = true;
         if(window.innerHeight > window.innerWidth){
             landscape = false;
@@ -81,52 +106,55 @@ function App() {
         }
     }
 
-    let vertical = state.landscape;
-
-    return (
-        <div className={'app'}>
-            <ReactResizeDetector
-                onResize = {onResize}
-                handleWidth
-                handleHeight />
-            <SatellitePanel />
-            <div className={className('timelineWrapper', {
-                vertical: vertical,
-                horizontal: !vertical,
-            })}>
-                <MapsTimeline
-                    activeLevel={state.activeTimeLevel}
-                    vertical = {vertical}
-                    period = {timelinePeriod}
-                    initialPeriod = {initialTimelinePeriod}
-                    // onLayerPeriodClick: this.onLayerPeriodClick,
-                    onChange = {onTimeChange}
-                    time={state.currentTime}
-                    overlays={state.timeLine.overlays}
-                    LEVELS={LEVELS}
-                    dayWidth={state.timeLine.dayWidth}
-                    onTimeClick={onTimeClick}
-                />
-            </div>
-            <div className={className('time-widget-wrapper', {
-                vertical: vertical,
-                horizontal: !vertical,
-            })}>
-                <TimeWidget
-                    time={state.currentTime}
-                    active={state.activeTimeLevel}
-                    onSelectActive={onSetActiveTimeLevel}
-                    onSetTime={onSetTime}
-                    onStartTimer={onStartTimer}
-                    onStopTimer={onStopTimer}
-                    nowActive={state.followNow}
-                    mouseTime={state.timeLine.mouseTime}
+    render() {
+        const {state, dispatch} = this.context;
+        let vertical = state.landscape;
+    
+        return (
+            <div className={'app'}>
+                <ReactResizeDetector
+                    onResize = {this.onResize}
+                    handleWidth
+                    handleHeight />
+                <SatellitePanel />
+                <div className={className('timelineWrapper', {
+                    vertical: vertical,
+                    horizontal: !vertical,
+                })}>
+                    <MapsTimeline
+                        activeLevel={state.activeTimeLevel}
+                        vertical = {vertical}
+                        period = {timelinePeriod}
+                        initialPeriod = {this.initialTimelinePeriod}
+                        // onLayerPeriodClick: this.onLayerPeriodClick,
+                        onChange = {this.onTimeChange}
+                        time={state.currentTime}
+                        overlays={state.timeLine.overlays}
+                        LEVELS={LEVELS}
+                        dayWidth={state.timeLine.dayWidth}
+                        onTimeClick={this.onTimeClick}
                     />
-                
+                </div>
+                <div className={className('time-widget-wrapper', {
+                    vertical: vertical,
+                    horizontal: !vertical,
+                })}>
+                    <TimeWidget
+                        time={state.currentTime}
+                        active={state.activeTimeLevel}
+                        onSelectActive={this.onSetActiveTimeLevel}
+                        onSetTime={this.onSetTime}
+                        onStartTimer={this.onStartTimer}
+                        onStopTimer={this.onStopTimer}
+                        nowActive={state.followNow}
+                        mouseTime={state.timeLine.mouseTime}
+                        />
+                    
+                </div>
+                <WorldWindMap/>
             </div>
-            <WorldWindMap/>
-        </div>
-    );
+        );
+    }
 }
 
 export default App;

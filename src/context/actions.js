@@ -3,7 +3,11 @@ import moment from 'moment';
 import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 
+export const addItemToIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index)];
+export const removeItemByIndex = (array, index) => [...array.slice(0, index), ...array.slice(index + 1)];
+
 let timer = null;
+let nowOverlayTimer = null;
 let intervalKeyZoom = null;
 let intervalKeyScroll = null;
 export const toggleSatelliteSelection = (satellite, state) => {
@@ -128,12 +132,42 @@ export const setFollowNow = followNow => {
       };
 }
 
-export const startTimer = (dispatch) => {
-  clearInterval(timer);
-  timer = setInterval(() => dispatch(tick()), 1000);
-  dispatch(setFollowNow(true));
-  dispatch(tick())
+export const setOverlays = overlays => {
+    return {
+        type: types.SET_OVERLAYS,
+        payload: overlays
+      };
 }
+
+export const startTimer = (dispatch) => {
+    window.clearInterval(timer);
+    timer = window.setInterval(() => dispatch(tick()), 1000);
+    dispatch(setFollowNow(true));
+    dispatch(tick())
+}
+
+export const startTrackNowOverlay = (state, dispatch) => {
+    window.clearInterval(nowOverlayTimer);
+    nowOverlayTimer = window.setInterval(() => dispatch(nowOverlayTick(state)), 1000);
+    dispatch(nowOverlayTick(state));
+}
+
+const nowOverlayTick = (state) => {
+    const nowOverlayKey = 'now';
+    const overlays = state && state.timeLine && state.timeLine.overlays;
+    if(!overlays) {
+        return {}
+    }
+    const now = moment(getNowUTC());
+    const overlayIndex = overlays.findIndex(o => o.key === nowOverlayKey);
+    const nowOverlay = overlays[overlayIndex];
+    const nowOverlayPlusSecond = {...nowOverlay, start: now.clone(), end: now.clone()};
+    const withoutOverlay = removeItemByIndex(overlays, overlayIndex);
+	const updatedOverlays = addItemToIndex(withoutOverlay, overlayIndex, nowOverlayPlusSecond);
+
+
+    return setOverlays(updatedOverlays);
+};
 
 const tick = () => {
     return changeTime(getNowUTC());
