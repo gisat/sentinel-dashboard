@@ -4,6 +4,7 @@ import {Context} from './context/context';
 import {startTrackNowOverlay, setOrientation, setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatellitePanel from './components/SatellitesPanel';
+import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
 import className from 'classnames';
@@ -116,7 +117,8 @@ class App extends React.PureComponent {
                     onResize = {this.onResize}
                     handleWidth
                     handleHeight />
-                <SatellitePanel />
+                {/* <SatellitePanel /> */}
+                <SatelliteSelect />
                 <div className={className('timelineWrapper', {
                     vertical: vertical,
                     horizontal: !vertical,

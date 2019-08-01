@@ -1,0 +1,16 @@
+.ptr-satellite-selector{
+}
+
+
+.ptr-select__group-heading{
+    height: 2rem;
+}
+
+.ptr-select__group-heading{
+    align-items: center;
+    /* border-right: 1px solid rgb(60, 87, 114); */
+    color: rgba(255, 255, 255, 0.75);
+    cursor: pointer;
+    display: flex;
+    padding: 0 .75rem;
+}
