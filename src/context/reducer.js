@@ -70,6 +70,25 @@ const setOverlays = (state, action) => {
     };
 }
 
+const setHelper = (state, path, value) => {
+	let remainingPath = [...path];
+	let currentKey = remainingPath.shift();
+	if (remainingPath.length) {
+		return {...state, [currentKey]: setHelper(state[currentKey], remainingPath, value)};
+	} else {
+		return {...state, [currentKey]: value};
+	}
+}
+
+const updateComponent = (state, action) => {
+	return {...state, components: {...state.components, [action.component]: state.components[action.component] ? {...state.components[action.component], ...action.update} : action.update}};
+}
+
+const setComponent = (state, action) => {
+	let path = action.path.split('.');
+	return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -98,6 +117,10 @@ export default (state, action) => {
             return setLandscape(state, action);
         case types.SET_OVERLAYS:
             return setOverlays(state, action);
+        case types.COMPONENTS.UPDATE:
+            return updateComponent(state, action);
+        case types.COMPONENTS.SET:
+            return setComponent(state, action);
         default:
             return state;
     }

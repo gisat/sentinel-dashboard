@@ -1,9 +1,22 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
-import {startTrackNowOverlay, setOrientation, setFollowNow, scrollToTime, setTimeLevelDayWidth, zoomToTimeLevel, setActiveTimeLevel, changeTime, startTimer, stopTimer, setTimeLineMouseTime} from './context/actions';
+import {
+    updateComponent,
+    openSatelliteSelect,
+    startTrackNowOverlay,
+    setOrientation,
+    setFollowNow,
+    scrollToTime,
+    setTimeLevelDayWidth,
+    zoomToTimeLevel,
+    setActiveTimeLevel,
+    changeTime,
+    startTimer,
+    stopTimer,
+    setTimeLineMouseTime} from './context/actions';
+import select from './context/selectors/';
 import WorldWindMap from './components/WorldWindMap/index';
-import SatellitePanel from './components/SatellitesPanel';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
@@ -36,6 +49,8 @@ class App extends React.PureComponent {
         this.onStartTimer = this.onStartTimer.bind(this);
         this.onStopTimer = this.onStopTimer.bind(this);
         this.onResize = this.onResize.bind(this);
+        this.onLayerClick = this.onLayerClick.bind(this);
+        this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
     }
 
     componentDidMount() {
@@ -107,18 +122,37 @@ class App extends React.PureComponent {
         }
     }
 
-    render() {
-        const {state, dispatch} = this.context;
-        let vertical = state.landscape;
+    onLayerClick(evt) {
+        console.log(evt);
+    }
     
+    onSatelliteCollapsClick(evt) {
+        const {state, dispatch} = this.context;
+        const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
+        if(satelliteSelectState.open) {
+            dispatch(updateComponent('satelliteSelect', {open: false}))
+        } else {
+            dispatch(updateComponent('satelliteSelect', {open: true}))
+        }
+    }
+
+    render() {
+        const {state} = this.context;
+        let vertical = state.landscape;
+        const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
+        const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
         return (
             <div className={'app'}>
                 <ReactResizeDetector
                     onResize = {this.onResize}
                     handleWidth
                     handleHeight />
-                {/* <SatellitePanel /> */}
-                <SatelliteSelect />
+                <SatelliteSelect 
+                    options={sateliteOptions}
+                    open={satelliteSelectState.open}
+                    onLayerClick={this.onLayerClick}
+                    onCollapsClick={this.onSatelliteCollapsClick}
+                    />
                 <div className={className('timelineWrapper', {
                     vertical: vertical,
                     horizontal: !vertical,

@@ -139,6 +139,24 @@ export const setOverlays = overlays => {
       };
 }
 
+export const updateComponent = (component, data) => {
+	return {
+		type: types.COMPONENTS.UPDATE,
+		component: component,
+		update: data
+	}
+}
+
+export const setComponent = (component, path, value) => {
+	return {
+		type: types.COMPONENTS.SET,
+		component,
+		path,
+		value
+	}
+}
+
+//TODO save actual time in state
 export const startTimer = (dispatch) => {
     window.clearInterval(timer);
     timer = window.setInterval(() => dispatch(tick()), 1000);
@@ -146,6 +164,7 @@ export const startTimer = (dispatch) => {
     dispatch(tick())
 }
 
+//TODO save actual time in state
 export const startTrackNowOverlay = (state, dispatch) => {
     window.clearInterval(nowOverlayTimer);
     nowOverlayTimer = window.setInterval(() => dispatch(nowOverlayTick(state)), 1000);
@@ -153,6 +172,8 @@ export const startTrackNowOverlay = (state, dispatch) => {
 }
 
 const nowOverlayTick = (state) => {
+    console.log('now tick');
+    
     const nowOverlayKey = 'now';
     const overlays = state && state.timeLine && state.timeLine.overlays;
     if(!overlays) {
@@ -170,6 +191,7 @@ const nowOverlayTick = (state) => {
 };
 
 const tick = () => {
+    console.log('tick');
     return changeTime(getNowUTC());
 };
 

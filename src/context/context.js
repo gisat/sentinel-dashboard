@@ -12,19 +12,21 @@ export const Context = createContext({
     currentTime: null,
     timeLine: {},
     followNow: null,
-    overlays: null,
+    components:{}
 });
 
 const initialState = {
-    satellites: [
-        {id: 'S-1A', name: 'S1-A', iconClass: 's1-btn'},
-        {id: 'S-1B', name: 'S1-B', iconClass: 's1-btn'},
-        {id: 'S-2A', name: 'S2-A', iconClass: 's2-btn'},
-        {id: 'S-2B', name: 'S2-B', iconClass: 's2-btn'},
-        {id: 'S-3A', name: 'S3-A', iconClass: 's3-btn'},
-        {id: 'S-3B', name: 'S3-B', iconClass: 's3-btn'},
-        {id: 'S-5P', name: 'S-5', iconClass: 's5-btn'}
-    ], // All the available satellites.
+    data: {
+        satellites: [
+            {id: 'S-1A', name: 'S1-A', iconClass: 'sentinel-1', layers:[1,2]},
+            {id: 'S-1B', name: 'S1-B', iconClass: 'sentinel-1', layers:[1,2]},
+            {id: 'S-2A', name: 'S2-A', iconClass: 'sentinel-2', layers:[1,2]},
+            {id: 'S-2B', name: 'S2-B', iconClass: 'sentinel-2', layers:[1,2]},
+            {id: 'S-3A', name: 'S3-A', iconClass: 'sentinel-3', layers:[1,2]},
+            {id: 'S-3B', name: 'S3-B', iconClass: 'sentinel-3', layers:[1,2]},
+            {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[1,2]}
+        ], // All the available satellites.
+    },
     selected: [], // Selected represents satellites for which we download data
     focus: null, // Focus represents the type of focus {type: 'satellite', value: 'S-2A'} or
         // {type: 'product', value: 'S-2A'} No focus mean the default selection.
@@ -48,6 +50,11 @@ const initialState = {
     },
     landscape: true,
     followNow: true,
+    components:{
+        satelliteSelect: {
+            open: true,
+        }
+    }
 };
 
 export const ContextProvider = (props) => {

@@ -1,52 +1,51 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import SelectBase, { components } from 'react-select';
-import SatelliteGroupOption from './SatelliteOption';
+import SatelliteGroupOption from './SatelliteGroupOption';
+import {getLayerOption} from './LayerOption';
+import {getDropdownIndicator} from './DropdownIndicator';
+import SatelliteGroupHeading from './SatelliteGroupHeading';
 import './style.css';
-
-import Icon from '../Icon';
 
 const ValueContainer = ({ children, ...props }) => (
     <components.ValueContainer {...props}><span>Products</span></components.ValueContainer>
-  );  
+);
 
-const SatelliteOption = props => {
-    const {groupData, ...restProps} = props;
-    return (
-            <components.GroupHeading {...restProps} onClick={() => {console.log(groupData.value)}}>
-                <Icon icon={groupData.icon} />
-                <span>
-                    {props.children}
-                </span>
-                <Icon icon={'location'} />
-            </components.GroupHeading>
-    );
-};
+const SelectContainer = ({ children, ...props }) => (
+    // <div onClick={() => {console.log('on click')}}>
+    <div>
+        <components.SelectContainer {...props}>
+            {children}
+        </components.SelectContainer>
+    </div>
+);
 
-const LayerOption = props => {
-    return (
-        <components.Option {...props}>
-            Layer
-        </components.Option>
-    );
-};
+const DropdownIndicator = ({ children, ...props }) => (
+    <div onClick={() => {console.log("dropdown")}}>
+        <components.DropdownIndicator {...props}>
+            {children}
+        </components.DropdownIndicator>
+    </div>
+);
   
-
 class Select extends React.PureComponent {
+    static defaultProps = {
+        onLayerClick: () => {},
+    }
+
     static propTypes = {
-        satellites: PropTypes.array,
+        options: PropTypes.array,
         open: PropTypes.bool,
         selectedLayers: PropTypes.array,
-        onSelectLayer: PropTypes.func,
+        onLayerClick: PropTypes.func,
+        onCollapsClick: PropTypes.func,
         onReleaseCamera: PropTypes.func,
         onFixCamera: PropTypes.func,
     }
 
-    constructor(props) {
-        super(props);
-    }
-
     render() {
+        const {open, options, onLayerClick, onCollapsClick} = this.props;
+
         const customStyles = {
             container: (provided, state) => ({
               ...provided,
@@ -66,96 +65,12 @@ class Select extends React.PureComponent {
 
         const components = {
             ValueContainer: ValueContainer,
-            Option: LayerOption,
-            GroupHeading: SatelliteOption,
-            Group: SatelliteGroupOption
+            Option: getLayerOption(onLayerClick),
+            GroupHeading: SatelliteGroupHeading,
+            Group: SatelliteGroupOption,
+            SelectContainer,
+            DropdownIndicator: getDropdownIndicator(onCollapsClick),
         }
-
-        const options = [
-            {
-                groupData: {
-                    value: 'sat1',
-                    icon: 'sentinel-1',
-                },
-                label: 'Satelit 1',
-                options: [
-                    {
-                        id: 1,
-                        label: 'zelena'
-                    },
-                    {
-                        id: 2,
-                        label: 'zluta'
-                    }
-                ]
-            },
-            {
-                groupData: {
-                    value: 'sat2',
-                    icon: 'sentinel-2',
-                },
-                label: 'Satelit 2',
-                options: [
-                    {
-                        id: 3,
-                        label: 'cervena'
-                    },
-                    {
-                        id: 1,
-                        label: 'zelena'
-                    }
-                ]
-            },
-            {
-                groupData: {
-                    value: 'sat3',
-                    icon: 'sentinel-3',
-                },
-                label: 'Satelit 3',
-                options: [
-                    {
-                        id: 3,
-                        label: 'cervena'
-                    },
-                    {
-                        id: 1,
-                        label: 'zelena'
-                    }
-                ]
-            }, {
-                groupData: {
-                    value: 'sat4',
-                    icon: 'sentinel-4',
-                },
-                label: 'Satelit 4',
-                options: [
-                    {
-                        id: 3,
-                        label: 'cervena'
-                    },
-                    {
-                        id: 1,
-                        label: 'zelena'
-                    }
-                ]
-            }, {
-                groupData: {
-                    value: 'sat5',
-                    icon: 'sentinel-5',
-                },
-                label: 'Satelit 5',
-                options: [
-                    {
-                        id: 3,
-                        label: 'cervena'
-                    },
-                    {
-                        id: 1,
-                        label: 'zelena'
-                    }
-                ]
-            }
-        ]
 
         return (
             <SelectBase
@@ -166,12 +81,13 @@ class Select extends React.PureComponent {
                 // formatOptionLabel={this.getLabel}
                 hideSelectedOptions={true}
                 // onChange={this.onChange}
-                // options={props.options}
                 // value={props.value}
                 title={'Satellites'}
                 components={components}
                 options={options}
-                menuIsOpen={true}
+                menuIsOpen={open}
+                closeMenuOnSelect={false}
+                blurInputOnSelect={false}
             />
         );
     }
