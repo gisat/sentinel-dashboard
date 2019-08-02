@@ -9,7 +9,8 @@
     "react-dom": "^16.8.6",
     "react-resize-detector": "^4.2.0",
     "react-scripts": "3.0.1",
-    "webworldwind-esa": "^0.10.0-alpha.3"
+    "webworldwind-esa": "^0.10.0-alpha.4",
+    "webworldwind-x": "^2.1.0"
   },
   "scripts": {
     "start": "react-scripts start",
