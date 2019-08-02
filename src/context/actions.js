@@ -1,5 +1,6 @@
 import types from './types';
 import moment from 'moment';
+import select from './selectors/';
 import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 
@@ -46,26 +47,6 @@ export const focusOnProduct = satellite => {
     }
 };
 
-export const setActiveTimeLevel = level => {
-    return {
-        type: types.CHANGE_ACTIVE_TIME_LEVEL,
-        payload: level
-    }
-};
-
-export const setTimeLevelDayWidth = dayWidth => {
-    return {
-        type: types.CHANGE_TIME_LINE_DAY_WIDTH,
-        payload: dayWidth
-    }
-};
-
-export const setTimeLineMouseTime = (mouseTime) => {
-    return {
-        type: types.TIME_LINE_SET_MOUSE_TIME,
-        payload: mouseTime
-    }
-}
 export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth) => {
     window.clearInterval(intervalKeyZoom);
     //zoom to dayWidth
@@ -81,7 +62,7 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
             index = 0;
             window.clearInterval(intervalKeyZoom);
         } else {
-            dispatch(setTimeLevelDayWidth(currentDayWidth + (peace * index)));
+            dispatch(updateComponent('timeline', {dayWidth: currentDayWidth + (peace * index)}))
         }
     }, 60)
 };
@@ -132,13 +113,6 @@ export const setFollowNow = followNow => {
       };
 }
 
-export const setOverlays = overlays => {
-    return {
-        type: types.SET_OVERLAYS,
-        payload: overlays
-      };
-}
-
 export const updateComponent = (component, data) => {
 	return {
 		type: types.COMPONENTS.UPDATE,
@@ -172,10 +146,9 @@ export const startTrackNowOverlay = (state, dispatch) => {
 }
 
 const nowOverlayTick = (state) => {
-    console.log('now tick');
-    
     const nowOverlayKey = 'now';
-    const overlays = state && state.timeLine && state.timeLine.overlays;
+    const timelineState = select.components.timeline.getSubstate(state);
+    const overlays = state && timelineState && timelineState.overlays;
     if(!overlays) {
         return {}
     }
@@ -186,12 +159,10 @@ const nowOverlayTick = (state) => {
     const withoutOverlay = removeItemByIndex(overlays, overlayIndex);
 	const updatedOverlays = addItemToIndex(withoutOverlay, overlayIndex, nowOverlayPlusSecond);
 
-
-    return setOverlays(updatedOverlays);
+    return updateComponent('timeline', {overlays: updatedOverlays});
 };
 
 const tick = () => {
-    console.log('tick');
     return changeTime(getNowUTC());
 };
 

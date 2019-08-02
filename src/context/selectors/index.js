@@ -1,4 +1,5 @@
 import * as satelliteSelect from './components/satellitesSelect';
+import * as timeline from './components/timeline';
 import * as satellites from './data/satellites';
 
 export default {
@@ -6,6 +7,7 @@ export default {
         satellites
     },
     components: {
-        satelliteSelect
+        satelliteSelect,
+        timeline,
     }
 }

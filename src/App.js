@@ -3,18 +3,15 @@ import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
 import {
     updateComponent,
-    openSatelliteSelect,
     startTrackNowOverlay,
     setOrientation,
     setFollowNow,
     scrollToTime,
-    setTimeLevelDayWidth,
     zoomToTimeLevel,
-    setActiveTimeLevel,
     changeTime,
     startTimer,
     stopTimer,
-    setTimeLineMouseTime} from './context/actions';
+} from './context/actions';
 import select from './context/selectors/';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatelliteSelect from './components/SatelliteSelect';
@@ -61,28 +58,32 @@ class App extends React.PureComponent {
 
     onTimeChange(timelineState) {
         const {state, dispatch} = this.context;
+        const curTimelineState = select.components.timeline.getSubstate(state);
+
         if(state.currentTime && timelineState.centerTime && timelineState.centerTime.toString() !== state.currentTime.toString()) {
             dispatch(stopTimer());
             dispatch(changeTime(timelineState.centerTime));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== state.activeTimeLevel) {
-            dispatch(setActiveTimeLevel(timelineState.activeLevel));
+            dispatch(updateComponent('timeline', {activeTimeLevel: timelineState.activeLevel}))
         }
 
-        if(timelineState.mouseTime !== state.timeLine.mouseTime) {
-            dispatch(setTimeLineMouseTime(timelineState.mouseTime));
+        if(timelineState.mouseTime !== curTimelineState.mouseTime) {
+            dispatch(updateComponent('timeline', {mouseTime: timelineState.mouseTime}))
         }
 
-        if(timelineState.dayWidth && timelineState.dayWidth !== state.timeLine.dayWidth) {
-            dispatch(setTimeLevelDayWidth(timelineState.dayWidth));
+        if(timelineState.dayWidth && timelineState.dayWidth !== curTimelineState.dayWidth) {
+            // dispatch(setTimeLevelDayWidth(timelineState.dayWidth));
+            dispatch(updateComponent('timeline', {dayWidth: timelineState.dayWidth}))
         }
     }
 
     onSetActiveTimeLevel(level) {
         const {state, dispatch} = this.context;
+        const timelineState = select.components.timeline.getSubstate(state);
         const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
-        zoomToTimeLevel(dispatch, level, timeLevelDayWidth, state.timeLine.dayWidth);
+        zoomToTimeLevel(dispatch, level, timeLevelDayWidth, timelineState.dayWidth);
     }
 
     onTimeClick (evt) {
@@ -106,7 +107,7 @@ class App extends React.PureComponent {
     }
 
     onStopTimer() {
-        const {state, dispatch} = this.context;
+        const {dispatch} = this.context;
         dispatch(stopTimer());
     }
 
@@ -141,6 +142,9 @@ class App extends React.PureComponent {
         let vertical = state.landscape;
         const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
         const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
+
+        const timelineState = select.components.timeline.getSubstate(state);
+
         return (
             <div className={'app'}>
                 <ReactResizeDetector
@@ -158,16 +162,16 @@ class App extends React.PureComponent {
                     horizontal: !vertical,
                 })}>
                     <MapsTimeline
-                        activeLevel={state.activeTimeLevel}
+                        activeLevel={timelineState.activeTimeLevel}
                         vertical = {vertical}
                         period = {timelinePeriod}
                         initialPeriod = {this.initialTimelinePeriod}
                         // onLayerPeriodClick: this.onLayerPeriodClick,
                         onChange = {this.onTimeChange}
                         time={state.currentTime}
-                        overlays={state.timeLine.overlays}
+                        overlays={timelineState.overlays}
                         LEVELS={LEVELS}
-                        dayWidth={state.timeLine.dayWidth}
+                        dayWidth={timelineState.dayWidth}
                         onTimeClick={this.onTimeClick}
                     />
                 </div>
@@ -177,13 +181,13 @@ class App extends React.PureComponent {
                 })}>
                     <TimeWidget
                         time={state.currentTime}
-                        active={state.activeTimeLevel}
+                        active={timelineState.activeTimeLevel}
                         onSelectActive={this.onSetActiveTimeLevel}
                         onSetTime={this.onSetTime}
                         onStartTimer={this.onStartTimer}
                         onStopTimer={this.onStopTimer}
                         nowActive={state.followNow}
-                        mouseTime={state.timeLine.mouseTime}
+                        mouseTime={timelineState.mouseTime}
                         />
                     
                 </div>

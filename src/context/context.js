@@ -10,7 +10,6 @@ export const Context = createContext({
     selected: null,
     focus: null,
     currentTime: null,
-    timeLine: {},
     followNow: null,
     components:{}
 });
@@ -31,29 +30,30 @@ const initialState = {
     focus: null, // Focus represents the type of focus {type: 'satellite', value: 'S-2A'} or
         // {type: 'product', value: 'S-2A'} No focus mean the default selection.
     currentTime: null,
-    activeTimeLevel: 'month',
-    timeLine: {
-        mouseTime: null,
-        dayWidth: null,
-        overlays: [
-            {
-                key: 'now',
-                start: now.clone(),
-                end: now.clone(),
-                backdroundColor: 'rgba(77, 77, 239, 0.7)',
-                label: 'Mission',
-                classes: 'overlay1',
-                height: 70,
-                top: 0,
-            },
-        ]
-    },
     landscape: true,
     followNow: true,
+
     components:{
         satelliteSelect: {
             open: true,
-        }
+        },
+        timeline: {
+            mouseTime: null,
+            dayWidth: null,
+            activeTimeLevel: 'month',
+            overlays: [
+                {
+                    key: 'now',
+                    start: now.clone(),
+                    end: now.clone(),
+                    backdroundColor: 'rgba(77, 77, 239, 0.7)',
+                    label: 'Mission',
+                    classes: 'overlay1',
+                    height: 70,
+                    top: 0,
+                },
+            ]
+        },
     }
 };
 
