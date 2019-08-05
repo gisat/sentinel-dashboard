@@ -4,11 +4,8 @@ import select from './selectors/';
 import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 
-export const addItemToIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index)];
-export const removeItemByIndex = (array, index) => [...array.slice(0, index), ...array.slice(index + 1)];
-
 let timer = null;
-let nowOverlayTimer = null;
+let nowTimer = null;
 let intervalKeyZoom = null;
 let intervalKeyScroll = null;
 export const toggleSatelliteSelection = (satellite, state) => {
@@ -67,14 +64,14 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
     }, 60)
 };
 
-export const scrollToTime = (dispatch, currentTime, newTime, period, callback) => {
+export const scrollToTime = (dispatch, selectTime, newTime, period, callback) => {
     window.clearInterval(intervalKeyScroll);
     const steps = 12;
     let timeInPeriod = newTime;
     if(period) {
         timeInPeriod = getInside(period, moment(newTime));
     }
-    const diff = timeInPeriod.diff(moment(currentTime));
+    const diff = timeInPeriod.diff(moment(selectTime));
     const peace = diff / steps;
     let index = 0;
     intervalKeyScroll = window.setInterval(() => {
@@ -86,7 +83,7 @@ export const scrollToTime = (dispatch, currentTime, newTime, period, callback) =
                 callback();
             }
         } else {
-            dispatch(changeTime(moment(currentTime).add(peace * index).toDate()));
+            dispatch(changeSelectTime(moment(selectTime).add(peace * index).toDate()));
         }
     }, 60)
 };
@@ -95,9 +92,20 @@ export const scrollToTime = (dispatch, currentTime, newTime, period, callback) =
  * 
  * @param {Date} time 
  */
-export const changeTime = time => {
+export const changeSelectTime = time => {
     return {
-        type: types.CHANGE_TIME,
+        type: types.CHANGE_SELECTTIME,
+        payload: time
+    }
+}
+
+/**
+ * 
+ * @param {Date} time 
+ */
+export const changeCurrentTime = time => {
+    return {
+        type: types.CHANGE_CURRENTTIME,
         payload: time
     }
 }
@@ -130,40 +138,15 @@ export const setComponent = (component, path, value) => {
 	}
 }
 
-//TODO save actual time in state
-export const startTimer = (dispatch) => {
-    window.clearInterval(timer);
-    timer = window.setInterval(() => dispatch(tick()), 1000);
-    dispatch(setFollowNow(true));
-    dispatch(tick())
+export const startTrackNowTime = (state, dispatch) => {
+    window.clearInterval(nowTimer);
+    nowTimer = window.setInterval(() => dispatch(nowTick(state)), 1000);
+    dispatch(nowTick())
 }
 
-//TODO save actual time in state
-export const startTrackNowOverlay = (state, dispatch) => {
-    window.clearInterval(nowOverlayTimer);
-    nowOverlayTimer = window.setInterval(() => dispatch(nowOverlayTick(state)), 1000);
-    dispatch(nowOverlayTick(state));
-}
-
-const nowOverlayTick = (state) => {
-    const nowOverlayKey = 'now';
-    const timelineState = select.components.timeline.getSubstate(state);
-    const overlays = state && timelineState && timelineState.overlays;
-    if(!overlays) {
-        return {}
-    }
-    const now = moment(getNowUTC());
-    const overlayIndex = overlays.findIndex(o => o.key === nowOverlayKey);
-    const nowOverlay = overlays[overlayIndex];
-    const nowOverlayPlusSecond = {...nowOverlay, start: now.clone(), end: now.clone()};
-    const withoutOverlay = removeItemByIndex(overlays, overlayIndex);
-	const updatedOverlays = addItemToIndex(withoutOverlay, overlayIndex, nowOverlayPlusSecond);
-
-    return updateComponent('timeline', {overlays: updatedOverlays});
-};
-
-const tick = () => {
-    return changeTime(getNowUTC());
+const nowTick = () => {
+    const now = getNowUTC();
+    return changeCurrentTime(now);
 };
 
 export const stopTimer = () => {

@@ -1,4 +1,6 @@
 import types from './types';
+import select from './selectors/';
+
 
 const selectSatelite = (state, action) => {
     return {
@@ -21,9 +23,29 @@ const setFocus = (state, action) => {
     };
 }
 
-const setTime = (state, action) => {
+const setSelectTime = (state, action) => {
     return {
         ...state,
+        selectTime: action.payload
+    };
+}
+
+const setCurrentTime = (state, action) => {
+
+    //if follow now
+    let selectTimeState = {};
+
+    //not clear solution, because I don't know, how to acces to current state in timer in action
+    if(select.rootSelectors.getFollowNow(state)) {
+        selectTimeState = setSelectTime(state, {
+            payload: action.payload
+        })
+    }
+    
+
+    return {
+        ...state,
+        ...selectTimeState,
         currentTime: action.payload
     };
 }
@@ -103,8 +125,10 @@ export default (state, action) => {
         // Removes focus from specific satellite.
         case types.UNFOCUS:
             return setFocus(state, null);
-        case types.CHANGE_TIME:
-            return setTime(state, action);
+        case types.CHANGE_SELECTTIME:
+            return setSelectTime(state, action);
+        case types.CHANGE_CURRENTTIME:
+            return setCurrentTime(state, action);
         case types.CHANGE_ACTIVE_TIME_LEVEL:
             return setActiveTimeLevel(state, action);
         case types.FOLLOW_NOW:
