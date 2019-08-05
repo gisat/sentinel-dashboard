@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import WorldWind from 'webworldwind-esa';
+import {getLayers} from './layers';
 import './style.css';
 
 /**
@@ -10,23 +11,37 @@ import './style.css';
 class Map extends Component {
     constructor(props){
         super(props);
+        this.wwd = null;
         this.state = {
             wwdCreated: false
         };
     }
+
+    async componentDidUpdate(prevProps){
+        if(prevProps.layers !== this.props.layers) {
+            const layers = await getLayers(this.props.layers);
+            this.handleLayers(layers);
+        }
+    }
+
+    handleLayers(nextLayersData = []) {
+		this.wwd.layers = nextLayersData;
+		this.wwd.redraw();
+	}
+
 
     /**
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
      */
     componentDidMount(){
         if(!this.state.wwd) {
-            let wwd = new WorldWind.WorldWindow("wwd-results");
-            this.setState({wwd: wwd});
+            this.wwd = new WorldWind.WorldWindow("wwd-results");
+            this.setState({wwd: this.wwd});
 
             let mapLayer = new WorldWind.BMNGLandsatLayer();
 
-            wwd.addLayer(mapLayer);
-            wwd.redraw();
+            this.wwd.addLayer(mapLayer);
+            this.wwd.redraw();
         }
     }
 

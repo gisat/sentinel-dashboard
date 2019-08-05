@@ -34,12 +34,12 @@ const initialState = {
         },
         satellites: [
             {id: 'S-1A', name: 'S1-A', iconClass: 'sentinel-1', layers:['SLC']},
-            {id: 'S-1B', name: 'S1-B', iconClass: 'sentinel-1', layers:[1,2]},
-            {id: 'S-2A', name: 'S2-A', iconClass: 'sentinel-2', layers:[1,2]},
-            {id: 'S-2B', name: 'S2-B', iconClass: 'sentinel-2', layers:[1,2]},
-            {id: 'S-3A', name: 'S3-A', iconClass: 'sentinel-3', layers:[1,2]},
-            {id: 'S-3B', name: 'S3-B', iconClass: 'sentinel-3', layers:[1,2]},
-            {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[1,2]}
+            {id: 'S-1B', name: 'S1-B', iconClass: 'sentinel-1', layers:[1]},
+            {id: 'S-2A', name: 'S2-A', iconClass: 'sentinel-2', layers:[1]},
+            {id: 'S-2B', name: 'S2-B', iconClass: 'sentinel-2', layers:[1]},
+            {id: 'S-3A', name: 'S3-A', iconClass: 'sentinel-3', layers:[1]},
+            {id: 'S-3B', name: 'S3-B', iconClass: 'sentinel-3', layers:[1]},
+            {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[1]}
         ], // All the available satellites.
     },
     activeLayers: [],

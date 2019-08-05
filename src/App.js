@@ -191,7 +191,7 @@ class App extends React.PureComponent {
                         />
                     
                 </div>
-                <WorldWindMap/>
+                <WorldWindMap layers = {select.rootSelectors.getActiveLayers(state)}/>
             </div>
         );
     }
