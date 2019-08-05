@@ -24,22 +24,13 @@ export const toggleSatelliteSelection = (satellite, state) => {
     return dispatchObj;
 };
 
-export const focusOnSatellite = satellite => {
+export const toggleLayer = (satelliteKey, layerKey) => {
     return {
-        type: types.FOCUS,
-        payload: {
-            type: 'satellite',
-            value: satellite.id
-        }
-    }
-};
-
-export const focusOnProduct = satellite => {
-    return {
-        type: types.FOCUS,
+        type: types.TOGGLE_LAYER,
         payload: {
             type: 'product',
-            value: satellite.id
+            satKey: satelliteKey,
+            layerKey: layerKey,
         }
     }
 };

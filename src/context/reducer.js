@@ -2,6 +2,68 @@ import types from './types';
 import select from './selectors/';
 
 
+export const addItemToIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index)];
+export const removeItemByIndex = (array, index) => [...array.slice(0, index), ...array.slice(index + 1)];
+
+
+const deactivateLayer = (state, action) => {
+    const satKey = action.payload.satKey;
+    const layerKey = action.payload.layerKey;
+
+    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
+
+    if(activeIndex > -1) {
+        return {
+            ...state,
+            activeLayers: removeItemByIndex(activeLayers, activeIndex)
+        };
+    } else {
+        return state
+    }
+}
+
+const activateLayer = (state, action) => {
+    const satKey = action.payload.satKey;
+    const layerKey = action.payload.layerKey;
+
+    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
+
+    if(activeIndex === -1) {
+        return {
+            ...state,
+            activeLayers: [...activeLayers, {satKey, layerKey}]
+        };
+    } else {
+        return state
+    }
+}
+
+const toggleLayer = (state, action) => {
+    const satKey = action.payload.satKey;
+    const layerKey = action.payload.layerKey;
+
+    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
+
+    if(activeIndex > -1) {
+        return deactivateLayer(state, {
+            payload: {
+                satKey,
+                layerKey
+            }
+        })
+    } else {
+        return activateLayer(state, {
+            payload: {
+                satKey,
+                layerKey
+            }
+        })
+    }
+}
+
 const selectSatelite = (state, action) => {
     return {
         ...state,
@@ -120,8 +182,12 @@ export default (state, action) => {
         case types.UNSELECT_SATELLITE:
             return unselectSatelite(state, action)            
         // Focuses either on specific product or on specific satellite.
-        case types.FOCUS:
-            return setFocus(state, action);
+        case types.TOGGLE_LAYER:
+            return toggleLayer(state, action);
+        case types.ACTIVATE_LAYER:
+            return activateLayer(state, action);
+        case types.DEACTIVATE_LAYER:
+            return deactivateLayer(state, action);
         // Removes focus from specific satellite.
         case types.UNFOCUS:
             return setFocus(state, null);

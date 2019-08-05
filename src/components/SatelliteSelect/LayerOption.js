@@ -10,14 +10,14 @@ const LayerOption = props => {
     return (
         // <components.Option {...props} isFocused={false}>
         <components.Option {...props}>
-            Layer
+            Layer {props.data.label}
         </components.Option>
     );
 };
 
 const getLayerOption = (onClick) => {
     return (props) => {
-        return <LayerOption {...props} onClick={() => onClick(props)} />
+        return <LayerOption {...props} onClick={() => onClick(props.data)} />
     } 
 }
 export default LayerOption;

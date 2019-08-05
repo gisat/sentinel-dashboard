@@ -2,6 +2,7 @@ import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
 import {
+    toggleLayer,
     updateComponent,
     startTrackNowTime,
     setOrientation,
@@ -121,7 +122,8 @@ class App extends React.PureComponent {
     }
 
     onLayerClick(evt) {
-        console.log(evt);
+        const {state, dispatch} = this.context;
+        dispatch(toggleLayer(evt.satKey, evt.id))
     }
     
     onSatelliteCollapsClick(evt) {

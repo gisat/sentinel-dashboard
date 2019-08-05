@@ -2,16 +2,20 @@ import { createSelector } from 'reselect'
 
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
+import {getSubstate as getLayersSubstate, getByKey as getayerByKey} from '../data/layers';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
 const getSatelitesSelectOptions = createSelector(
     getSatellitesSubstate,
-    (satellites) => {
-        const getLayerOption = (layerConfig) => {
+    getLayersSubstate,
+    (satellites, layersSubState) => {
+        const getLayerOption = (layerKey, satKey) => {
+            const layer = getayerByKey(layersSubState, layerKey);
             return {
-                id: layerConfig.id,
-                label: layerConfig.id,
+                id: layer.key,
+                label: layer.name,
+                satKey: satKey,
             }
         }
 
@@ -26,7 +30,7 @@ const getSatelitesSelectOptions = createSelector(
             }
 
             if(satConfig.layers && satConfig.layers.length > 0) {
-                satOption.options = satConfig.layers.map(getLayerOption);
+                satOption.options = satConfig.layers.map((layerKey) => getLayerOption(layerKey, satConfig.id));
             }
 
             return satOption;
