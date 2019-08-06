@@ -1,7 +1,12 @@
 import React, { Component } from 'react';
 import WorldWind from 'webworldwind-esa';
+import WorldWindX from 'webworldwind-x';
 import {getLayers} from './layers';
 import './style.css';
+
+const {
+    SentinelCloudlessLayer
+} = WorldWindX;
 
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
@@ -38,9 +43,7 @@ class Map extends Component {
             this.wwd = new WorldWind.WorldWindow("wwd-results");
             this.setState({wwd: this.wwd});
 
-            let mapLayer = new WorldWind.BMNGLandsatLayer();
-
-            this.wwd.addLayer(mapLayer);
+            this.wwd.addLayer(new SentinelCloudlessLayer());
             this.wwd.redraw();
         }
     }

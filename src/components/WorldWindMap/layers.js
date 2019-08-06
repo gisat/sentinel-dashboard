@@ -1,13 +1,17 @@
 import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import './style.css';
-const {SciHubProducts} = WordWindX;
+const {
+    SentinelCloudlessLayer,
+    SciHubProducts
+} = WordWindX;
 const {
     RenderableLayer,
 } = WorldWind;
 
 const username = 'copapps';
 const password = 'C9C-2EZ-gQ4-ezY';
+const defaultBackgroundLayer = new SentinelCloudlessLayer();
 
 const fetchWithCredentials = (url, options = {}) => {
     if (!options.headers) {
@@ -34,7 +38,7 @@ const getSentinelLayer = async (layerConfig) => {
 }
 
 export const getLayers = async (layersConfig) => {
-    const layers = [new WorldWind.BMNGLandsatLayer()];
+    const layers = [defaultBackgroundLayer];
 
     const layersReq = layersConfig.map(getSentinelLayer);
 
