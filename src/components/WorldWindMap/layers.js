@@ -26,10 +26,8 @@ const getSentinelLayer = async (layerConfig) => {
     const productsLocal = await productsScihub.renderables({
         shortName: layerConfig.satKey,
         products: [layerConfig.layerKey],
-        // beginTime: layerConfig.beginTime,
-        // endTime: layerConfig.endTime
-        beginTime: new Date("2017-06-01 03:45:32.004+02:00"),
-        endTime: new Date("2017-06-01 04:45:32.004+02:00")
+        beginTime: layerConfig.beginTime,
+        endTime: layerConfig.endTime
     });
     productsLayer.addRenderables(productsLocal);
     return productsLayer;
