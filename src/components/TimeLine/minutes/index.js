@@ -29,7 +29,7 @@ const Minutes = (props) => {
 		
 		if(dayWidth > 20000) {
 			label = (
-				<Label label={minute.minute} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
+				<Label label={`${minute.hour} : ${minute.minute}`} vertical={vertical} x={x} height={height} className={'ptr-timeline-day-label'} />
 			);
 		}
 
