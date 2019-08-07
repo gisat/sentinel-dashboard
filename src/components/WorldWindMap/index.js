@@ -1,7 +1,14 @@
 import React, { Component } from 'react';
+import PropTypes from "prop-types";
 import WorldWind from 'webworldwind-esa';
 import WorldWindX from 'webworldwind-x';
-import {getLayers} from './layers';
+import {isEqual} from 'lodash';
+import {
+    getLayers,
+    getLayerKeyFromConfig,
+    getLayerByName,
+    setRenderables
+} from './layers';
 import './style.css';
 
 const {
@@ -14,6 +21,15 @@ const {
  * Web World Wind instance is also created.
  */
 class Map extends Component {
+    static propsTypes = {
+        onLayerChanged: PropTypes.func,
+        layers: PropTypes.array,
+    }
+
+    static defaultProps = {    
+        onLayerChanged: () => {},
+        layers: [],
+    }
     constructor(props){
         super(props);
         this.wwd = null;
@@ -22,16 +38,61 @@ class Map extends Component {
         };
     }
 
-    async componentDidUpdate(prevProps){
+    componentDidUpdate (prevProps) {
         if(prevProps.layers !== this.props.layers) {
-            const layers = await getLayers(this.props.layers);
-            this.handleLayers(layers);
+            const prevVisibleLayers = new Set(prevProps.layers.map((l) => getLayerKeyFromConfig(l)).sort())
+            const visibleLayers = new Set(this.props.layers.map((l) => getLayerKeyFromConfig(l)).sort())
+            if(!isEqual(prevVisibleLayers, visibleLayers)) {
+                const layers = getLayers(this.props.layers);
+                this.handleLayers(layers);
+
+                this.props.layers.forEach((layerCfg) => {
+                    const layerKey = getLayerKeyFromConfig(layerCfg);
+                    const layer = getLayerByName(layerKey, layers);
+                    //start loading layer
+                    this.props.onLayerChanged(
+                        {
+                            satKey: layerCfg.satKey,
+                            layerKey: layerCfg.layerKey
+                        }, {
+                            status: 'loading'
+                        })
+
+
+                    //todo only on new layer or if layer config change
+                    const msg = setRenderables(layer, layerCfg, this.wwd.redraw.bind(this.wwd));
+                    this.wwd.redraw();
+                    if(msg.status === 'error') {
+                        this.props.onLayerChanged(
+                            {
+                                satKey: layerCfg.satKey,
+                                layerKey: layerCfg.layerKey
+                            }, {
+                                status: 'error',
+                                message: msg.message,
+                            })
+                    } else {
+                        this.props.onLayerChanged(
+                            {
+                                satKey: layerCfg.satKey,
+                                layerKey: layerCfg.layerKey
+                            }, 
+                            {
+                                status: 'ok'
+                            }
+                        )
+                    }
+                    //stop loading layer
+                })
+            }
         }
     }
 
     handleLayers(nextLayersData = []) {
-		this.wwd.layers = nextLayersData;
-		this.wwd.redraw();
+        if(nextLayersData !== this.wwd.layers) {
+            this.wwd.layers = nextLayersData;
+            this.wwd.redraw();
+        }
 	}
 
 

@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 import momentjs from 'moment';
 import common from './_common';
 
@@ -25,6 +26,13 @@ export const getActiveLayers = createSelector([
     });
     return activeLayers;
 });
+
+export const getActiveLayerByKey = createCachedSelector([
+    (activeLayers) => activeLayers,
+    (activeLayers, layerKey) => layerKey,
+    (activeLayers, layerKey, satKey) => satKey,
+], (activeLayers, layerKey, satKey) => activeLayers.find(l => l.layerKey === layerKey && l.satKey === satKey))((state, layerKey, satKey) => `${satKey}-${layerKey}`);
+
 
 export default {
     getCurrentTime,

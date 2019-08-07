@@ -6,12 +6,13 @@ import './style.css';
 
 const LayerOption = props => {
     props.innerProps.onClick = props.onClick;
-
+    const activeClass = props.data.active ? 'active' : '';
     return (
-        // <components.Option {...props} isFocused={false}>
-        <components.Option {...props}>
-            Layer {props.data.label}
-        </components.Option>
+        <div className={`ptr-satselect-option ${activeClass}`}>
+            <components.Option {...props} isFocused={false}>
+                Layer {props.data.label}
+            </components.Option>
+        </div>
     );
 };
 

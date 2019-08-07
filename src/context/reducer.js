@@ -4,7 +4,7 @@ import select from './selectors/';
 
 export const addItemToIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index)];
 export const removeItemByIndex = (array, index) => [...array.slice(0, index), ...array.slice(index + 1)];
-
+export const replaceItemOnIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index + 1)];
 
 const deactivateLayer = (state, action) => {
     const satKey = action.payload.satKey;
@@ -173,6 +173,28 @@ const setComponent = (state, action) => {
 	return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
 }
 
+const updateActiveLayer = (state, action) => {
+    //get layer by key
+    const layerKey = action.payload.layerKey.layerKey;
+    const satKey = action.payload.layerKey.satKey;
+    const change = action.payload.change;
+
+    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const layerIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
+
+    if(layerIndex > -1) {
+        const layerInfo = state.activeLayers[layerIndex];
+        delete layerInfo.message;
+        delete layerInfo.status;
+        return {
+            ...state,
+            activeLayers: replaceItemOnIndex(activeLayers, layerIndex, {...layerInfo, ...change})
+        };
+    } else {
+        return state
+    }
+}
+
 export default (state, action) => {
     switch(action.type) {
         // Adds satellite to the selected.
@@ -211,6 +233,8 @@ export default (state, action) => {
             return updateComponent(state, action);
         case types.COMPONENTS.SET:
             return setComponent(state, action);
+        case types.UPDATE_ACTIVE_LAYER:
+            return updateActiveLayer(state, action);
         default:
             return state;
     }

@@ -11,6 +11,7 @@ import {
     zoomToTimeLevel,
     changeSelectTime,
     stopTimer,
+    updateActiveLayer,
 } from './context/actions';
 import select from './context/selectors/';
 import WorldWindMap from './components/WorldWindMap/index';
@@ -48,6 +49,7 @@ class App extends React.PureComponent {
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
+        this.onLayerChanged = this.onLayerChanged.bind(this);
     }
 
     componentDidMount() {
@@ -136,6 +138,11 @@ class App extends React.PureComponent {
         }
     }
 
+    onLayerChanged(layerKey, change) {
+        const {dispatch} = this.context;
+        dispatch(updateActiveLayer(layerKey, change))
+    }
+
     render() {
         const {state} = this.context;
         let vertical = select.rootSelectors.getLandscape(state);
@@ -191,7 +198,10 @@ class App extends React.PureComponent {
                         />
                     
                 </div>
-                <WorldWindMap layers = {select.rootSelectors.getActiveLayers(state)}/>
+                <WorldWindMap 
+                    layers = {select.rootSelectors.getActiveLayers(state)}
+                    onLayerChanged={this.onLayerChanged}
+                    />
             </div>
         );
     }

@@ -2,21 +2,27 @@ import { createSelector } from 'reselect'
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
+import {getActiveLayers, getActiveLayerByKey} from '../rootSelectors';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
-// TODO - use re-reselect
 const getSatelitesSelectOptions = createSelector(
     getSatellitesSubstate,
     getLayersSubstate,
-    (satellites, layersSubState) => {
+    getActiveLayers,
+    (satellites, layersSubState, activeLayers) => {
         const getLayerOption = (layerKey, satKey) => {
             const layer = getLayerByKey(layersSubState, layerKey);
+            const activeLayerCfg = getActiveLayerByKey(activeLayers, layerKey, satKey)
+            console.log(activeLayers, layerKey, satKey, activeLayerCfg);
+            
             return {
-                id: layer.key,
+                id: layerKey,
                 label: layer.name,
                 satKey: satKey,
-                active: true
+                active: activeLayerCfg ? true : false,
+                status: activeLayerCfg && activeLayerCfg.status,
+                message: activeLayerCfg && activeLayerCfg.message,
             }
         }
 

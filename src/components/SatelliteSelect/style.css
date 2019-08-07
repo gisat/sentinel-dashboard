@@ -14,3 +14,9 @@
     display: flex;
     padding: 0 .75rem;
 }
+
+.ptr-satselect-option{}
+
+.ptr-satselect-option.active{
+    background: red;
+}

@@ -14,7 +14,7 @@ const SatelliteGroupOption = (props) => {
     data
   } = props;
   return (
-    <div css={getStyles('group', props)} className={cx({ group: true }, className)} >
+    <div style={getStyles('group', props)} className={cx({ group: true }, className)} >
       <Heading
         {...headingProps}
         selectProps={selectProps}

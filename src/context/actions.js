@@ -155,3 +155,18 @@ export const setOrientation = (landscape) => {
         payload: landscape
     }
 }
+
+/**
+ * 
+ * @param {string} layerKey 
+ * @param {object} change 
+ */
+export const updateActiveLayer = (layerKey, change) => {
+    return {
+        type: types.UPDATE_ACTIVE_LAYER,
+        payload: {
+            layerKey,
+            change
+        }
+    }
+}
