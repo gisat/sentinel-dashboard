@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
-import './style.css';
-
 
 const DropdownIndicator = props => {
     props.innerProps.onClick = props.onClick;
