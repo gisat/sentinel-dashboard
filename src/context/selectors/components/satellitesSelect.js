@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
-import {getActiveLayers, getActiveLayerByKey} from '../rootSelectors';
+import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite} from '../rootSelectors';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
@@ -10,11 +10,11 @@ const getSatelitesSelectOptions = createSelector(
     getSatellitesSubstate,
     getLayersSubstate,
     getActiveLayers,
-    (satellites, layersSubState, activeLayers) => {
+    getFocusedSattelite,
+    (satellites, layersSubState, activeLayers, focusedSattelite) => {
         const getLayerOption = (layerKey, satKey) => {
             const layer = getLayerByKey(layersSubState, layerKey);
             const activeLayerCfg = getActiveLayerByKey(activeLayers, layerKey, satKey)
-            console.log(activeLayers, layerKey, satKey, activeLayerCfg);
             
             return {
                 id: layerKey,
@@ -31,6 +31,7 @@ const getSatelitesSelectOptions = createSelector(
                 groupData: {
                     value: satConfig.id,
                     icon: satConfig.iconClass,
+                    active: focusedSattelite === satConfig.id,
                 },
                 label: satConfig.name,
                 options: []

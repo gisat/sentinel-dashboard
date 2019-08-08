@@ -8,22 +8,33 @@ let timer = null;
 let nowTimer = null;
 let intervalKeyZoom = null;
 let intervalKeyScroll = null;
-export const toggleSatelliteSelection = (satellite, state) => {
-    const satelliteInSelected = state.selected.includes(satellite.id);
-    let dispatchObj = {
-        type: types.SELECT_SATELLITE,
-        payload: satellite.id
-    };
-    if (satelliteInSelected) {
-        const remainingSelected = state.selected.filter(selected => selected !== satellite.id);
-        dispatchObj = {
-            type: types.UNSELECT_SATELLITE,
-            payload: remainingSelected
+/**
+ * 
+ * @param {string} satelliteId 
+ * @param {Object} state 
+ */
+export const toggleSatelliteFocus = (satelliteId, state) => {
+    const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
+    const satteliteIsFocused = focusedSattelite === satelliteId;
+
+    if (satteliteIsFocused) {
+        return {
+            type: types.FOCUS_SATELLITE,
+            payload: null
+        };
+    } else {
+        return {
+            type: types.FOCUS_SATELLITE,
+            payload: satelliteId
         };
     }
-    return dispatchObj;
 };
 
+/**
+ * 
+ * @param {string} satelliteKey 
+ * @param {string} layerKey 
+ */
 export const toggleLayer = (satelliteKey, layerKey) => {
     return {
         type: types.TOGGLE_LAYER,

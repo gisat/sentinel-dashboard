@@ -8,6 +8,8 @@ export function getSelectTime (state)  {return common.getByPath(state, ['selectT
 export function getFollowNow (state)  {return common.getByPath(state, ['followNow'])};
 export function getLandscape (state)  {return common.getByPath(state, ['landscape'])};
 
+export function getFocusedSattelite (state)  {return common.getByPath(state, ['focus'])};
+
 //round time on minutes to prevent rerender on every second?
 const getEndDataTime = getSelectTime;
 

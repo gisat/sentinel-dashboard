@@ -7,7 +7,6 @@ const now = moment(getNowUTC());
 
 export const Context = createContext({
     satellites: [],
-    selected: null,
     activeLayers: [],
     focus: null,
     selectTime: null,
@@ -43,9 +42,7 @@ const initialState = {
         ], // All the available satellites.
     },
     activeLayers: [],
-    selected: [], // Selected represents satellites for which we download data
-    focus: null, // Focus represents the type of focus {type: 'satellite', value: 'S-2A'} or
-        // {type: 'product', value: 'S-2A'} No focus mean the default selection.
+    focus: 'S-1A', // Fix camera on sattelite
     selectTime: null,
     currentTime: getNowUTC(),
     landscape: true,

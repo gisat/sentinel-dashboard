@@ -46,6 +46,7 @@ import Upload from './components/Upload';
 import RotateLeftCircularArrow from './components/RotateLeftCircularArrow';
 import RotateRightCircularArrow from './components/RotateRightCircularArrow';
 import Location from './components/Location.js';
+import Warning from './components/Warning.js';
 
 import Sentinel1 from './components/satellites/Sentinel1.js';
 import Sentinel2 from './components/satellites/Sentinel2.js';
@@ -137,6 +138,8 @@ const icon = key => {
 			return <Times />;
 		case 'triangle-down':
 			return <TriangleDown />;
+		case 'warning':
+			return <Warning />;
 		// case 'sort-down':
 		// 	return getSortDown();
 		// case 'sort-up':

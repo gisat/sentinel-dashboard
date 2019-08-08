@@ -68,7 +68,7 @@ const getSciRenderables = async (layerConfig) => {
         return productsLocal;
     } catch(e) {
         console.error('Can not get renderables.')
-        return []
+        return {total:0}
     }
 }
 export const setRenderables = async (layer, layerConfig, redrawCallback) => {

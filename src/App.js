@@ -12,6 +12,7 @@ import {
     changeSelectTime,
     stopTimer,
     updateActiveLayer,
+    toggleSatelliteFocus,
 } from './context/actions';
 import select from './context/selectors/';
 import WorldWindMap from './components/WorldWindMap/index';
@@ -48,6 +49,7 @@ class App extends React.PureComponent {
         this.onStopTimer = this.onStopTimer.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
+        this.onSatteliteClick = this.onSatteliteClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
         this.onLayerChanged = this.onLayerChanged.bind(this);
     }
@@ -127,6 +129,10 @@ class App extends React.PureComponent {
         const {state, dispatch} = this.context;
         dispatch(toggleLayer(evt.satKey, evt.id))
     }
+    onSatteliteClick(satKey) {
+        const {state, dispatch} = this.context;
+        dispatch(toggleSatelliteFocus(satKey, state))
+    }
     
     onSatelliteCollapsClick(evt) {
         const {state, dispatch} = this.context;
@@ -162,6 +168,7 @@ class App extends React.PureComponent {
                     options={sateliteOptions}
                     open={satelliteSelectState.open}
                     onLayerClick={this.onLayerClick}
+                    onSatteliteClick={this.onSatteliteClick}
                     onCollapsClick={this.onSatelliteCollapsClick}
                     />
                 <div className={className('timelineWrapper', {

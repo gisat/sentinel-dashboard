@@ -34,6 +34,9 @@
     ]
   },
   "devDependencies": {
+    "@emotion/core": "^10.0.15",
+    "@emotion/css": "^10.0.14",
+    "@emotion/styled": "^10.0.15",
     "lodash": "^4.17.15",
     "re-reselect": "^3.4.0",
     "react-select": "^3.0.4",

@@ -4,8 +4,7 @@ import SelectBase, { components } from 'react-select';
 import SatelliteGroupOption from './SatelliteGroupOption';
 import {getLayerOption} from './LayerOption';
 import {getDropdownIndicator} from './DropdownIndicator';
-import SatelliteGroupHeading from './SatelliteGroupHeading';
-import './style.css';
+import {getSatelliteGroupHeading} from './SatelliteGroupHeading';
 
 const ValueContainer = ({ children, ...props }) => (
     <components.ValueContainer {...props}><span>Products</span></components.ValueContainer>
@@ -31,6 +30,8 @@ const DropdownIndicator = ({ children, ...props }) => (
 class Select extends React.PureComponent {
     static defaultProps = {
         onLayerClick: () => {},
+        onCollapsClick: () => {},
+        onSatteliteClick: () => {},
     }
 
     static propTypes = {
@@ -39,34 +40,83 @@ class Select extends React.PureComponent {
         selectedLayers: PropTypes.array,
         onLayerClick: PropTypes.func,
         onCollapsClick: PropTypes.func,
+        onSatteliteClick: PropTypes.func,
         onReleaseCamera: PropTypes.func,
         onFixCamera: PropTypes.func,
     }
 
     render() {
-        const {open, options, onLayerClick, onCollapsClick} = this.props;
+        const {open, options, onLayerClick, onCollapsClick, onSatteliteClick} = this.props;
+
+        // style
+        //TODO -> extract style to file
+        const color = 'rgb(189, 189, 189)';
+        const activeColor = 'rgb(235, 235, 235)';
+        const activeBackgroundColor = 'rgb(93, 93, 253)';
+        const hoverBackgroundColor = 'rgba(139, 139, 208, 0.6)';
+        const menuBackgroundColor = 'rgba(42, 46, 52, 0.64)';
+        // end style
 
         const customStyles = {
+            menu: (provided, state) => ({
+              ...provided,
+              backgroundColor: menuBackgroundColor,
+            }),
             container: (provided, state) => ({
               ...provided,
               position: 'absolute',
               width: '200px'
             }),
-            groupHeading: (provided, state) => ({
-                ...provided,
-                alignItems: 'center',
-                // color: 'rgba(255, 255, 255, 0.75)',
-                cursor: 'pointer',
-                display: 'flex',
-                padding: '0 .75rem',
-            
-              }),
+            groupHeading:(provided, state) => {
+                const style = {
+                    ...provided,
+                    alignItems: 'center',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    padding: '0 .75rem',
+                    '&:hover': {
+                        backgroundColor: hoverBackgroundColor
+                    },
+                  }
+
+                  return style;
+            },
+            option: (provided, state) => {
+
+                const activeStyle = {
+                    backgroundColor: activeBackgroundColor,
+                    color: activeColor,
+                    fill: activeColor,
+                    stroke: activeColor,
+                }
+
+                const active = state.data.active;
+                const style = {
+                    ...provided,
+                    paddingTop: '0px',
+                    paddingBottom: '0px',
+                    paddingLeft: '3rem',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    color: color,
+                    fill: color,
+                    stroke: color,
+                    ':hover': {
+                        backgroundColor: hoverBackgroundColor
+                    },
+                    ...(active && activeStyle),
+                  }
+
+                  return style;
+            },
           }
 
         const components = {
             ValueContainer: ValueContainer,
             Option: getLayerOption(onLayerClick),
-            GroupHeading: SatelliteGroupHeading,
+            GroupHeading: getSatelliteGroupHeading(onSatteliteClick),
             Group: SatelliteGroupOption,
             SelectContainer,
             DropdownIndicator: getDropdownIndicator(onCollapsClick),
@@ -77,11 +127,7 @@ class Select extends React.PureComponent {
                 className={'ptr-satellite-selector'}
                 classNamePrefix={'ptr-select'}
                 styles={customStyles}
-                // components={props.components}
-                // formatOptionLabel={this.getLabel}
                 hideSelectedOptions={true}
-                // onChange={this.onChange}
-                // value={props.value}
                 title={'Satellites'}
                 components={components}
                 options={options}

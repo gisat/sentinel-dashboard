@@ -25,7 +25,9 @@ const SatelliteGroupOption = (props) => {
       >
         {label}
       </Heading>
-      <div>{children}</div>
+      <div>
+        {children}
+      </div>
     </div>
   );
 };
