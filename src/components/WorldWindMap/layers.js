@@ -73,7 +73,9 @@ const getSciRenderables = async (layerConfig) => {
 }
 export const setRenderables = async (layer, layerConfig, redrawCallback) => {
     const msg = {
-        status: 'ok'
+        status: 'ok',
+        loadedCount: null,
+        totalCount: null,
     }
     layer.removeAllRenderables();
     const productsLocal = await getSciRenderables(layerConfig);
@@ -83,6 +85,8 @@ export const setRenderables = async (layer, layerConfig, redrawCallback) => {
         msg.message = 'No data found'
     }else {
         layer.addRenderables(productsLocal.renderables);
+        msg.loadedCount = productsLocal.renderables.length;
+        msg.totalCount = productsLocal.total;
     }
 
     redrawCallback();

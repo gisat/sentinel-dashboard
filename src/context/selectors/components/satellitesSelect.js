@@ -23,6 +23,8 @@ const getSatelitesSelectOptions = createSelector(
                 active: activeLayerCfg ? true : false,
                 status: activeLayerCfg && activeLayerCfg.status,
                 message: activeLayerCfg && activeLayerCfg.message,
+                loadedCount: activeLayerCfg && activeLayerCfg.loadedCount,
+                totalCount: activeLayerCfg && activeLayerCfg.totalCount,
             }
         }
 

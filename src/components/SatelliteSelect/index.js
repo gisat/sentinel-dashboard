@@ -95,7 +95,6 @@ class Select extends React.PureComponent {
                     ...provided,
                     paddingTop: '0px',
                     paddingBottom: '0px',
-                    paddingLeft: '3rem',
                     cursor: 'pointer',
                     display: 'flex',
                     alignItems: 'center',

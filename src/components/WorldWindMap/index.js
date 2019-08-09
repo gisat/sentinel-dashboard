@@ -60,29 +60,31 @@ class Map extends Component {
 
 
                     //todo only on new layer or if layer config change
-                    const msg = setRenderables(layer, layerCfg, this.wwd.redraw.bind(this.wwd));
-                    this.wwd.redraw();
-                    if(msg.status === 'error') {
-                        this.props.onLayerChanged(
-                            {
-                                satKey: layerCfg.satKey,
-                                layerKey: layerCfg.layerKey
-                            }, {
-                                status: 'error',
-                                message: msg.message,
-                            })
-                    } else {
-                        this.props.onLayerChanged(
-                            {
-                                satKey: layerCfg.satKey,
-                                layerKey: layerCfg.layerKey
-                            }, 
-                            {
-                                status: 'ok'
-                            }
-                        )
-                    }
-                    //stop loading layer
+                    setRenderables(layer, layerCfg, this.wwd.redraw.bind(this.wwd)).then((msg) => {
+                        this.wwd.redraw();
+                        if(msg.status === 'error') {
+                            this.props.onLayerChanged(
+                                {
+                                    satKey: layerCfg.satKey,
+                                    layerKey: layerCfg.layerKey
+                                }, {
+                                    status: 'error',
+                                    message: msg.message,
+                                })
+                        } else {
+                            this.props.onLayerChanged(
+                                {
+                                    satKey: layerCfg.satKey,
+                                    layerKey: layerCfg.layerKey
+                                }, 
+                                {
+                                    status: 'ok',
+                                    loadedCount: msg.loadedCount,
+                                    totalCount: msg.totalCount,
+                                }
+                            )
+                        }
+                    });
                 })
             }
         }

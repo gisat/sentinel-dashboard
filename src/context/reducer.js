@@ -172,6 +172,8 @@ const updateActiveLayer = (state, action) => {
         const layerInfo = state.activeLayers[layerIndex];
         delete layerInfo.message;
         delete layerInfo.status;
+        delete layerInfo.loadedCount;
+        delete layerInfo.totalCount;
         return {
             ...state,
             activeLayers: replaceItemOnIndex(activeLayers, layerIndex, {...layerInfo, ...change})
