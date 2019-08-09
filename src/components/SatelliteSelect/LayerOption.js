@@ -3,14 +3,15 @@ import PropTypes from 'prop-types';
 import { components } from 'react-select';
 import Icon from '../Icon';
 
-
 const LayerOption = props => {
     props.innerProps.onClick = props.onClick;
 
     //TODO extract into file
+    const maxHeight = '32px'
+
     const iconsWrapperStyle = {
         flex: '0 1 auto',
-        maxHeight: '32px',
+        maxHeight: maxHeight,
     }
 
     const infoIconStyle = {
@@ -27,6 +28,7 @@ const LayerOption = props => {
                     {props.data.label}
                 </span>
                 <span style={iconsWrapperStyle}>
+                    <Icon icon='loader-oval' className='ptr-icon-warning' style={infoIconStyle}/>
                     <Icon icon='info' className='ptr-icon-warning' style={infoIconStyle}/>
                     <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/>
                 </span>

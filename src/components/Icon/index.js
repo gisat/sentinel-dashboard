@@ -45,6 +45,7 @@ import getTimes from './components/times-solid';
 import Upload from './components/Upload';
 import RotateLeftCircularArrow from './components/RotateLeftCircularArrow';
 import RotateRightCircularArrow from './components/RotateRightCircularArrow';
+import LoaderOval from './components/Loader-oval';
 import Location from './components/Location.js';
 import Warning from './components/Warning.js';
 
@@ -158,6 +159,8 @@ const icon = key => {
 			return <Sentinel5 />;
 		case 'location':
 			return <Location />;
+		case 'loader-oval':
+			return <LoaderOval />;
 		// case 'times':
 		// 	return getTimes();
 		default:
