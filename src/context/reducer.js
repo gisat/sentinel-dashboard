@@ -1,3 +1,4 @@
+import moment from 'moment';
 import types from './types';
 import select from './selectors/';
 import {removeItemByIndex,replaceItemOnIndex} from '../utils/arrayManipulation';
@@ -75,21 +76,28 @@ const focusSatelite = (state, action) => {
 }
 
 const setSelectTime = (state, action) => {
+    //FIXME - should be dispatched separated to set selectTimePastCurrent
+    const currentTime = select.rootSelectors.getCurrentTime(state);
+    const selectTime = action.payload;
+    
     return {
         ...state,
-        selectTime: action.payload
+        selectTime: action.payload,
+        selectTimePastCurrent: moment(selectTime).isAfter(currentTime),
     };
 }
 
 const setCurrentTime = (state, action) => {
-
+    //FIXME - should be dispatched separated to set selectTimePastCurrent and setSelectTime
+    const currentTime = action.payload;
+    const selectTime = select.rootSelectors.getSelectTime(state);
     //if follow now
     let selectTimeState = {};
 
     //not clear solution, because I don't know, how to acces to current state in timer in action
     if(select.rootSelectors.getFollowNow(state)) {
         selectTimeState = setSelectTime(state, {
-            payload: action.payload
+            payload: currentTime
         })
     }
     
@@ -97,7 +105,8 @@ const setCurrentTime = (state, action) => {
     return {
         ...state,
         ...selectTimeState,
-        currentTime: action.payload
+        currentTime: currentTime,
+        selectTimePastCurrent: moment(selectTime).isAfter(currentTime),
     };
 }
 
