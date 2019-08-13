@@ -2,6 +2,7 @@ import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import createCachedSelector from 're-reselect';
 import './style.css';
+import {removeItemByIndex} from '../../utils/arrayManipulation';
 const {
     SentinelCloudlessLayer,
     SciHubProducts
@@ -17,6 +18,7 @@ const layersCache = new window.Map();
 const productsScihub = new SciHubProducts(csiRenderablesCache, fetchWithCredentials);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 
+const productsRequests = [];
 export function getLayerKeyFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
 }
@@ -29,13 +31,35 @@ export function getLayerByName (name, layers) {
     return layers.find(l => l.displayName === name);
 }
 
+const stopRequests = () => {
+    productsRequests.forEach((r) => {
+        r.abort();
+
+    })
+}
+
 function fetchWithCredentials (url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
     options.headers.Authorization = `Basic ${window.btoa(`${username}:${password}`)}`;
 
-    return window.fetch(url, options);
+    const controller = new AbortController();
+    const signal = controller.signal;
+
+    options['signal'] = signal;
+
+    const fetch = window.fetch(url, options);
+    productsRequests.push(controller);
+
+    fetch.then(() => {
+        //remove self from productsRequests
+        const fetchIndex = productsRequests.findIndex(r => r === controller);
+        removeItemByIndex(productsRequests, fetchIndex);
+        
+    })
+
+    return fetch;
 };
 
 const getSentinelLayer = (layerConfig) => {
@@ -83,6 +107,7 @@ export const setRenderables = async (layer, layerConfig, redrawCallback) => {
     }
     layer.removeAllRenderables();
     redrawCallback();
+    stopRequests();
     const productsLocal = await getSciRenderables(layerConfig);
     layer.removeAllRenderables();
     if(productsLocal.total === 0) {
