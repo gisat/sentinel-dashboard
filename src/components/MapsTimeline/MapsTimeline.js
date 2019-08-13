@@ -151,6 +151,7 @@ class MapsTimeline extends React.PureComponent {
 							vertical={vertical}
 							periodLimit={initialPeriod}
 							periodLimitOnCenter={true}
+							selectMode={false}
 						>
 							<PeriodLimit key="periodLimit"/>
 							<Overlays overlays={overlays} key="overlays"/>

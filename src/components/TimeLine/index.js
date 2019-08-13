@@ -62,6 +62,7 @@ class Timeline extends React.PureComponent {
 			level: PropTypes.string
 		})),										//ordered levels by higher level.end 
 		onChange: PropTypes.func,
+		selectMode: PropTypes.bool,					//whether change time while zoom 
 	};
 
 	static defaultProps = {
@@ -71,6 +72,7 @@ class Timeline extends React.PureComponent {
 		onClick: () => {},
 		width: 100,
 		height: 100,
+		selectMode: false,
 	}
 
 	constructor(props){
@@ -265,7 +267,7 @@ class Timeline extends React.PureComponent {
 	}
 
 	render() {
-		const {levels, period, onHover, onClick, vertical, children, periodLimitOnCenter} = this.props;
+		const {levels, period, onHover, onClick, vertical, children, periodLimitOnCenter, selectMode} = this.props;
 		const {dayWidth, periodLimit, mouseX} = this.state;
 
 		const maxDayWidth = this.getMaxDayWidth();
@@ -292,7 +294,8 @@ class Timeline extends React.PureComponent {
 				onClick,
 				onHover,
 				vertical,
-				periodLimitOnCenter
+				periodLimitOnCenter,
+				selectMode,
 				}}>
 				<TimelineContent>
 					{children}

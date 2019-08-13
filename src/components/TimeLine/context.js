@@ -19,6 +19,7 @@ export const Context = createContext({
     onHover: null,
     vertical: null,
     periodLimitOnCenter: null,
+    selectMode: null,
 });
 
 export const ContextProvider = (props) => {
