@@ -104,7 +104,7 @@ class Timeline extends React.PureComponent {
 		}
 	
 		//if parent component set time
-		if(prevProps.time !== time && this.state.centerTime !== time) {
+		if(prevProps.time.toString() !== time.toString() && this.state.centerTime.toString() !== time.toString()) {
 
 			const periodLimit = this.getPeriodLimitByTime(time);
 

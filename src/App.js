@@ -63,9 +63,9 @@ class App extends React.PureComponent {
         const {state, dispatch} = this.context;
         const curTimelineState = select.components.timeline.getSubstate(state);
 
-        if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state).toString()) {
+        if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
             dispatch(stopTimer());
-            dispatch(changeSelectTime(timelineState.centerTime));
+            dispatch(changeSelectTime(timelineState.centerTime.toString()));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== curTimelineState.activeTimeLevel) {
@@ -91,7 +91,7 @@ class App extends React.PureComponent {
     onTimeClick (evt) {
         const {state, dispatch} = this.context;
         dispatch(stopTimer());
-        scrollToTime(dispatch, select.rootSelectors.getSelectTime(state), evt.time, timelinePeriod);
+        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, timelinePeriod);
     }
 
     onSetTime (time) {
@@ -101,9 +101,10 @@ class App extends React.PureComponent {
 
     onStartTimer() {
         const {state, dispatch} = this.context;
-        const selectTime = select.rootSelectors.getSelectTime(state) || getNowUTC();
+        const selectTime = select.rootSelectors.getSelectTime(state);
+        const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
         dispatch(setFollowNow(true));
-        scrollToTime(dispatch, selectTime, moment(getNowUTC()), timelinePeriod, () => {
+        scrollToTime(dispatch, scrollTime, moment(getNowUTC()), timelinePeriod, () => {
             dispatch(setFollowNow(true));
         });
     }
@@ -182,7 +183,7 @@ class App extends React.PureComponent {
                         initialPeriod = {this.initialTimelinePeriod}
                         // onLayerPeriodClick: this.onLayerPeriodClick,
                         onChange = {this.onTimeChange}
-                        time={select.rootSelectors.getSelectTime(state)}
+                        time={new Date(select.rootSelectors.getSelectTime(state))}
                         overlays={timelineOverlays}
                         LEVELS={LEVELS}
                         dayWidth={timelineState.dayWidth}
@@ -194,7 +195,7 @@ class App extends React.PureComponent {
                     horizontal: !vertical,
                 })}>
                     <TimeWidget
-                        time={select.rootSelectors.getSelectTime(state)}
+                        time={new Date(select.rootSelectors.getSelectTime(state))}
                         active={timelineState.activeTimeLevel}
                         onSelectActive={this.onSetActiveTimeLevel}
                         onSetTime={this.onSetTime}

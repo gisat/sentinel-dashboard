@@ -85,14 +85,14 @@ export const scrollToTime = (dispatch, selectTime, newTime, period, callback) =>
                 callback();
             }
         } else {
-            dispatch(changeSelectTime(moment(selectTime).add(peace * index).toDate()));
+            dispatch(changeSelectTime(moment(selectTime).add(peace * index).toDate().toString()));
         }
     }, 60)
 };
 
 /**
  * 
- * @param {Date} time 
+ * @param {string} time 
  */
 export const changeSelectTime = time => {
     return {
@@ -103,7 +103,7 @@ export const changeSelectTime = time => {
 
 /**
  * 
- * @param {Date} time 
+ * @param {string} time 
  */
 export const changeCurrentTime = time => {
     return {
@@ -148,7 +148,7 @@ export const startTrackNowTime = (state, dispatch) => {
 
 const nowTick = () => {
     const now = getNowUTC();
-    return changeCurrentTime(now);
+    return changeCurrentTime(now.toString());
 };
 
 export const stopTimer = () => {

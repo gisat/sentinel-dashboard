@@ -21,6 +21,10 @@ export function getLayerKeyFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
 }
 
+export function getLayerIdFromConfig (layerConfig) {
+    return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
+}
+
 export function getLayerByName (name, layers) {
     return layers.find(l => l.displayName === name);
 }
@@ -79,7 +83,7 @@ export const setRenderables = async (layer, layerConfig, redrawCallback) => {
     }
     layer.removeAllRenderables();
     const productsLocal = await getSciRenderables(layerConfig);
-
+    layer.removeAllRenderables();
     if(productsLocal.total === 0) {
         msg.status = 'error'
         msg.message = 'No data found'
@@ -93,8 +97,52 @@ export const setRenderables = async (layer, layerConfig, redrawCallback) => {
     return msg;
 }
 
+export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
+
+    layers.forEach((layerCfg) => {
+        const layerKey = getLayerKeyFromConfig(layerCfg);
+        const layer = getLayerByName(layerKey, wwdLayers);   
+
+        onLayerChanged(
+            {
+                satKey: layerCfg.satKey,
+                layerKey: layerCfg.layerKey
+            }, {
+                status: 'loading'
+            })
+
+
+        setRenderables(layer, layerCfg, wwd.redraw.bind(wwd)).then((msg) => {
+            wwd.redraw();
+            if(msg.status === 'error') {
+                onLayerChanged(
+                    {
+                        satKey: layerCfg.satKey,
+                        layerKey: layerCfg.layerKey
+                    }, {
+                        status: 'error',
+                        message: msg.message,
+                    })
+            } else {
+                onLayerChanged(
+                    {
+                        satKey: layerCfg.satKey,
+                        layerKey: layerCfg.layerKey
+                    }, 
+                    {
+                        status: 'ok',
+                        loadedCount: msg.loadedCount,
+                        totalCount: msg.totalCount,
+                    }
+                )
+            }
+        });
+    });
+}
+
 export default {
     getLayers,
     getLayerKeyFromConfig,
     getLayerByName,
+    reloadLayersRenderable,
 }

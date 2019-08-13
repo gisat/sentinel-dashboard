@@ -6,8 +6,9 @@ import {isEqual} from 'lodash';
 import {
     getLayers,
     getLayerKeyFromConfig,
+    getLayerIdFromConfig,
     getLayerByName,
-    setRenderables
+    reloadLayersRenderable
 } from './layers';
 import './style.css';
 
@@ -33,59 +34,38 @@ class Map extends Component {
     constructor(props){
         super(props);
         this.wwd = null;
-        this.state = {
-            wwdCreated: false
-        };
+        this.wwdCreated = false;
     }
+    shouldComponentUpdate(nextProps) {
+        const layersChanged = nextProps.layers !== this.props.layers;
 
-    componentDidUpdate (prevProps) {
+        return layersChanged;
+    }
+    componentDidUpdate (prevProps, prevState) {
         if(prevProps.layers !== this.props.layers) {
             const prevVisibleLayers = new Set(prevProps.layers.map((l) => getLayerKeyFromConfig(l)).sort())
             const visibleLayers = new Set(this.props.layers.map((l) => getLayerKeyFromConfig(l)).sort())
+            
+            // layer ID is composed by layer, satellite, end date, start date
+            const prevLayers = new Set(prevProps.layers.map((l) => getLayerIdFromConfig(l)).sort())
+            const Layers = new Set(this.props.layers.map((l) => getLayerIdFromConfig(l)).sort())
+            
+            //check visibility change
             if(!isEqual(prevVisibleLayers, visibleLayers)) {
-                const layers = getLayers(this.props.layers);
-                this.handleLayers(layers);
+                //visibility changed
+                const wwdLayers = getLayers(this.props.layers);
+                this.handleLayers(wwdLayers);
+                
+                //start loading layer
 
-                this.props.layers.forEach((layerCfg) => {
-                    const layerKey = getLayerKeyFromConfig(layerCfg);
-                    const layer = getLayerByName(layerKey, layers);
-                    //start loading layer
-                    this.props.onLayerChanged(
-                        {
-                            satKey: layerCfg.satKey,
-                            layerKey: layerCfg.layerKey
-                        }, {
-                            status: 'loading'
-                        })
-
-
-                    //todo only on new layer or if layer config change
-                    setRenderables(layer, layerCfg, this.wwd.redraw.bind(this.wwd)).then((msg) => {
-                        this.wwd.redraw();
-                        if(msg.status === 'error') {
-                            this.props.onLayerChanged(
-                                {
-                                    satKey: layerCfg.satKey,
-                                    layerKey: layerCfg.layerKey
-                                }, {
-                                    status: 'error',
-                                    message: msg.message,
-                                })
-                        } else {
-                            this.props.onLayerChanged(
-                                {
-                                    satKey: layerCfg.satKey,
-                                    layerKey: layerCfg.layerKey
-                                }, 
-                                {
-                                    status: 'ok',
-                                    loadedCount: msg.loadedCount,
-                                    totalCount: msg.totalCount,
-                                }
-                            )
-                        }
-                    });
-                })
+                //TODO - reload only new layers
+                reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
+            } else if(!isEqual(prevLayers, Layers)) {
+                //layers date changed
+                //TODO reload only changed layers
+                //TODO if already loading, stop
+                const wwdLayers = getLayers(this.props.layers);
+                reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
             }
         }
     }
@@ -102,9 +82,9 @@ class Map extends Component {
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
      */
     componentDidMount(){
-        if(!this.state.wwd) {
+        if(!this.wwdCreated) {
             this.wwd = new WorldWind.WorldWindow("wwd-results");
-            this.setState({wwd: this.wwd});
+            this.wwdCreated=true;
 
             this.wwd.addLayer(new SentinelCloudlessLayer());
             this.wwd.redraw();

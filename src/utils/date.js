@@ -1,5 +1,12 @@
 export const convertToUTC = (date) => {
-    return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+    if(typeof date === 'string') {
+        date = new Date(date);
+    }
+    if(date) {
+        return new Date(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate(), date.getUTCHours(), date.getUTCMinutes(), date.getUTCSeconds());
+    } else {
+        return null;
+    }
 }
 
 export const getNowUTC = () => {
