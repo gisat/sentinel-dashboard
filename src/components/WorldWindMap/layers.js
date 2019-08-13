@@ -82,6 +82,7 @@ export const setRenderables = async (layer, layerConfig, redrawCallback) => {
         totalCount: null,
     }
     layer.removeAllRenderables();
+    redrawCallback();
     const productsLocal = await getSciRenderables(layerConfig);
     layer.removeAllRenderables();
     if(productsLocal.total === 0) {

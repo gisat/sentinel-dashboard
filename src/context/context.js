@@ -12,6 +12,7 @@ export const Context = createContext({
     selectTime: null,
     currentTime: null,
     followNow: null,
+    preventReloadLayers: null,
     components:{}
 });
 
@@ -47,12 +48,14 @@ const initialState = {
     currentTime: getNowUTC(),
     landscape: true,
     followNow: true,
+    preventReloadLayers: false,
 
     components:{
         satelliteSelect: {
             open: true,
         },
         timeline: {
+            moving: false,
             mouseTime: null,
             dayWidth: null,
             activeTimeLevel: 'month',

@@ -64,6 +64,13 @@ const toggleLayer = (state, action) => {
     }
 }
 
+const setPreventReloadLayers = (state, action) => {
+    return {
+        ...state,
+        preventReloadLayers: action.payload
+    };
+}
+
 const focusSatelite = (state, action) => {
     return {
         ...state,
@@ -189,6 +196,8 @@ export default (state, action) => {
             return focusSatelite(state, action)
         case types.TOGGLE_LAYER:
             return toggleLayer(state, action);
+        case types.PREVENT_RELOAD_LAYERS:
+            return setPreventReloadLayers(state, action);
         case types.ACTIVATE_LAYER:
             return activateLayer(state, action);
         case types.DEACTIVATE_LAYER:

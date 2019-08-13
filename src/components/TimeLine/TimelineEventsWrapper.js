@@ -192,7 +192,16 @@ class TimelineEventsWrapper extends React.PureComponent {
 		}
 	}
 
+	setMoving(moving = false) {
+		const {updateContext} = this.context;
+		updateContext({
+			moving: moving,
+		});
+
+	}
+
 	onPointerDown(clientX) {
+		this.setMoving(true);
 		this._drag = true;
 		this.trackingPoints = [];
 		this._lastX = clientX;
@@ -467,6 +476,7 @@ class TimelineEventsWrapper extends React.PureComponent {
   }
 
 	clearScroll() {
+		this.setMoving(false);
 		this.decelerating = false;
 	  }
 

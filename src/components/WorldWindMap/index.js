@@ -25,6 +25,7 @@ class Map extends Component {
     static propsTypes = {
         onLayerChanged: PropTypes.func,
         layers: PropTypes.array,
+        preventReload: PropTypes.bool,
     }
 
     static defaultProps = {    
@@ -38,8 +39,9 @@ class Map extends Component {
     }
     shouldComponentUpdate(nextProps) {
         const layersChanged = nextProps.layers !== this.props.layers;
+        const preventMovingChanged = nextProps.preventReload !== this.props.preventReload;
 
-        return layersChanged;
+        return layersChanged || preventMovingChanged;
     }
     componentDidUpdate (prevProps, prevState) {
         if(prevProps.layers !== this.props.layers) {
@@ -65,9 +67,16 @@ class Map extends Component {
                 //TODO reload only changed layers
                 //TODO if already loading, stop
                 const wwdLayers = getLayers(this.props.layers);
-                reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
+                if(!this.props.preventReload) {
+                    reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
+                }
             }
+        } else if(prevProps.preventReload !== this.props.preventReload && !this.props.preventReload) {
+            const wwdLayers = getLayers(this.props.layers);
+            reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
         }
+
+
     }
 
     handleLayers(nextLayersData = []) {

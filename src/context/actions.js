@@ -46,6 +46,18 @@ export const toggleLayer = (satelliteKey, layerKey) => {
     }
 };
 
+/**
+ * 
+ * @param {string} satelliteKey 
+ * @param {string} layerKey 
+ */
+export const setPreventReloadLayers = (preventReloadLayers) => {
+    return {
+        type: types.PREVENT_RELOAD_LAYERS,
+        payload: preventReloadLayers
+    }
+};
+
 export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth) => {
     window.clearInterval(intervalKeyZoom);
     //zoom to dayWidth

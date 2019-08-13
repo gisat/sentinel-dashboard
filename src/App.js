@@ -3,6 +3,7 @@ import ReactResizeDetector from 'react-resize-detector';
 import {Context} from './context/context';
 import {
     toggleLayer,
+    setPreventReloadLayers,
     updateComponent,
     startTrackNowTime,
     setOrientation,
@@ -62,6 +63,10 @@ class App extends React.PureComponent {
     onTimeChange(timelineState) {
         const {state, dispatch} = this.context;
         const curTimelineState = select.components.timeline.getSubstate(state);
+        
+        if(timelineState.moving !== curTimelineState.moving) {
+            dispatch(updateComponent('timeline', {moving: timelineState.moving}))
+        }
 
         if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
             dispatch(stopTimer());
@@ -91,7 +96,11 @@ class App extends React.PureComponent {
     onTimeClick (evt) {
         const {state, dispatch} = this.context;
         dispatch(stopTimer());
-        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, timelinePeriod);
+
+        dispatch(setPreventReloadLayers(true));
+        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, timelinePeriod, () => {
+            dispatch(setPreventReloadLayers(false));
+        });
     }
 
     onSetTime (time) {
@@ -155,10 +164,12 @@ class App extends React.PureComponent {
         let vertical = select.rootSelectors.getLandscape(state);
         const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
         const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
-
+        
         const timelineState = select.components.timeline.getSubstate(state);
         const timelineOverlays = select.components.timeline.getOverlays(state);
-
+        
+        // prevent reloading layers while moving timeline
+        const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
         return (
             <div className={'app'}>
                 <ReactResizeDetector
@@ -209,6 +220,7 @@ class App extends React.PureComponent {
                 <WorldWindMap 
                     layers = {select.rootSelectors.getActiveLayers(state)}
                     onLayerChanged={this.onLayerChanged}
+                    preventReload={preventReloadLayers}
                     />
             </div>
         );
