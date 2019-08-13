@@ -70,7 +70,10 @@ class NotificationBadge extends React.Component {
 NotificationBadge.propTypes = {
   containerStyle: PropTypes.object,
   count: PropTypes.number,
-  label: PropTypes.string,
+  label: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
+  ]),
   style: PropTypes.object,
   className: PropTypes.string,
   effect: PropTypes.array,
