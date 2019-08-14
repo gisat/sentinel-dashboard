@@ -41,8 +41,8 @@ const LayerOption = props => {
     return (
             <components.Option {...props} isFocused={false}>
                 <div style={dataInfoWrapperStyle}>
-                    {props.data.active && props.data.status === 'loading' ? Loader : null}
-                    {props.data.active && props.data.status !== 'loading' ? CountBadge : null}
+                    {!props.data.disabled && props.data.active && props.data.status === 'loading' ? Loader : null}
+                    {!props.data.disabled && props.data.active && props.data.status !== 'loading' ? CountBadge : null}
                 </div>
                 <span style={layerLabelStyle}>
                     {props.data.label}
@@ -57,7 +57,7 @@ const LayerOption = props => {
 
 const getLayerOption = (onClick) => {
     return (props) => {
-        return <LayerOption {...props} onClick={() => onClick(props.data)} />
+        return <LayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
     } 
 }
 export default LayerOption;

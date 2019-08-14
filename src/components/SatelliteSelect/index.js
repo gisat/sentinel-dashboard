@@ -53,6 +53,8 @@ class Select extends React.PureComponent {
         const color = 'rgb(189, 189, 189)';
         const activeColor = 'rgb(235, 235, 235)';
         const activeBackgroundColor = 'rgb(93, 93, 253)';
+        const disabledBackgroundColor = 'rgba(175, 175, 179, 0.4)';
+        const disabledActiveBackgroundColor = 'rgba(93, 93, 253, 0.4)';
         const hoverBackgroundColor = 'rgba(139, 139, 208, 0.6)';
         const menuBackgroundColor = 'rgba(42, 46, 52, 0.64)';
         // end style
@@ -90,7 +92,20 @@ class Select extends React.PureComponent {
                     stroke: activeColor,
                 }
 
+                const disabledStyle = {
+                    backgroundColor: disabledBackgroundColor,
+                    color: activeColor,
+                    fill: activeColor,
+                    stroke: activeColor,
+                    cursor: 'not-allowed',
+                }
+
+                const disabledActiveStyle = {
+                    backgroundColor: disabledActiveBackgroundColor,
+                }
+
                 const active = state.data.active;
+                const disabled = state.data.disabled;
                 const style = {
                     ...provided,
                     paddingTop: '0px',
@@ -106,6 +121,8 @@ class Select extends React.PureComponent {
                         backgroundColor: hoverBackgroundColor
                     },
                     ...(active && activeStyle),
+                    ...(disabled && disabledStyle),
+                    ...(disabled && active && disabledActiveStyle),
                   }
 
                   return style;

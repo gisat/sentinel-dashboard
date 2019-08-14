@@ -43,7 +43,9 @@ class Map extends Component {
 
         return layersChanged || preventMovingChanged;
     }
-    componentDidUpdate (prevProps, prevState) {
+    componentDidUpdate (prevProps) {
+        const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
+
         if(prevProps.layers !== this.props.layers) {
             const prevVisibleLayers = new Set(prevProps.layers.map((l) => getLayerKeyFromConfig(l)).sort())
             const visibleLayers = new Set(this.props.layers.map((l) => getLayerKeyFromConfig(l)).sort())
@@ -52,28 +54,53 @@ class Map extends Component {
             const prevLayers = new Set(prevProps.layers.map((l) => getLayerIdFromConfig(l)).sort())
             const Layers = new Set(this.props.layers.map((l) => getLayerIdFromConfig(l)).sort())
             
+            // layer ID is composed by layer, satellite, end date, start date
+            const disabledPrevLayers = new Set(prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l)).sort())
+            const disabledLayers = new Set(this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l)).sort())
+
             //check visibility change
             if(!isEqual(prevVisibleLayers, visibleLayers)) {
                 //visibility changed
-                const wwdLayers = getLayers(this.props.layers);
+                const wwdLayers = getLayers(enabledLayersKeys);
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
 
                 //TODO - reload only new layers
-                reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
-            } else if(!isEqual(prevLayers, Layers)) {
+                reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
+            }  else if(!isEqual(disabledPrevLayers, disabledLayers)) {
+                const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
+                const disabledPrevLayersKeys = prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
+                const enabledLayersKeys = this.props.layers.filter(l => !l.disabled).map((l) => getLayerKeyFromConfig(l));
+                const newlyEnabledLayersKeys = disabledPrevLayersKeys.filter(l => enabledLayersKeys.includes(l));
+                const wwdLayers = getLayers(this.props.layers);
+                // const newlyEnabled
+                wwdLayers.forEach(l => {
+                    if(newlyEnabledLayersKeys.includes(l.displayName)) {
+                        l.enabled = true;
+                    };
+
+                    if(disabledLayersKeys.includes(l.displayName)) {
+                        l.enabled = false;
+                    };
+
+                    //redraw
+                    this.wwd.redraw();
+                })
+            }
+            
+            if(!isEqual(prevLayers, Layers)) {
                 //layers date changed
                 //TODO reload only changed layers
                 //TODO if already loading, stop
-                const wwdLayers = getLayers(this.props.layers);
+                const wwdLayers = getLayers(enabledLayersKeys);
                 if(!this.props.preventReload) {
-                    reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
+                    reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
                 }
             }
         } else if(prevProps.preventReload !== this.props.preventReload && !this.props.preventReload) {
-            const wwdLayers = getLayers(this.props.layers);
-            reloadLayersRenderable(this.props.layers, wwdLayers, this.wwd, this.props.onLayerChanged);
+            const wwdLayers = getLayers(enabledLayersKeys);
+            reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
         }
 
 

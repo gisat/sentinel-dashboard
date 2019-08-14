@@ -136,7 +136,7 @@ export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) =
             }, {
                 status: 'loading'
             })
-
+        //FIXME disable layer, go to future, go to past, enable layer -> not loading
 
         setRenderables(layer, layerCfg, wwd.redraw.bind(wwd)).then((msg) => {
             wwd.redraw();
