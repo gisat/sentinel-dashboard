@@ -68,7 +68,8 @@ class Map extends Component {
                 //start loading layer
                 //reload only new layers
                 const newlyEnabledLayersKeys = [...visibleLayers].filter(l => !prevVisibleLayers.has(l));
-                reloadLayersRenderable(newlyEnabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
+                const newlyEnabledLayersCfg = this.props.layers.filter((cfg) => newlyEnabledLayersKeys.includes(getLayerKeyFromConfig(cfg)));
+                reloadLayersRenderable(newlyEnabledLayersCfg, wwdLayers, this.wwd, this.props.onLayerChanged);
             }  else if(!isEqual(disabledPrevLayers, disabledLayers)) {
                 //disabled changed
                 const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
