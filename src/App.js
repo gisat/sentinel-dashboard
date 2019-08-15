@@ -1,5 +1,8 @@
 import React, {useContext} from 'react';
 import ReactResizeDetector from 'react-resize-detector';
+import className from 'classnames';
+import moment from 'moment';
+
 import {Context} from './context/context';
 import {
     toggleLayer,
@@ -14,18 +17,18 @@ import {
     stopTimer,
     updateActiveLayer,
     toggleSatelliteFocus,
-    toggleInfoModal,
+    updateInfoModal,
+    setActiveInfoModal,
 } from './context/actions';
 import select from './context/selectors/';
+import Modal from './components/Modal/';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
-import className from 'classnames';
 
 import period from './utils/period'
 import {getNowUTC} from './utils/date'
-import moment from 'moment';
 import Select from './components/SatelliteSelect';
 
 //todo - to state
@@ -53,6 +56,7 @@ class App extends React.PureComponent {
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onInfoClick = this.onInfoClick.bind(this);
+        this.onInfoModalClose = this.onInfoModalClose.bind(this);
         this.onSatteliteClick = this.onSatteliteClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
         this.onLayerChanged = this.onLayerChanged.bind(this);
@@ -138,6 +142,11 @@ class App extends React.PureComponent {
         }
     }
 
+    onInfoModalClose(modalKey) {
+        const {state, dispatch} = this.context;
+        dispatch(updateInfoModal(modalKey, {open: false}));
+        dispatch(setActiveInfoModal(null));
+    }
     onInfoClick(evt) {
         const {state, dispatch} = this.context;
         const modalKey = `${evt.satKey}-${evt.id}`;
@@ -147,7 +156,8 @@ class App extends React.PureComponent {
             content: 'alksf adf adfs asdf',
             open,
         };
-        dispatch(toggleInfoModal(`${evt.satKey}-${evt.id}`, modalContent))
+        dispatch(updateInfoModal(modalKey, modalContent));
+        dispatch(setActiveInfoModal(modalKey));
     }
     
     onLayerClick(evt) {
@@ -185,12 +195,23 @@ class App extends React.PureComponent {
         
         // prevent reloading layers while moving timeline
         const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
+        
+        //info modal state
+        const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
+        const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
+
         return (
             <div className={'app'}>
                 <ReactResizeDetector
                     onResize = {this.onResize}
                     handleWidth
                     handleHeight />
+                    {activeInfoModalKey ? <Modal 
+                        modalKey = {activeInfoModalKey}
+                        isOpen = {activeInfoModal.open}
+                        content = {activeInfoModal.content}
+                        onClose = {this.onInfoModalClose}
+                        /> : null}
                 <SatelliteSelect 
                     options={sateliteOptions}
                     open={satelliteSelectState.open}

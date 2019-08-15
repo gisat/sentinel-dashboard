@@ -51,12 +51,25 @@ export const toggleLayer = (satelliteKey, layerKey) => {
  * @param {string} modalKey 
  * @param {string} content 
  */
-export const toggleInfoModal = (modalKey, modalState) => {
+export const updateInfoModal = (modalKey, modalState) => {
     return {
         type: types.UPDATE_INFO_MODAL,
         payload: {
             modalKey,
             modalState,
+        }
+    }
+};
+
+/**
+ * 
+ * @param {string} modalKey 
+ */
+export const setActiveInfoModal = (modalKey) => {
+    return {
+        type: types.SET_ACTIVE_INFO_MODAL,
+        payload: {
+            modalKey,
         }
     }
 };

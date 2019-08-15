@@ -9,6 +9,7 @@ export const getCurrentTime = createCachedSelector(
 )((state) => common.getByPath(state, ['currentTime']))
 
 export const getPreventReloadLayers = (state) => common.getByPath(state, ['preventReloadLayers']);
+export const getActiveInfoModalKey = (state) => common.getByPath(state, ['infoModal', 'active']);
 export const getInfoModal = (state, infoModalKey) => common.getByPath(state, ['infoModal', infoModalKey]);
 
 export const getSelectTime = createCachedSelector(

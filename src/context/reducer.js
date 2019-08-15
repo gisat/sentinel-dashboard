@@ -182,6 +182,11 @@ const updateInfoModal = (state, action) => {
     return updateModal(state, ['infoModal', modalKey], {...infoModalState, ...modalState, modalKey});
 }
 
+const setActiveInfoModal = (state, action) => {
+    const {modalKey} = action.payload
+    return {...state, infoModal: {...state.infoModal, active: modalKey}};
+}
+
 const updateActiveLayer = (state, action) => {
     //get layer by key
     const layerKey = action.payload.layerKey.layerKey;
@@ -242,6 +247,8 @@ export default (state, action) => {
             return updateActiveLayer(state, action);
         case types.UPDATE_INFO_MODAL:
             return updateInfoModal(state, action);
+        case types.SET_ACTIVE_INFO_MODAL:
+            return setActiveInfoModal(state, action);
         default:
             return state;
     }
