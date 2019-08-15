@@ -47,9 +47,9 @@ const LayerOption = (props) => {
                 <span style={layerLabelStyle}>
                     {props.data.label}
                 </span>
-                <span style={iconsWrapperStyle}>
+                <span style={iconsWrapperStyle}  onClick={(evt) => {evt.preventDefault();evt.stopPropagation();props.onInfoClick(props.data)}}>
                     <Icon icon='info' className='ptr-icon-warning' style={infoIconStyle}/>
-                    <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/>
+                    {/* <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/> */}
                 </span>
             </components.Option>
             <div style={{position:'relative', height: '2px'}}>
@@ -61,9 +61,9 @@ const LayerOption = (props) => {
 
 const CachedLayerOption = React.memo(LayerOption);
 
-const getLayerOption = (onClick) => {    
+const getLayerOption = (onClick, onInfoClick) => {    
     return (props) => {
-        return <CachedLayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
+        return <CachedLayerOption {...props} onInfoClick = {onInfoClick} onClick={() => !props.data.disabled && onClick(props.data)} />
     } 
 }
 

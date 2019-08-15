@@ -39,6 +39,7 @@ class Select extends React.PureComponent {
         open: PropTypes.bool,
         selectedLayers: PropTypes.array,
         onLayerClick: PropTypes.func,
+        onInfoClick: PropTypes.func,
         onCollapsClick: PropTypes.func,
         onSatteliteClick: PropTypes.func,
         onReleaseCamera: PropTypes.func,
@@ -47,11 +48,11 @@ class Select extends React.PureComponent {
 
     constructor(props) {
         super(props);
-        const {onLayerClick} = this.props;
+        const {onLayerClick, onInfoClick} = this.props;
 
         //Performance optimalisation.
         //React.memo dont rerender component so often
-        this.optionComponent = getLayerOption(onLayerClick);
+        this.optionComponent = getLayerOption(onLayerClick, onInfoClick);
     }
 
     render() {

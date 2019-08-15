@@ -171,6 +171,17 @@ const setComponent = (state, action) => {
 	return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
 }
 
+const updateModal = (state, modalPath, modal) => {
+    // return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
+    return {...setHelper(state, modalPath, modal)};
+}
+
+const updateInfoModal = (state, action) => {
+    const {modalKey, modalState} = action.payload
+    const infoModalState = select.rootSelectors.getInfoModal(state, modalKey);
+    return updateModal(state, ['infoModal', modalKey], {...infoModalState, ...modalState, modalKey});
+}
+
 const updateActiveLayer = (state, action) => {
     //get layer by key
     const layerKey = action.payload.layerKey.layerKey;
@@ -229,6 +240,8 @@ export default (state, action) => {
             return setComponent(state, action);
         case types.UPDATE_ACTIVE_LAYER:
             return updateActiveLayer(state, action);
+        case types.UPDATE_INFO_MODAL:
+            return updateInfoModal(state, action);
         default:
             return state;
     }

@@ -14,7 +14,8 @@ export const Context = createContext({
     followNow: null,
     preventReloadLayers: null,
     selectTimePastCurrent: null,
-    components:{}
+    components:{},
+    infoModal: {},
 });
 
 const initialState = {
@@ -48,6 +49,7 @@ const initialState = {
     selectTime: null,
     currentTime: getNowUTC(),
     landscape: true,
+    infoModal: {},
     followNow: true,
     preventReloadLayers: false,
     selectTimePastCurrent: false,

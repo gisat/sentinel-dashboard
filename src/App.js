@@ -14,6 +14,7 @@ import {
     stopTimer,
     updateActiveLayer,
     toggleSatelliteFocus,
+    toggleInfoModal,
 } from './context/actions';
 import select from './context/selectors/';
 import WorldWindMap from './components/WorldWindMap/index';
@@ -25,6 +26,7 @@ import className from 'classnames';
 import period from './utils/period'
 import {getNowUTC} from './utils/date'
 import moment from 'moment';
+import Select from './components/SatelliteSelect';
 
 //todo - to state
 const timelinePeriod = period('2010/2025');
@@ -50,6 +52,7 @@ class App extends React.PureComponent {
         this.onStopTimer = this.onStopTimer.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
+        this.onInfoClick = this.onInfoClick.bind(this);
         this.onSatteliteClick = this.onSatteliteClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
         this.onLayerChanged = this.onLayerChanged.bind(this);
@@ -135,6 +138,18 @@ class App extends React.PureComponent {
         }
     }
 
+    onInfoClick(evt) {
+        const {state, dispatch} = this.context;
+        const modalKey = `${evt.satKey}-${evt.id}`;
+        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
+        const open = modalState && modalState.open ? false : true;
+        const modalContent = {
+            content: 'alksf adf adfs asdf',
+            open,
+        };
+        dispatch(toggleInfoModal(`${evt.satKey}-${evt.id}`, modalContent))
+    }
+    
     onLayerClick(evt) {
         const {state, dispatch} = this.context;
         dispatch(toggleLayer(evt.satKey, evt.id))
@@ -180,6 +195,7 @@ class App extends React.PureComponent {
                     options={sateliteOptions}
                     open={satelliteSelectState.open}
                     onLayerClick={this.onLayerClick}
+                    onInfoClick={this.onInfoClick}
                     onSatteliteClick={this.onSatteliteClick}
                     onCollapsClick={this.onSatelliteCollapsClick}
                     />
