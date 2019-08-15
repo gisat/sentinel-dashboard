@@ -18,7 +18,7 @@ const layersCache = new window.Map();
 const productsScihub = new SciHubProducts(csiRenderablesCache, fetchWithCredentials);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 
-const productsRequests = [];
+const productsRequests = new window.Map();
 export function getLayerKeyFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
 }
@@ -37,21 +37,7 @@ function fetchWithCredentials (url, options = {}) {
     }
     options.headers.Authorization = `Basic ${window.btoa(`${username}:${password}`)}`;
 
-    const controller = new AbortController();
-    const signal = controller.signal;
-
-    options['signal'] = signal;
-
     const fetch = window.fetch(url, options);
-    productsRequests.push(controller);
-
-    fetch.then(() => {
-        //remove self from productsRequests
-        const fetchIndex = productsRequests.findIndex(r => r === controller);
-        removeItemByIndex(productsRequests, fetchIndex);
-        
-    })
-
     return fetch;
 };
 
@@ -91,7 +77,12 @@ const getSciProducts = async (layerConfig) => {
     }
 }
 
-export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged) => {
+export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
+    let rejected = false;
+    cancelled.catch(() => {
+        rejected = true;
+    })
+    //return promise
     const msg = {
         status: 'ok',
         loadedCount: null,
@@ -108,10 +99,19 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
         layerKey: layerConfig.layerKey
     }
     onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+
     const products = await getSciProducts(layerConfig);
     totalCount = products.length;
+    if(rejected) {
+        return
+    }
+
     for(let productIndex = 0; productIndex < products.length; productIndex++) {
         const request = products[productIndex].renderable().then((result) => {
+            if(rejected) {
+                return
+            }
+
             const error = result instanceof Error;
             if(!error) {
                 loadedCount++;
@@ -131,14 +131,46 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
     return msg;
 }
 
-export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
+export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
 
+    const layerKey = getLayerKeyFromConfig(layerCfg);
+    let rejected = false;
+    const activeRequestReject = productsRequests.get(layerKey);
+    if(activeRequestReject) {
+        //reject pending request
+        activeRequestReject();
+        rejected = true;
+        productsRequests.delete(layerKey);
+    }
+
+    wwdLayer.removeAllRenderables();
+    const cancelled = new Promise((resolve, reject) => {
+        productsRequests.set(layerKey, reject);
+    });
+
+    const dispatchChange = (layerKey, change) => {
+        if(!rejected) {
+            onLayerChanged(layerKey, change);
+        }
+    }
+
+    try {
+        await setRenderables(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled);
+        productsRequests.delete(layerKey);
+    } catch (err) {
+        if (err.message === "Cancelled") {
+            console.log("Connection was closed");
+        } else {
+            console.log("Unexpected error:", err.stack);
+        }
+    }
+}
+
+export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
     layers.forEach((layerCfg) => {
         const layerKey = getLayerKeyFromConfig(layerCfg);
-        const layer = getLayerByName(layerKey, wwdLayers);   
-        //FIXME disable layer, go to future, go to past, enable layer -> not loading
-        layer.removeAllRenderables();
-        setRenderables(layer, layerCfg, wwd.redraw.bind(wwd), onLayerChanged)
+        const wwdLayer = getLayerByName(layerKey, wwdLayers);   
+        reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
     });
 }
 
