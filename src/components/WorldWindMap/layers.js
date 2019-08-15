@@ -31,13 +31,6 @@ export function getLayerByName (name, layers) {
     return layers.find(l => l.displayName === name);
 }
 
-const stopRequests = () => {
-    productsRequests.forEach((r) => {
-        r.abort();
-
-    })
-}
-
 function fetchWithCredentials (url, options = {}) {
     if (!options.headers) {
         options.headers = {};
@@ -84,42 +77,57 @@ export const getLayers = createCachedSelector([
     return layersConfig.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
 });
 
-const getSciRenderables = async (layerConfig) => {
-
-    try{
-        const productsLocal = await productsScihub.renderables({
+const getSciProducts = async (layerConfig) => {
+    try {
+        const productsLocal = productsScihub.products({
             shortName: layerConfig.satKey,
             products: [layerConfig.layerKey],
             beginTime: layerConfig.beginTime,
             endTime: layerConfig.endTime
-        });
-        return productsLocal;
-    } catch(e) {
-        console.error('Can not get renderables.')
-        return {total:0}
+        })
+        return await productsLocal;
+    } catch {
+        console.error('Can not get products.')
     }
 }
-export const setRenderables = async (layer, layerConfig, redrawCallback) => {
+
+export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged) => {
     const msg = {
         status: 'ok',
         loadedCount: null,
         totalCount: null,
     }
-    layer.removeAllRenderables();
+    const requests = [];
+    const status = 'loading';
+    let loadedCount = 0;
+    let errors = [];
+    let totalCount = 0;
     redrawCallback();
-    stopRequests();
-    const productsLocal = await getSciRenderables(layerConfig);
-    layer.removeAllRenderables();
-    if(productsLocal.total === 0) {
-        msg.status = 'error'
-        msg.message = 'No data found'
-    }else {
-        layer.addRenderables(productsLocal.renderables);
-        msg.loadedCount = productsLocal.renderables.length;
-        msg.totalCount = productsLocal.total;
+    const changedLayer = {
+        satKey: layerConfig.satKey,
+        layerKey: layerConfig.layerKey
+    }
+    onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+    const products = await getSciProducts(layerConfig);
+    totalCount = products.length;
+    for(let productIndex = 0; productIndex < products.length; productIndex++) {
+        const request = products[productIndex].renderable().then((result) => {
+            const error = result instanceof Error;
+            if(!error) {
+                loadedCount++;
+                layer.addRenderable(result);
+                redrawCallback();
+                onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+            } else {
+                errors.push(error);
+            }
+        });
+        requests.push(request);
     }
 
-    redrawCallback();
+    await Promise.all(requests.map(p => p.catch(e => e)));
+    onLayerChanged(changedLayer, {status: 'ok', loadedCount, totalCount});
+
     return msg;
 }
 
@@ -128,41 +136,9 @@ export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) =
     layers.forEach((layerCfg) => {
         const layerKey = getLayerKeyFromConfig(layerCfg);
         const layer = getLayerByName(layerKey, wwdLayers);   
-
-        onLayerChanged(
-            {
-                satKey: layerCfg.satKey,
-                layerKey: layerCfg.layerKey
-            }, {
-                status: 'loading'
-            })
         //FIXME disable layer, go to future, go to past, enable layer -> not loading
-
-        setRenderables(layer, layerCfg, wwd.redraw.bind(wwd)).then((msg) => {
-            wwd.redraw();
-            if(msg.status === 'error') {
-                onLayerChanged(
-                    {
-                        satKey: layerCfg.satKey,
-                        layerKey: layerCfg.layerKey
-                    }, {
-                        status: 'error',
-                        message: msg.message,
-                    })
-            } else {
-                onLayerChanged(
-                    {
-                        satKey: layerCfg.satKey,
-                        layerKey: layerCfg.layerKey
-                    }, 
-                    {
-                        status: 'ok',
-                        loadedCount: msg.loadedCount,
-                        totalCount: msg.totalCount,
-                    }
-                )
-            }
-        });
+        layer.removeAllRenderables();
+        setRenderables(layer, layerCfg, wwd.redraw.bind(wwd), onLayerChanged)
     });
 }
 

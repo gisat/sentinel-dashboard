@@ -58,8 +58,9 @@ class Map extends Component {
             const disabledPrevLayers = new Set(prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l)).sort())
             const disabledLayers = new Set(this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l)).sort())
 
+            const visibilityChanged = !isEqual(prevVisibleLayers, visibleLayers);
             //check visibility change
-            if(!isEqual(prevVisibleLayers, visibleLayers)) {
+            if(visibilityChanged) {
                 //visibility changed
                 const wwdLayers = getLayers(enabledLayersKeys);
                 this.handleLayers(wwdLayers);
@@ -89,7 +90,7 @@ class Map extends Component {
                 })
             }
             
-            if(!isEqual(prevLayers, Layers)) {
+            if(!visibilityChanged && !isEqual(prevLayers, Layers)) {
                 //layers date changed
                 //TODO reload only changed layers
                 //TODO if already loading, stop

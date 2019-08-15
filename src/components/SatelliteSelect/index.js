@@ -45,8 +45,17 @@ class Select extends React.PureComponent {
         onFixCamera: PropTypes.func,
     }
 
+    constructor(props) {
+        super(props);
+        const {onLayerClick} = this.props;
+
+        //Performance optimalisation.
+        //React.memo dont rerender component so often
+        this.optionComponent = getLayerOption(onLayerClick);
+    }
+
     render() {
-        const {open, options, onLayerClick, onCollapsClick, onSatteliteClick} = this.props;
+        const {open, options, onCollapsClick, onSatteliteClick} = this.props;
 
         // style
         //TODO -> extract style to file
@@ -131,7 +140,7 @@ class Select extends React.PureComponent {
 
         const components = {
             ValueContainer: ValueContainer,
-            Option: getLayerOption(onLayerClick),
+            Option: this.optionComponent,
             GroupHeading: getSatelliteGroupHeading(onSatteliteClick),
             Group: SatelliteGroupOption,
             SelectContainer,

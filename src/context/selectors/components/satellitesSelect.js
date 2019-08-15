@@ -12,7 +12,6 @@ const getSatelitesSelectOptions = createSelector(
     getActiveLayers,
     getFocusedSattelite,
     getSelectTimePastCurrent,
-    getSelectTimePastCurrent,
     (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastCurrent) => {
         
         const getLayerOption = (layerKey, satKey) => {

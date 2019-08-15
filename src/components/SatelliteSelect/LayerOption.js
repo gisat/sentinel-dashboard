@@ -2,9 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
 import Icon from '../Icon';
+import Loader from './Loader';
 import NotificationBadge from '../NotificationBadge';
 
-const LayerOption = props => {
+const LayerOption = (props) => {
     props.innerProps.onClick = props.onClick;
 
     //TODO extract into file
@@ -35,14 +36,13 @@ const LayerOption = props => {
         flex: '1 1 auto',
     }
 
-    const Loader = <Icon icon='loader-oval' className='ptr-icon-warning' style={infoIconStyle}/>;
     const badgeLabel = props.data.totalCount === props.data.loadedCount ? props.data.totalCount : `${props.data.loadedCount}/${props.data.totalCount}`
     const CountBadge = <NotificationBadge label={badgeLabel} style={{position: 'relative'}} containerStyle={{position: 'relative'}}/>;
     return (
+        <>
             <components.Option {...props} isFocused={false}>
                 <div style={dataInfoWrapperStyle}>
-                    {!props.data.disabled && props.data.active && props.data.status === 'loading' ? Loader : null}
-                    {!props.data.disabled && props.data.active && props.data.status !== 'loading' ? CountBadge : null}
+                    {!props.data.disabled && props.data.active ? CountBadge : null}
                 </div>
                 <span style={layerLabelStyle}>
                     {props.data.label}
@@ -52,15 +52,21 @@ const LayerOption = props => {
                     <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/>
                 </span>
             </components.Option>
+            <div style={{position:'relative', height: '2px'}}>
+                {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
+            </div>
+        </>
     );
 };
 
-const getLayerOption = (onClick) => {
+const CachedLayerOption = React.memo(LayerOption);
+
+const getLayerOption = (onClick) => {    
     return (props) => {
-        return <LayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
+        return <CachedLayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
     } 
 }
-export default LayerOption;
+
 export {
     getLayerOption,
 }
