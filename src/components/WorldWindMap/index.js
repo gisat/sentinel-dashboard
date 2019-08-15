@@ -66,16 +66,17 @@ class Map extends Component {
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
-
-                //TODO - reload only new layers
-                reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
+                //reload only new layers
+                const newlyEnabledLayersKeys = [...visibleLayers].filter(l => !prevVisibleLayers.has(l));
+                reloadLayersRenderable(newlyEnabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
             }  else if(!isEqual(disabledPrevLayers, disabledLayers)) {
+                //disabled changed
                 const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const disabledPrevLayersKeys = prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const enabledLayersKeys = this.props.layers.filter(l => !l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const newlyEnabledLayersKeys = disabledPrevLayersKeys.filter(l => enabledLayersKeys.includes(l));
                 const wwdLayers = getLayers(this.props.layers);
-                // const newlyEnabled
+
                 wwdLayers.forEach(l => {
                     if(newlyEnabledLayersKeys.includes(l.displayName)) {
                         l.enabled = true;
@@ -84,7 +85,6 @@ class Map extends Component {
                     if(disabledLayersKeys.includes(l.displayName)) {
                         l.enabled = false;
                     };
-
                     //redraw
                     this.wwd.redraw();
                 })
@@ -93,7 +93,6 @@ class Map extends Component {
             if(!visibilityChanged && !isEqual(prevLayers, Layers)) {
                 //layers date changed
                 //TODO reload only changed layers
-                //TODO if already loading, stop
                 const wwdLayers = getLayers(enabledLayersKeys);
                 if(!this.props.preventReload) {
                     reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
@@ -103,8 +102,6 @@ class Map extends Component {
             const wwdLayers = getLayers(enabledLayersKeys);
             reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
         }
-
-
     }
 
     handleLayers(nextLayersData = []) {
