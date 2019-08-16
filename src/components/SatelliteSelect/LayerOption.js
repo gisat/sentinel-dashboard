@@ -1,3 +1,5 @@
+/** @jsx jsx */
+import { jsx, css } from '@emotion/core'
 import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
@@ -28,9 +30,13 @@ const LayerOption = (props) => {
         alignItems: 'center',
     }
 
-    const infoIconStyle = {
-        maxWidth: '1.25rem'
-    }
+    const infoIconStyle = css({
+        maxWidth: '1.25rem',
+        ':hover,:focus': {
+            fill: 'rgb(255, 255, 255)',
+            stroke: 'rgb(255, 255, 255)',
+        }
+      })
 
     const layerLabelStyle = {
         flex: '1 1 auto',
@@ -48,7 +54,7 @@ const LayerOption = (props) => {
                     {props.data.label}
                 </span>
                 <span style={iconsWrapperStyle}  onClick={(evt) => {evt.preventDefault();evt.stopPropagation();props.onInfoClick(props.data)}}>
-                    <Icon icon='info' className='ptr-icon-warning' style={infoIconStyle}/>
+                    <Icon icon='info' className='ptr-icon-warning' css={infoIconStyle}/>
                     {/* <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/> */}
                 </span>
             </components.Option>
