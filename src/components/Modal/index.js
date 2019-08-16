@@ -30,6 +30,7 @@ export default (props) => {
         borderBottom: '1px solid rgb(233, 233, 233)',
         minHeight: '1.9rem',
         backgroundColor: 'rgba(8, 11, 18, 0.9)',
+        fontSize: '2rem',
     })
 
     return (

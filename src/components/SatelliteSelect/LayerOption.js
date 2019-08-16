@@ -31,6 +31,7 @@ const LayerOption = (props) => {
     }
 
     const infoIconStyle = css({
+        cursor: 'pointer',
         maxWidth: '1.25rem',
         ':hover,:focus': {
             fill: 'rgb(255, 255, 255)',

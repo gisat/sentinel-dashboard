@@ -29,7 +29,6 @@ import TimeWidget from './components/TimeWidget/';
 
 import period from './utils/period'
 import {getNowUTC} from './utils/date'
-import Select from './components/SatelliteSelect';
 
 //todo - to state
 const timelinePeriod = period('2010/2025');
@@ -152,8 +151,11 @@ class App extends React.PureComponent {
         const modalKey = `${evt.satKey}-${evt.id}`;
         const modalState = select.rootSelectors.getInfoModal(state, modalKey)
         const open = modalState && modalState.open ? false : true;
+        const layersSubstate = select.data.layers.getSubstate(state);
+        const layer = select.data.layers.getByKey(layersSubstate, evt.id);
         const modalContent = {
-            content: 'alksf adf adfs asdf',
+            content: layer.description || 'no data',
+            header: `${evt.satKey} - ${evt.id}`,
             open,
         };
         dispatch(updateInfoModal(modalKey, modalContent));
@@ -210,6 +212,7 @@ class App extends React.PureComponent {
                         modalKey = {activeInfoModalKey}
                         isOpen = {activeInfoModal.open}
                         content = {activeInfoModal.content}
+                        header = {activeInfoModal.header}
                         onClose = {this.onInfoModalClose}
                         /> : null}
                 <SatelliteSelect 
