@@ -76,37 +76,44 @@ const focusSatelite = (state, action) => {
 }
 
 const setSelectTime = (state, action) => {
-    //FIXME - should be dispatched separated to set selectTimePastCurrent
+    //FIXME - should be dispatched separated to set selectTimePastOrCurrent
     const currentTime = select.rootSelectors.getCurrentTime(state);
     const selectTime = action.payload;
-    
+    let followNow = false;
+    if(select.rootSelectors.getFollowNow(state)) {
+        followNow = true;
+    }
+    const selectTimeMoment = moment(selectTime);
     return {
         ...state,
         selectTime: action.payload,
-        selectTimePastCurrent: moment(selectTime).isAfter(currentTime),
+        selectTimePastOrCurrent: selectTimeMoment.isAfter(currentTime) || followNow,
     };
 }
 
 const setCurrentTime = (state, action) => {
-    //FIXME - should be dispatched separated to set selectTimePastCurrent and setSelectTime
+    //FIXME - should be dispatched separated to set selectTimePastOrCurrent and setSelectTime
     const currentTime = action.payload;
-    const selectTime = select.rootSelectors.getSelectTime(state);
+    let selectTime = select.rootSelectors.getSelectTime(state);
     //if follow now
     let selectTimeState = {};
 
     //not clear solution, because I don't know, how to acces to current state in timer in action
+    let followNow = false;
     if(select.rootSelectors.getFollowNow(state)) {
+        followNow = true;
         selectTimeState = setSelectTime(state, {
             payload: currentTime
         })
     }
     
+    const selectTimeMoment = moment(selectTime);
 
     return {
         ...state,
         ...selectTimeState,
         currentTime: currentTime,
-        selectTimePastCurrent: moment(selectTime).isAfter(currentTime),
+        selectTimePastOrCurrent: selectTimeMoment.isAfter(currentTime) || followNow,
     };
 }
 

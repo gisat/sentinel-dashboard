@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
-import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastCurrent} from '../rootSelectors';
+import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent} from '../rootSelectors';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
@@ -11,8 +11,8 @@ const getSatelitesSelectOptions = createSelector(
     getLayersSubstate,
     getActiveLayers,
     getFocusedSattelite,
-    getSelectTimePastCurrent,
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastCurrent) => {
+    getSelectTimePastOrCurrent,
+    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent) => {
         
         const getLayerOption = (layerKey, satKey) => {
             const layer = getLayerByKey(layersSubState, layerKey);
@@ -21,7 +21,7 @@ const getSatelitesSelectOptions = createSelector(
             return {
                 id: layerKey,
                 label: layer.name,
-                disabled: selectTimePastCurrent,
+                disabled: selectTimePastOrCurrent,
                 satKey: satKey,
                 active: activeLayerCfg ? true : false,
                 status: activeLayerCfg && activeLayerCfg.status,

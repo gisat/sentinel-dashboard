@@ -1,7 +1,7 @@
 import createCachedSelector from 're-reselect';
 import momentjs from 'moment';
 import common from './_common';
-export const getSelectTimePastCurrent = (state) => common.getByPath(state, ['selectTimePastCurrent']);
+export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
     (state) => common.getByPath(state, ['currentTime']),
@@ -59,8 +59,8 @@ export const getActiveLayers = createCachedSelector(
     getPureActiveLayers,
     getBeginDataTime,
     getEndDataTime,
-    getSelectTimePastCurrent,
-    (activeLayers, beginTime, endTime, selectTimePastCurrent) => {
+    getSelectTimePastOrCurrent,
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent) => {
 
     const activeLayersWithDates = []
 
@@ -68,7 +68,7 @@ export const getActiveLayers = createCachedSelector(
         const layer = {...l,
             beginTime: new Date(beginTime),
             endTime: new Date(endTime),
-            disabled: selectTimePastCurrent
+            disabled: selectTimePastOrCurrent
         }
         activeLayersWithDates.push(layer);
     });
