@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import SelectBase, { components } from 'react-select';
 import SatelliteGroupOption from './SatelliteGroupOption';
 import {getLayerOption} from './LayerOption';
-import {getDropdownIndicator} from './DropdownIndicator';
 import {getSatelliteGroupHeading} from './SatelliteGroupHeading';
 
 const ValueContainer = ({ children, ...props }) => (
@@ -157,7 +156,6 @@ class Select extends React.PureComponent {
             GroupHeading: getSatelliteGroupHeading(onSatteliteClick),
             Group: SatelliteGroupOption,
             SelectContainer,
-            DropdownIndicator: getDropdownIndicator(onCollapsClick),
         }
 
         return (
@@ -172,6 +170,8 @@ class Select extends React.PureComponent {
                 menuIsOpen={open}
                 closeMenuOnSelect={false}
                 blurInputOnSelect={false}
+                onMenuClose={onCollapsClick}
+                onMenuOpen={onCollapsClick}
             />
         );
     }
