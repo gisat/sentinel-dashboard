@@ -18,14 +18,6 @@ const SelectContainer = ({ children, ...props }) => (
         </components.SelectContainer>
     </div>
 );
-
-const DropdownIndicator = ({ children, ...props }) => (
-    <div onClick={() => {console.log("dropdown")}}>
-        <components.DropdownIndicator {...props}>
-            {children}
-        </components.DropdownIndicator>
-    </div>
-);
   
 class Select extends React.PureComponent {
     static defaultProps = {
@@ -66,7 +58,9 @@ class Select extends React.PureComponent {
         const disabledBackgroundColor = 'rgba(175, 175, 179, 0.4)';
         const disabledActiveBackgroundColor = 'rgba(93, 93, 253, 0.4)';
         const hoverBackgroundColor = 'rgba(139, 139, 208, 0.6)';
-        const menuBackgroundColor = 'rgba(42, 46, 52, 0.64)';
+        // const menuBackgroundColor = 'rgba(42, 46, 52, 0.64)';
+        const menuContainerBackgroundColor = 'rgba(0, 0, 0, 0.7)';
+        const menuBackgroundColor = 'rgba(0, 0, 0, 0.6)';
         // end style
 
         const customStyles = {
@@ -77,7 +71,18 @@ class Select extends React.PureComponent {
             container: (provided, state) => ({
               ...provided,
               position: 'absolute',
-              width: '200px'
+              top: '0.5rem',
+              left: '0.5rem',
+              width: '200px',
+            }),
+            valueContainer: (provided, state) => ({
+                ...provided,
+                color: 'rgb(237, 237, 237)',
+            }),
+            control: (provided, state) => ({
+                ...provided,
+                backgroundColor: menuContainerBackgroundColor,
+                borderColor: 'rgba(236, 235, 255, 0.66)',
             }),
             groupHeading:(provided, state) => {
                 const style = {
@@ -92,6 +97,13 @@ class Select extends React.PureComponent {
                   }
 
                   return style;
+            },
+            dropdownIndicator: (provided, state) => {
+                const style = {
+                    ...provided,
+                    cursor: 'pointer',
+                }
+                return style;
             },
             option: (provided, state) => {
 
