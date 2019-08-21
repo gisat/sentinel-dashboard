@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import WorldWind from 'webworldwind-esa';
 import WorldWindX from 'webworldwind-x';
+import ClickPickController from './utils/ClickPickController';
 import {isEqual} from 'lodash';
 import {
     getLayers,
@@ -24,12 +25,14 @@ const {
 class Map extends Component {
     static propsTypes = {
         onLayerChanged: PropTypes.func,
+        onProductsClick: PropTypes.func,
         layers: PropTypes.array,
         preventReload: PropTypes.bool,
     }
 
     static defaultProps = {    
         onLayerChanged: () => {},
+        onProductsClick: () => {},
         layers: [],
     }
     constructor(props){
@@ -112,6 +115,21 @@ class Map extends Component {
         }
 	}
 
+    clickHandler(clickedRenderables = [], evt) {
+        const renderables = clickedRenderables.objects.filter(r => {
+			return !r.isTerrain;
+        }).reverse();
+        const products = new Set();
+
+        renderables.forEach(r => {
+            // products.add(r.parentLayer.displayName);
+            products.add(r.userObject.userProperties.key);
+        })
+
+        if(products.size > 0) {
+            this.props.onProductsClick([...products]);
+        }
+    }
 
     /**
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
@@ -119,6 +137,7 @@ class Map extends Component {
     componentDidMount(){
         if(!this.wwdCreated) {
             this.wwd = new WorldWind.WorldWindow("wwd-results");
+            this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
 
             this.wwd.addLayer(new SentinelCloudlessLayer());

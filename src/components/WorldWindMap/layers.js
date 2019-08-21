@@ -27,6 +27,10 @@ export function getLayerIdFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
 }
 
+export function getProductByKey (productKey) {
+    return csiRenderablesCache.get(productKey);
+}
+
 export function getLayerByName (name, layers) {
     return layers.find(l => l.displayName === name);
 }
@@ -107,6 +111,7 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
     }
 
     for(let productIndex = 0; productIndex < products.length; productIndex++) {
+        const key = products[productIndex].id();
         const request = products[productIndex].renderable().then((result) => {
             if(rejected) {
                 return
@@ -115,6 +120,9 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
             const error = result instanceof Error;
             if(!error) {
                 loadedCount++;
+                result['userProperties'] = {
+                    key
+                }
                 layer.addRenderable(result);
                 redrawCallback();
                 onLayerChanged(changedLayer, {status, loadedCount, totalCount});
