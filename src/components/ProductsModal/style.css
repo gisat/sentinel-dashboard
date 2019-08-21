@@ -1,0 +1,33 @@
+.ReactModal__Content h1.modal-header{
+    margin-top: 1rem;
+}
+
+.product-info {
+    margin: 2rem;
+    overflow-x: auto;
+}
+
+.product-info h1 {
+    font-size: 1.25rem;
+    margin-left: 2rem;
+    margin-bottom: 1rem;
+}
+
+.product-info .item {
+    display: flex;
+}
+
+@media screen and (max-width: 600px) {
+    .product-info {
+        margin: 0.2rem;
+    }
+
+
+    .product-info .item {
+        display: block;
+    }
+
+    .ReactModal__Content{
+        padding: 0.5rem;
+    }    
+} 

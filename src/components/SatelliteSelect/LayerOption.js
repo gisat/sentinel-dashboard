@@ -11,14 +11,14 @@ const LayerOption = (props) => {
     props.innerProps.onClick = props.onClick;
 
     //TODO extract into file
-    const maxHeight = '32px'
+    // const maxHeight = '32px'
 
-    const iconsWrapperStyle = {
-        flex: '0 1 auto',
-        maxHeight: maxHeight,
-        display: 'flex',
-        alignItems: 'center',
-    }
+    // const iconsWrapperStyle = {
+    //     flex: '0 1 auto',
+    //     maxHeight: maxHeight,
+    //     display: 'flex',
+    //     alignItems: 'center',
+    // }
 
     const dataInfoWrapperStyle = {
         display: 'flex',
@@ -30,14 +30,14 @@ const LayerOption = (props) => {
         alignItems: 'center',
     }
 
-    const infoIconStyle = css({
-        cursor: 'pointer',
-        maxWidth: '1.25rem',
-        ':hover,:focus': {
-            fill: 'rgb(255, 255, 255)',
-            stroke: 'rgb(255, 255, 255)',
-        }
-      })
+    // const infoIconStyle = css({
+    //     cursor: 'pointer',
+    //     maxWidth: '1.25rem',
+    //     ':hover,:focus': {
+    //         fill: 'rgb(255, 255, 255)',
+    //         stroke: 'rgb(255, 255, 255)',
+    //     }
+    //   })
 
     const layerLabelStyle = {
         flex: '1 1 auto',
@@ -54,10 +54,10 @@ const LayerOption = (props) => {
                 <span style={layerLabelStyle}>
                     {props.data.label}
                 </span>
-                <span style={iconsWrapperStyle}  onClick={(evt) => {evt.preventDefault();evt.stopPropagation();props.onInfoClick(props.data)}}>
-                    <Icon icon='info' className='ptr-icon-warning' css={infoIconStyle}/>
+                {/* <span style={iconsWrapperStyle}  onClick={(evt) => {evt.preventDefault();evt.stopPropagation();props.onInfoClick(props.data)}}> */}
+                    {/* <Icon icon='info' className='ptr-icon-warning' css={infoIconStyle}/> */}
                     {/* <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/> */}
-                </span>
+                {/* </span> */}
             </components.Option>
             <div style={{position:'relative', height: '2px'}}>
                 {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
@@ -68,9 +68,9 @@ const LayerOption = (props) => {
 
 const CachedLayerOption = React.memo(LayerOption);
 
-const getLayerOption = (onClick, onInfoClick) => {    
+const getLayerOption = (onClick) => {    
     return (props) => {
-        return <CachedLayerOption {...props} onInfoClick = {onInfoClick} onClick={() => !props.data.disabled && onClick(props.data)} />
+        return <CachedLayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
     } 
 }
 

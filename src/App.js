@@ -1,4 +1,4 @@
-import React, {useContext} from 'react';
+import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import className from 'classnames';
 import moment from 'moment';
@@ -21,7 +21,7 @@ import {
     setActiveInfoModal,
 } from './context/actions';
 import select from './context/selectors/';
-import Modal from './components/Modal/';
+import ProductsModal from './components/ProductsModal/';
 import WorldWindMap from './components/WorldWindMap/index';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
@@ -54,11 +54,10 @@ class App extends React.PureComponent {
         this.onStopTimer = this.onStopTimer.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
-        this.onInfoClick = this.onInfoClick.bind(this);
-        this.onInfoModalClose = this.onInfoModalClose.bind(this);
         this.onSatteliteClick = this.onSatteliteClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
         this.onLayerChanged = this.onLayerChanged.bind(this);
+        this.onProductsClick = this.onProductsClick.bind(this);
     }
 
     componentDidMount() {
@@ -140,27 +139,6 @@ class App extends React.PureComponent {
             dispatch(setOrientation(landscape));
         }
     }
-
-    onInfoModalClose(modalKey) {
-        const {state, dispatch} = this.context;
-        dispatch(updateInfoModal(modalKey, {open: false}));
-        dispatch(setActiveInfoModal(null));
-    }
-    onInfoClick(evt) {
-        const {state, dispatch} = this.context;
-        const modalKey = `${evt.satKey}-${evt.id}`;
-        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
-        const open = modalState && modalState.open ? false : true;
-        const layersSubstate = select.data.layers.getSubstate(state);
-        const layer = select.data.layers.getByKey(layersSubstate, evt.id);
-        const modalContent = {
-            content: layer.description || 'no data',
-            header: `${evt.satKey} - ${evt.id}`,
-            open,
-        };
-        dispatch(updateInfoModal(modalKey, modalContent));
-        dispatch(setActiveInfoModal(modalKey));
-    }
     
     onLayerClick(evt) {
         const {state, dispatch} = this.context;
@@ -186,6 +164,19 @@ class App extends React.PureComponent {
         dispatch(updateActiveLayer(layerKey, change))
     }
 
+    onProductsClick(products) {
+        const {state, dispatch} = this.context;
+        const modalKey = products.join(',');
+        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
+        const open = modalState && modalState.open ? false : true;
+        const modalContent = {
+            products,
+            open,
+        };
+        dispatch(updateInfoModal(modalKey, modalContent));
+        dispatch(setActiveInfoModal(modalKey));
+    }
+
     render() {
         const {state} = this.context;
         let vertical = select.rootSelectors.getLandscape(state);
@@ -207,19 +198,12 @@ class App extends React.PureComponent {
                 <ReactResizeDetector
                     onResize = {this.onResize}
                     handleWidth
-                    handleHeight />
-                    {activeInfoModalKey ? <Modal 
-                        modalKey = {activeInfoModalKey}
-                        isOpen = {activeInfoModal.open}
-                        content = {activeInfoModal.content}
-                        header = {activeInfoModal.header}
-                        onClose = {this.onInfoModalClose}
-                        /> : null}
+                    handleHeight />                
+                <ProductsModal />
                 <SatelliteSelect 
                     options={sateliteOptions}
                     open={satelliteSelectState.open}
                     onLayerClick={this.onLayerClick}
-                    onInfoClick={this.onInfoClick}
                     onSatteliteClick={this.onSatteliteClick}
                     onCollapsClick={this.onSatelliteCollapsClick}
                     />
@@ -260,6 +244,7 @@ class App extends React.PureComponent {
                 <WorldWindMap 
                     layers = {select.rootSelectors.getActiveLayers(state)}
                     onLayerChanged={this.onLayerChanged}
+                    onProductsClick={this.onProductsClick}
                     preventReload={preventReloadLayers}
                     />
             </div>
