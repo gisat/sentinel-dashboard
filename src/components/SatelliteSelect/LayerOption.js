@@ -22,10 +22,10 @@ const LayerOption = (props) => {
 
     const dataInfoWrapperStyle = {
         display: 'flex',
-        justifyContent: 'center',
-        width: '3.5rem',
+        justifyContent: 'left',
+        minWidth: '2rem',
         height: '100%',
-        flex: '0 1 auto',
+        flex: '0 0 auto',
         maxHeight: '32px',
         alignItems: 'center',
     }
@@ -41,6 +41,10 @@ const LayerOption = (props) => {
 
     const layerLabelStyle = {
         flex: '1 1 auto',
+        marginLeft: '0.5rem',
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
     }
 
     const badgeLabel = props.data.totalCount === props.data.loadedCount ? props.data.totalCount : `${props.data.loadedCount}/${props.data.totalCount}`
@@ -59,7 +63,7 @@ const LayerOption = (props) => {
                     {/* <Icon icon='warning' className='ptr-icon-warning' style={infoIconStyle}/> */}
                 {/* </span> */}
             </components.Option>
-            <div style={{position:'relative', height: '2px'}}>
+            <div style={{position:'relative', height: '1px'}}>
                 {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
             </div>
         </>

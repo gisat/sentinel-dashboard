@@ -2,11 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const styles = {
-  container: {
-    position: 'relative',
-    width: '100%',
-    height: '100%',
-  },
+  container: {},
 
   badge: {
     WebkitTransition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms',
@@ -26,8 +22,7 @@ const styles = {
     verticalAlign: 'baseline',
     backgroundColor: 'rgba(212, 19, 13, 1)',
     borderRadius: '10px',
-    top: '-2px',
-    right: '-2px',
+    top: '-1px',
   },
 };
 

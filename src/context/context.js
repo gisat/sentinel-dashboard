@@ -24,7 +24,7 @@ const initialState = {
             //sentinel 1
             'SLC': {
                 key: 'SLC',
-                name: 's l c',
+                name: 'slc',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
             'GRD': {
