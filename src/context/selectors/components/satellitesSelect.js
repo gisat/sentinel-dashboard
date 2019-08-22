@@ -39,7 +39,7 @@ const getSatelitesSelectOptions = createSelector(
                     active: focusedSattelite === satConfig.id,
                 },
                 label: satConfig.name,
-                options: []
+                options: ['']
             }
 
             if(satConfig.layers && satConfig.layers.length > 0) {
