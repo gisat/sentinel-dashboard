@@ -44,6 +44,10 @@ class App extends React.PureComponent {
     constructor(props) {
         super(props)
 
+        this.state = {
+            height: 0
+        }
+
         this.initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
 
         this.onTimeChange = this.onTimeChange.bind(this);
@@ -128,7 +132,7 @@ class App extends React.PureComponent {
         dispatch(stopTimer());
     }
 
-    onResize() {
+    onResize(width, height) {
         const {state, dispatch} = this.context;
         let landscape = true;
         if(window.innerHeight > window.innerWidth){
@@ -138,6 +142,10 @@ class App extends React.PureComponent {
         if (select.rootSelectors.getLandscape(state) !== landscape) {
             dispatch(setOrientation(landscape));
         }
+
+        this.setState({
+            height
+        })
     }
     
     onLayerClick(evt) {
@@ -177,6 +185,19 @@ class App extends React.PureComponent {
         dispatch(setActiveInfoModal(modalKey));
     }
 
+    getMaxSatelliteSelectHeight() {
+        const {state} = this.context;
+        let vertical = select.rootSelectors.getLandscape(state);
+        const windowHeight = this.state.height;
+        const timelineHeight = 45;
+        const timeWidgetHeight = 46;
+        const satelliteSelectHeight = 38;
+        const satelliteSelectMargin = 2*8;
+        const satelliteSelectTop = 8;
+        const maxSelectHeight = !vertical ?  (windowHeight - timelineHeight - timeWidgetHeight - satelliteSelectHeight - satelliteSelectMargin - satelliteSelectTop) : (windowHeight - satelliteSelectHeight - satelliteSelectMargin - satelliteSelectTop)
+        return maxSelectHeight;
+    }
+
     render() {
         const {state} = this.context;
         let vertical = select.rootSelectors.getLandscape(state);
@@ -193,6 +214,7 @@ class App extends React.PureComponent {
         const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
         const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
 
+        const maxSelectHeight = this.getMaxSatelliteSelectHeight();
         return (
             <div className={'app'}>
                 <ReactResizeDetector
@@ -206,6 +228,7 @@ class App extends React.PureComponent {
                     onLayerClick={this.onLayerClick}
                     onSatteliteClick={this.onSatteliteClick}
                     onCollapsClick={this.onSatelliteCollapsClick}
+                    maxHeight = {maxSelectHeight}
                     />
                 <div className={className('timelineWrapper', {
                     vertical: vertical,

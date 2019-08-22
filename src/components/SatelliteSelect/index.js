@@ -47,7 +47,7 @@ class Select extends React.PureComponent {
     }
 
     render() {
-        const {open, options, onCollapsClick, onSatteliteClick} = this.props;
+        const {open, options, onCollapsClick, onSatteliteClick, maxHeight} = this.props;
 
         // style
         //TODO -> extract style to file
@@ -66,6 +66,10 @@ class Select extends React.PureComponent {
             menu: (provided, state) => ({
               ...provided,
               backgroundColor: menuBackgroundColor,
+            }),
+            menuList: (provided, state) => ({
+              ...provided,
+              maxHeight: maxHeight,
             }),
             container: (provided, state) => ({
               ...provided,
