@@ -20,11 +20,7 @@ const ProductsModal = (props) => {
     const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
     const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
     const visible = !!activeInfoModalKey;
-    // const products = visible ? activeInfoModal.products.map((key) => getProductByKey(key).metadata()) : null;
     let products = visible ? activeInfoModal.products.map((key) => getProductByKey(key).metadata()) : null;
-    if(products) {
-        products = [...products, ...products]
-    }
     const onInfoModalClose = () => {
         dispatch(updateInfoModal(activeInfoModalKey, {open: false}));
         dispatch(setActiveInfoModal(null));
