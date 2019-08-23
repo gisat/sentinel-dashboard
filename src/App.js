@@ -52,11 +52,7 @@ class App extends React.PureComponent {
         }
 
         this.onTimeChange = this.onTimeChange.bind(this);
-        this.onSetActiveTimeLevel = this.onSetActiveTimeLevel.bind(this);
         this.onTimeClick = this.onTimeClick.bind(this);
-        this.onSetTime = this.onSetTime.bind(this);
-        this.onStartTimer = this.onStartTimer.bind(this);
-        this.onStopTimer = this.onStopTimer.bind(this);
         this.onResize = this.onResize.bind(this);
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onSatteliteClick = this.onSatteliteClick.bind(this);
@@ -96,13 +92,6 @@ class App extends React.PureComponent {
         }
     }
 
-    onSetActiveTimeLevel(level) {
-        const {state, dispatch} = this.context;
-        const timelineState = select.components.timeline.getSubstate(state);
-        const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
-        zoomToTimeLevel(dispatch, level, timeLevelDayWidth, timelineState.dayWidth);
-    }
-
     onTimeClick (evt) {
         const {state, dispatch} = this.context;
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
@@ -112,26 +101,6 @@ class App extends React.PureComponent {
         scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, periodLimit, () => {
             dispatch(setPreventReloadLayers(false));
         });
-    }
-
-    onSetTime (time) {
-        const {dispatch} = this.context;
-        dispatch(changeSelectTime(time.toString()));
-    }
-
-    onStartTimer() {
-        const {state, dispatch} = this.context;
-        const selectTime = select.rootSelectors.getSelectTime(state);
-        const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
-        dispatch(setFollowNow(true));
-        scrollToTime(dispatch, scrollTime, moment(getNowUTC()), timelinePeriod, () => {
-            dispatch(setFollowNow(true));
-        });
-    }
-
-    onStopTimer() {
-        const {dispatch} = this.context;
-        dispatch(stopTimer());
     }
 
     onResize(width, height) {
@@ -212,10 +181,6 @@ class App extends React.PureComponent {
         // prevent reloading layers while moving timeline
         const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
         
-        //info modal state
-        const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
-        const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
-
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
         return (
             <div className={'app'}>
@@ -254,17 +219,7 @@ class App extends React.PureComponent {
                     vertical: vertical,
                     horizontal: !vertical,
                 })}>
-                    <TimeWidget
-                        time={new Date(select.rootSelectors.getSelectTime(state))}
-                        active={timelineState.activeTimeLevel}
-                        onSelectActive={this.onSetActiveTimeLevel}
-                        onSetTime={this.onSetTime}
-                        onStartTimer={this.onStartTimer}
-                        onStopTimer={this.onStopTimer}
-                        nowActive={select.rootSelectors.getFollowNow(state)}
-                        mouseTime={timelineState.mouseTime}
-                        />
-                    
+                    <TimeWidget />
                 </div>
                 <WorldWindMap 
                     layers = {select.rootSelectors.getActiveLayers(state)}

@@ -1,82 +1,70 @@
 import React from 'react';
 import moment from 'moment';
-import classnames from 'classnames';
-import './style.css';
+import Presentation from './presentation';
+import select from '../../context/selectors/';
+import {withContext} from '../../context/withContext';
+import {LEVELS} from '../MapsTimeline/MapsTimeline';
+import {getNowUTC} from '../../utils/date'
+import {
+    toggleLayer,
+    setPreventReloadLayers,
+    updateComponent,
+    startTrackNowTime,
+    setOrientation,
+    setFollowNow,
+    scrollToTime,
+    zoomToTimeLevel,
+    changeSelectTime,
+    stopTimer,
+    updateActiveLayer,
+    toggleSatelliteFocus,
+    updateInfoModal,
+    setActiveInfoModal,
+} from '../../context/actions';
 
-class TimeWidget extends React.PureComponent{
+const TimeWidget = (props) => {
+    const {dispatch, state} = props;
+    const timelineState = select.components.timeline.getSubstate(state);
 
-    componentDidMount() {
-        if(this.props.nowActive) {
-            this.props.onStartTimer();
-        }
+    const onSetActiveTimeLevel = (level) => {
+        const {state} = props;
+        const timelineState = select.components.timeline.getSubstate(state);
+        const timeLevelDayWidth = LEVELS.find(l => l.level === level).end;
+        zoomToTimeLevel(dispatch, level, timeLevelDayWidth, timelineState.dayWidth);
     }
 
-    render() {
-        const {time, mouseTime, nowActive, onStartTimer, onStopTimer, active, onSelectActive} = this.props;
-        const currentTime = time ? moment(time) : null;
-        const mouseTimeMom = mouseTime ? moment(mouseTime) : null;
-        const timeMom = mouseTimeMom || currentTime;
-        const classes = classnames('time-widget', {
-            'mouse-time': mouseTimeMom
-        })
-        return (
-            <div className={classes}>
-                {timeMom ?
-                <>
-                    <div onClick={() => nowActive ? onStopTimer() : onStartTimer()} className={`now time-cell ${nowActive ? 'active' : '' }`}>
-                        NOW
-                        <span className={'indicator'}>
-                        </span>
-                    </div>
-                    <div className={`time-cell ${active === 'month' ? 'active' : '' }`} onClick={() => onSelectActive('month')}>
-                        <span className={'month'}>
-                            {timeMom.format('MMM')}
-                        </span>
-                        <span className={'indicator'}>
-                        </span>
-                    </div>
-
-                    <div className={`time-cell ${active === 'day' ? 'active' : '' }`} onClick={() => onSelectActive('day')}>
-                        <span className={'day'}>
-                            {timeMom.format('DD')}
-                        </span>
-                        <span className={'indicator'}>
-                        </span>
-                    </div>
-
-                    <div className={`time-cell ${active === 'year' ? 'active' : '' }`} onClick={() => onSelectActive('year')}>
-                        <span className={'year'}>
-                            {timeMom.format('YYYY')}
-                        </span>
-                        <span className={'indicator'}>
-                        </span>
-                    </div>
-
-                    <div className={`time-cell ${active === 'hour' ? 'active' : '' }`} onClick={() => onSelectActive('hour')}>
-                        <span>
-                            {timeMom.format('HH')}
-                        </span>
-                        <span className={'indicator'}>
-                        </span>
-                    </div>:
-
-                    <div className={`time-cell ${active === 'minute' ? 'active' : '' }`} onClick={() => onSelectActive('minute')}>
-                        <span>
-                            {timeMom.format('mm')}
-                        </span>
-                        <span className={'indicator'}>
-                        </span>
-                    </div>:
-
-                    <div>
-                        <span>
-                            {timeMom.format('ss')}
-                        </span>
-                    </div>
-                </> : null}
-            </div>
-        )
+    const onSetTime = (time) => {
+        dispatch(changeSelectTime(time.toString()));
     }
+
+    const onStartTimer = () => {
+        const {state} = props;
+        const selectTime = select.rootSelectors.getSelectTime(state);
+        const periodLimit = select.rootSelectors.getPeriodLimit(state);
+        const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
+        dispatch(setFollowNow(true));
+        scrollToTime(dispatch, scrollTime, moment(getNowUTC()), periodLimit, () => {
+            dispatch(setFollowNow(true));
+        });
+    }
+
+    const onStopTimer = () => {
+        dispatch(stopTimer());
+    }
+
+    return (
+        <Presentation 
+            time={new Date(select.rootSelectors.getSelectTime(state))}
+            active={timelineState.activeTimeLevel}
+            onSelectActive={onSetActiveTimeLevel}
+            onSetTime={onSetTime}
+            onStartTimer={onStartTimer}
+            onStopTimer={onStopTimer}
+            nowActive={select.rootSelectors.getFollowNow(state)}
+            mouseTime={timelineState.mouseTime}
+            />
+    )
+
 }
 
-export default TimeWidget;
+export default withContext(TimeWidget);
