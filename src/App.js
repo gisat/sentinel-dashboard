@@ -1,15 +1,11 @@
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import className from 'classnames';
-import moment from 'moment';
 
 import {Context} from './context/context';
 import {
-    toggleLayer,
-    updateComponent,
     startTrackNowTime,
     setOrientation,
-    toggleSatelliteFocus,
 } from './context/actions';
 import select from './context/selectors/';
 import ProductsModal from './components/ProductsModal/';
@@ -29,9 +25,6 @@ class App extends React.PureComponent {
         }
 
         this.onResize = this.onResize.bind(this);
-        this.onLayerClick = this.onLayerClick.bind(this);
-        this.onSatteliteClick = this.onSatteliteClick.bind(this);
-        this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
     }
 
     componentDidMount() {
@@ -50,28 +43,7 @@ class App extends React.PureComponent {
             dispatch(setOrientation(landscape));
         }
 
-        this.setState({
-            height
-        })
-    }
-    
-    onLayerClick(evt) {
-        const {state, dispatch} = this.context;
-        dispatch(toggleLayer(evt.satKey, evt.id))
-    }
-    onSatteliteClick(satKey) {
-        const {state, dispatch} = this.context;
-        dispatch(toggleSatelliteFocus(satKey, state))
-    }
-    
-    onSatelliteCollapsClick(evt) {
-        const {state, dispatch} = this.context;
-        const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
-        if(satelliteSelectState.open) {
-            dispatch(updateComponent('satelliteSelect', {open: false}))
-        } else {
-            dispatch(updateComponent('satelliteSelect', {open: true}))
-        }
+        this.setState({height});
     }
 
     getMaxSatelliteSelectHeight() {
@@ -90,10 +62,8 @@ class App extends React.PureComponent {
     render() {
         const {state} = this.context;
         const vertical = select.rootSelectors.getLandscape(state);
-        const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
-        const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
-        
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
+
         return (
             <div className={'app'}>
                 <ReactResizeDetector
@@ -101,12 +71,7 @@ class App extends React.PureComponent {
                     handleWidth
                     handleHeight />                
                 <ProductsModal />
-                <SatelliteSelect 
-                    options={sateliteOptions}
-                    open={satelliteSelectState.open}
-                    onLayerClick={this.onLayerClick}
-                    onSatteliteClick={this.onSatteliteClick}
-                    onCollapsClick={this.onSatelliteCollapsClick}
+                <SatelliteSelect  
                     maxHeight = {maxSelectHeight}
                     />
                 <div className={className('timelineWrapper', {
