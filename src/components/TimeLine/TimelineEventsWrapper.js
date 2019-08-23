@@ -374,8 +374,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 
 		updateContext({
 			periodLimit: {
-				end: periodLimitEnd,
-				start: periodLimitStart
+				end: periodLimitEnd.toDate().toString(),
+				start: periodLimitStart.toDate().toString()
 			}
 		});
 	}
@@ -608,8 +608,8 @@ class TimelineEventsWrapper extends React.PureComponent {
 
 		updateContext({
 			periodLimit: {
-				start: start,
-				end: end
+				start: start.toDate().toString(),
+				end: end.toDate().toString()
 			}
 		});
 	}

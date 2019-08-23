@@ -30,9 +30,6 @@ import TimeWidget from './components/TimeWidget/';
 import period from './utils/period'
 import {getNowUTC} from './utils/date'
 
-//todo - to state
-const timelinePeriod = period('2010/2025');
-
 const now = moment(getNowUTC());
 const start = now.clone().subtract(1, 'w');
 const end = now.clone().add(1, 'w');
@@ -48,7 +45,11 @@ class App extends React.PureComponent {
             height: 0
         }
 
-        this.initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
+        const initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
+        this.initialTimelinePeriod = {
+            start: initialTimelinePeriod.start.toDate().toString(),
+            end: initialTimelinePeriod.end.toDate().toString(),
+        }
 
         this.onTimeChange = this.onTimeChange.bind(this);
         this.onSetActiveTimeLevel = this.onSetActiveTimeLevel.bind(this);
@@ -104,10 +105,11 @@ class App extends React.PureComponent {
 
     onTimeClick (evt) {
         const {state, dispatch} = this.context;
+        const periodLimit = select.rootSelectors.getPeriodLimit(state);
         dispatch(stopTimer());
 
         dispatch(setPreventReloadLayers(true));
-        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, timelinePeriod, () => {
+        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, periodLimit, () => {
             dispatch(setPreventReloadLayers(false));
         });
     }
@@ -203,7 +205,7 @@ class App extends React.PureComponent {
         let vertical = select.rootSelectors.getLandscape(state);
         const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
         const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
-        
+        const periodLimit = select.rootSelectors.getPeriodLimit(state);
         const timelineState = select.components.timeline.getSubstate(state);
         const timelineOverlays = select.components.timeline.getOverlays(state);
         
@@ -237,7 +239,7 @@ class App extends React.PureComponent {
                     <MapsTimeline
                         activeLevel={timelineState.activeTimeLevel}
                         vertical = {vertical}
-                        period = {timelinePeriod}
+                        period = {periodLimit}
                         initialPeriod = {this.initialTimelinePeriod}
                         // onLayerPeriodClick: this.onLayerPeriodClick,
                         onChange = {this.onTimeChange}

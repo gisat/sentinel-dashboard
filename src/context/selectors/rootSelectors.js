@@ -48,6 +48,9 @@ export const getPureActiveLayers = createCachedSelector(
 })
 
 export function getFollowNow (state)  {return common.getByPath(state, ['followNow'])};
+
+export function getPeriodLimit (state)  {return common.getByPath(state, ['periodLimit'])};
+
 export function getLandscape (state)  {return common.getByPath(state, ['landscape'])};
 
 export function getFocusedSattelite (state)  {return common.getByPath(state, ['focus'])};

@@ -38,12 +38,12 @@ class Timeline extends React.PureComponent {
 
 	static propTypes = {
 		period: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
+			start: PropTypes.string,
+			end: PropTypes.string
 		}).isRequired,
 		periodLimit: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
+			start: PropTypes.string,
+			end: PropTypes.string
 		}),
 		dayWidth: PropTypes.number,
 		centerTime: PropTypes.func,
@@ -147,8 +147,8 @@ class Timeline extends React.PureComponent {
 		}
 
 		const halfDays = allDays / 2;
-		const start = moment(setTime).subtract(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms'));
-		const end = moment(setTime).add(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms'));
+		const start = moment(setTime).subtract(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms')).toDate().toString();
+		const end = moment(setTime).add(moment.duration(halfDays * (60 * 60 * 24 * 1000), 'ms')).toDate().toString();
 		return {
 			start,
 			end
@@ -196,8 +196,8 @@ class Timeline extends React.PureComponent {
 		const allDays = this.getXAxisWidth() / dayWidth;
 		const halfMouseDays = allDays / 2;
 
-		const start = moment(centerTime).subtract(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms'));
-		const end = moment(centerTime).add(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms'));
+		const start = moment(centerTime).subtract(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms')).toDate().toString();
+		const end = moment(centerTime).add(moment.duration(halfMouseDays * (60 * 60 * 24 * 1000), 'ms')).toDate().toString();
 		return {
 			start,
 			end

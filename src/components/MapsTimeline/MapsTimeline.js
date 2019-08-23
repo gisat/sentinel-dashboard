@@ -51,12 +51,12 @@ class MapsTimeline extends React.PureComponent {
 
 	static propTypes = {
 		period: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
+			start: PropTypes.string,
+			end: PropTypes.string
 		}).isRequired,
 		initialPeriod: PropTypes.shape({
-			start: PropTypes.object,
-			end: PropTypes.object
+			start: PropTypes.string,
+			end: PropTypes.string
 		}).isRequired,
 		dayWidth: PropTypes.number, //1.5
 		// layers: , //for tooltip

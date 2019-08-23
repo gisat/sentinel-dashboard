@@ -2,10 +2,18 @@ import React, {createContext} from 'react'
 import reducer from './reducer';
 import {getNowUTC} from '../utils/date'
 import moment from 'moment';
+import period from '../utils/period';
 
 const now = moment(getNowUTC());
 
+const periodLimit = period('2010/2025');
+const stringPeriodLimit = {
+    start: periodLimit.start.toDate().toString(),
+    end: periodLimit.end.toDate().toString(),
+}
+
 export const Context = createContext({
+    periodLimit: null,
     satellites: [],
     activeLayers: [],
     focus: null,
@@ -135,6 +143,7 @@ const initialState = {
             {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[]}
         ], // All the available satellites.
     },
+    periodLimit: stringPeriodLimit,
     activeLayers: [],
     focus: 'S-1A', // Fix camera on sattelite
     selectTime: null,
