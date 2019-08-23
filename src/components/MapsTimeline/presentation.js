@@ -18,7 +18,7 @@ import Months from '../TimeLine/months';
 import Days from '../TimeLine/days';
 import Hours from '../TimeLine/hours';
 import Minutes from '../TimeLine/minutes';
-import Timeline, {LEVELS} from '../TimeLine';
+import Timeline from '../TimeLine';
 
 const TOOLTIP_PADDING = 5;
 const MOUSE_BUFFER_WIDTH = 5;
@@ -166,7 +166,5 @@ class MapsTimeline extends React.PureComponent {
 	}
 
 }
-
-export {LEVELS};
 
 export default MapsTimeline;

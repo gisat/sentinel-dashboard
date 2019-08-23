@@ -3,7 +3,7 @@ import moment from 'moment';
 import Presentation from './presentation';
 import select from '../../context/selectors/';
 import {withContext} from '../../context/withContext';
-import {LEVELS} from '../MapsTimeline/MapsTimeline';
+import {LEVELS} from '../TimeLine';
 import {getNowUTC} from '../../utils/date'
 import {
     setFollowNow,
