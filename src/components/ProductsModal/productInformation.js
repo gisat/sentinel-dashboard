@@ -13,13 +13,13 @@ const titleStyle = {
     justifyContent: 'flex-start',
 }
 
-const getDataListItem = (title, value) => {
-    return (<div className={'item'}><span style={titleStyle}>{title}:</span><span>{value}</span></div>);
+const getDataListItem = (title, value, key) => {
+    return (<div className={'item'} key={key}><span style={titleStyle}>{title}:</span><span>{value}</span></div>);
 };
 
 const getDataList = (data) => {
-    return data.map((i) => {
-        return getDataListItem(i._attributes.name, i._text);
+    return data.map((i, index) => {
+        return getDataListItem(i._attributes.name, i._text, `${index}_${i._attributes.name}`);
     });
 };
 
@@ -37,13 +37,13 @@ const ProductInformation = (props) => {
     const intList = getDataList(int);
 
     //str
-    const strList = Object.entries(str).map(([title, value]) => getDataListItem(title, value));
+    const strList = Object.entries(str).map(([title, value], index) => getDataListItem(title, value, `${index}_${title}`));
 
     //summary
-    const summaryItem = getDataListItem('summary', summary._text);
+    const summaryItem = getDataListItem('summary', summary._text, 'summary');
 
     //title
-    const titleItem = getDataListItem('title', title._text);
+    const titleItem = getDataListItem('title', title._text, 'title');
 
 
     //styles
