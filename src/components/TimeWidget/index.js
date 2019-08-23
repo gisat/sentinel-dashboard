@@ -6,20 +6,11 @@ import {withContext} from '../../context/withContext';
 import {LEVELS} from '../MapsTimeline/MapsTimeline';
 import {getNowUTC} from '../../utils/date'
 import {
-    toggleLayer,
-    setPreventReloadLayers,
-    updateComponent,
-    startTrackNowTime,
-    setOrientation,
     setFollowNow,
     scrollToTime,
     zoomToTimeLevel,
     changeSelectTime,
     stopTimer,
-    updateActiveLayer,
-    toggleSatelliteFocus,
-    updateInfoModal,
-    setActiveInfoModal,
 } from '../../context/actions';
 
 const TimeWidget = (props) => {

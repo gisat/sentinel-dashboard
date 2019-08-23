@@ -10,19 +10,14 @@ import {
     updateComponent,
     startTrackNowTime,
     setOrientation,
-    setFollowNow,
     scrollToTime,
-    zoomToTimeLevel,
     changeSelectTime,
     stopTimer,
-    updateActiveLayer,
     toggleSatelliteFocus,
-    updateInfoModal,
-    setActiveInfoModal,
 } from './context/actions';
 import select from './context/selectors/';
 import ProductsModal from './components/ProductsModal/';
-import WorldWindMap from './components/WorldWindMap/index';
+import WorldWindMap from './components/WorldWindMap';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline, {LEVELS} from './components/MapsTimeline/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
@@ -57,8 +52,6 @@ class App extends React.PureComponent {
         this.onLayerClick = this.onLayerClick.bind(this);
         this.onSatteliteClick = this.onSatteliteClick.bind(this);
         this.onSatelliteCollapsClick = this.onSatelliteCollapsClick.bind(this);
-        this.onLayerChanged = this.onLayerChanged.bind(this);
-        this.onProductsClick = this.onProductsClick.bind(this);
     }
 
     componentDidMount() {
@@ -138,24 +131,6 @@ class App extends React.PureComponent {
         }
     }
 
-    onLayerChanged(layerKey, change) {
-        const {dispatch} = this.context;
-        dispatch(updateActiveLayer(layerKey, change))
-    }
-
-    onProductsClick(products) {
-        const {state, dispatch} = this.context;
-        const modalKey = products.join(',');
-        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
-        const open = modalState && modalState.open ? false : true;
-        const modalContent = {
-            products,
-            open,
-        };
-        dispatch(updateInfoModal(modalKey, modalContent));
-        dispatch(setActiveInfoModal(modalKey));
-    }
-
     getMaxSatelliteSelectHeight() {
         const {state} = this.context;
         let vertical = select.rootSelectors.getLandscape(state);
@@ -177,9 +152,6 @@ class App extends React.PureComponent {
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
         const timelineState = select.components.timeline.getSubstate(state);
         const timelineOverlays = select.components.timeline.getOverlays(state);
-        
-        // prevent reloading layers while moving timeline
-        const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
         
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
         return (
@@ -221,12 +193,7 @@ class App extends React.PureComponent {
                 })}>
                     <TimeWidget />
                 </div>
-                <WorldWindMap 
-                    layers = {select.rootSelectors.getActiveLayers(state)}
-                    onLayerChanged={this.onLayerChanged}
-                    onProductsClick={this.onProductsClick}
-                    preventReload={preventReloadLayers}
-                    />
+                <WorldWindMap />
             </div>
         );
     }
