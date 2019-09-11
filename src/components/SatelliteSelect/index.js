@@ -9,7 +9,7 @@ import {
 } from '../../context/actions';
 
 const SetalliteSelect = (props) => {
-    const {dispatch, state, maxSelectHeight} = props;
+    const {dispatch, state, maxHeight} = props;
 
     const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
     const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state);
@@ -40,7 +40,7 @@ const SetalliteSelect = (props) => {
             onLayerClick={onLayerClick}
             onSatteliteClick={onSatteliteClick}
             onCollapsClick={onSatelliteCollapsClick}
-            maxHeight = {maxSelectHeight}
+            maxHeight = {maxHeight}
             />
     )
 }
