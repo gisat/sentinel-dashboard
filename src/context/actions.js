@@ -135,6 +135,18 @@ export const scrollToTime = (dispatch, selectTime, newTime, period, callback) =>
  * @param {string} time 
  */
 export const changeSelectTime = time => {
+    const selectTime = moment(select.rootSelectors.getSelectTime());
+    const selectYearDay = `${selectTime.year()}-${selectTime.dayOfYear()}`
+    const momentTime = moment(time);
+    const timeYearDay = `${momentTime.year()}-${momentTime.dayOfYear()}`
+    const newTimeIsSameDay = selectYearDay === timeYearDay;
+
+    //Check if new time is in another day. If so, reload orbits
+    if(!newTimeIsSameDay) {
+        console.log("reload orbits", selectYearDay, timeYearDay);
+        //todo discart current orbit loader
+    }
+
     return {
         type: types.CHANGE_SELECTTIME,
         payload: time
