@@ -1,6 +1,7 @@
 import createCachedSelector from 're-reselect';
 import momentjs from 'moment';
 import common from './_common';
+import {getSubstate as getOrbitsSubstate} from './data/orbits';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
@@ -63,26 +64,34 @@ export const getActiveLayers = createCachedSelector(
     getBeginDataTime,
     getEndDataTime,
     getSelectTimePastOrCurrent,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent) => {
+    getOrbitsSubstate,
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate) => {
 
     const activeLayersWithDates = []
 
     activeLayers.forEach(l => {
         const layer = {...l,
+            type: 'sentinelData',
             beginTime: new Date(beginTime),
             endTime: new Date(endTime),
             disabled: selectTimePastOrCurrent
         }
         activeLayersWithDates.push(layer);
     });
+
+    const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
+    activeLayersWithDates.push(...orbitLayers);
     
     return activeLayersWithDates;
 })((state) => {
     const activeLayers = common.getByPath(state, ['activeLayers']);
+    const orbitLayers = getOrbitsSubstate(state);
     const beginTime = getBeginDataTime(state);
     const endTime = getEndDataTime(state);
     
-    const cacheKey = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
+    const orbitLayersKeys = orbitLayers.map(l => l.key).join(',');
+    const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
+    const cacheKey = `${orbitLayersKeys}-${activeLayersKeys}`;
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
 

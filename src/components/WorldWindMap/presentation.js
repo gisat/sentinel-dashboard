@@ -8,7 +8,6 @@ import {
     getLayers,
     getLayerKeyFromConfig,
     getLayerIdFromConfig,
-    getLayerByName,
     reloadLayersRenderable
 } from './layers';
 import './style.css';
@@ -139,8 +138,9 @@ class Map extends Component {
             this.wwd = new WorldWind.WorldWindow("wwd-results");
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
-
-            this.wwd.addLayer(new SentinelCloudlessLayer());
+            const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
+            const wwdLayers = getLayers(enabledLayersKeys);
+            this.wwd.layers = wwdLayers;
             this.wwd.redraw();
         }
     }

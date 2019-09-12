@@ -5,7 +5,9 @@ import './style.css';
 import {removeItemByIndex} from '../../utils/arrayManipulation';
 const {
     SentinelCloudlessLayer,
-    SciHubProducts
+    SciHubProducts,
+    EoUtils,
+    Orbit,
 } = WordWindX;
 const {
     RenderableLayer,
@@ -24,11 +26,23 @@ export function getLayerKeyFromConfig (layerConfig) {
 }
 
 export function getLayerIdFromConfig (layerConfig) {
-    return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
+    if(layerConfig.satKey && layerConfig.layerKey && layerConfig.beginTime && layerConfig.endTime) {
+        return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
+    } else {
+        return layerConfig.key;
+    }
 }
 
 export function getProductByKey (productKey) {
     return csiRenderablesCache.get(productKey);
+}
+
+const filterOrbitLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'orbit');
+}
+
+const filterSentinelDataLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'sentinelData');
 }
 
 export function getLayerByName (name, layers) {
@@ -56,15 +70,39 @@ const getSentinelLayer = (layerConfig) => {
         return layer;
     }
 }
+
+const getOrbitLayer = (layerConfig) => {
+    const layerKey = layerConfig.key;
+    const cacheLayer = layersCache.get(layerKey);
+    if(cacheLayer) {
+        return cacheLayer;
+    } else {
+        const satRec = EoUtils.computeSatrec(...layerConfig.specs);
+
+        const layer = new RenderableLayer(layerKey);
+        layer.addRenderable(new Orbit(satRec));
+        layersCache.set(layerKey, layer);
+        return layer;
+    }
+}
 export const getLayers = createCachedSelector([
     (layersConfig) => layersConfig,
 ], (layersConfig) => {
     const layers = [defaultBackgroundLayer];
-
-    const sentinelLayers = layersConfig.map(getSentinelLayer);
-    return [...layers, ...sentinelLayers];
+    const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
+    const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
+    
+    const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
+    const orbitLayers = orbitLayersConfigs.map(getOrbitLayer);
+    return [...layers, ...sentinelLayers, ...orbitLayers];
 })((layersConfig) => {
-    return layersConfig.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
+    const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
+    const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
+
+    const orbitLayersKeys = orbitLayersConfigs.map(l => l.key).join(',');
+    const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
+    const cacheKey = `${orbitLayersKeys}-${activeLayersKeys}`;
+    return cacheKey;
 });
 
 const getSciProducts = async (layerConfig) => {
@@ -176,9 +214,12 @@ export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
 
 export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
     layers.forEach((layerCfg) => {
-        const layerKey = getLayerKeyFromConfig(layerCfg);
-        const wwdLayer = getLayerByName(layerKey, wwdLayers);   
-        reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
+        //reload only sentinel data
+        if(layerCfg.type === 'sentinelData') {
+            const layerKey = getLayerKeyFromConfig(layerCfg);
+            const wwdLayer = getLayerByName(layerKey, wwdLayers);   
+            reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
+        }
     });
 }
 

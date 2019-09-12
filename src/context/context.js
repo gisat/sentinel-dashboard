@@ -142,6 +142,12 @@ const initialState = {
             {id: 'S-3B', name: 'S3-B', iconClass: 'sentinel-3', layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
             {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[]}
         ], // All the available satellites.
+        orbits: [
+            {
+                key: 'sat-1-2019-09-31',
+                specs: ['1 40697U 15028A   18124.08865983  .00000004  00000-0  17994-4 0  9993','2 40697  98.5686 199.4434 0001286  92.5669 267.5666 14.30817033149583'],
+            },
+        ]
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],
