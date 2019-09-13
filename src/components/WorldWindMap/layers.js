@@ -2,12 +2,14 @@ import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import createCachedSelector from 're-reselect';
 import './style.css';
-import {removeItemByIndex} from '../../utils/arrayManipulation';
+import SatelliteModelLayer from './SatelliteModelLayer';
+import {getModel} from './satellitesModels';
 const {
     SentinelCloudlessLayer,
     SciHubProducts,
     EoUtils,
     Orbit,
+    Model,
 } = WordWindX;
 const {
     RenderableLayer,
@@ -39,6 +41,10 @@ export function getProductByKey (productKey) {
 
 const filterOrbitLayersConfigs = (layersConfig) => {
     return layersConfig.filter(l => l.type === 'orbit');
+}
+
+const filterSatelliteLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'satellite');
 }
 
 const filterSentinelDataLayersConfigs = (layersConfig) => {
@@ -85,23 +91,43 @@ const getOrbitLayer = (layerConfig) => {
         return layer;
     }
 }
+
+const getSatelliteLayer = (layerConfig, wwd) => {
+    const layerKey = layerConfig.key;
+    const cacheLayer = layersCache.get(layerKey);
+    if(cacheLayer) {
+        return cacheLayer;
+    } else {
+        const layer = new SatelliteModelLayer({key: layerKey});
+        layer.setRerender(() => wwd.redraw());
+        getModel(`${layerConfig.satData.filePath}/${layerConfig.satData.fileName}`, layerKey).then(model => layer.setModel(model));
+        layersCache.set(layerKey, layer);
+        return layer;
+    }
+}
+
 export const getLayers = createCachedSelector([
     (layersConfig) => layersConfig,
-], (layersConfig) => {
+    (layersConfig, wwd) => wwd,
+], (layersConfig, wwd) => {
     const layers = [defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
     const orbitLayers = orbitLayersConfigs.map(getOrbitLayer);
-    return [...layers, ...sentinelLayers, ...orbitLayers];
+    const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
+    const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, wwd));
+    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers];
 })((layersConfig) => {
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
+    const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
 
-    const orbitLayersKeys = orbitLayersConfigs.map(l => l.key).join(',');
+    const orbitKeys = orbitLayersConfigs.map(l => l.key).join(',');
+    const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
-    const cacheKey = `${orbitLayersKeys}-${activeLayersKeys}`;
+    const cacheKey = `${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
     return cacheKey;
 });
 

@@ -2,6 +2,7 @@ import createCachedSelector from 're-reselect';
 import momentjs from 'moment';
 import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
+import {getSubstate as getSatellitesSubstate} from './data/satellites';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
@@ -65,7 +66,8 @@ export const getActiveLayers = createCachedSelector(
     getEndDataTime,
     getSelectTimePastOrCurrent,
     getOrbitsSubstate,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate) => {
+    getSatellitesSubstate,
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate) => {
 
     const activeLayersWithDates = []
 
@@ -80,18 +82,21 @@ export const getActiveLayers = createCachedSelector(
     });
 
     const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
-    activeLayersWithDates.push(...orbitLayers);
+    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData}));
+    activeLayersWithDates.push(...orbitLayers, ...satellitesLayers);
     
     return activeLayersWithDates;
 })((state) => {
     const activeLayers = common.getByPath(state, ['activeLayers']);
-    const orbitLayers = getOrbitsSubstate(state);
+    const orbitSubstate = getOrbitsSubstate(state);
+    const satellitesSubstate = getSatellitesSubstate(state);
     const beginTime = getBeginDataTime(state);
     const endTime = getEndDataTime(state);
     
-    const orbitLayersKeys = orbitLayers.map(l => l.key).join(',');
+    const orbitKeys = orbitSubstate.map(l => l.key).join(',');
+    const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
     const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
-    const cacheKey = `${orbitLayersKeys}-${activeLayersKeys}`;
+    const cacheKey = `${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
 

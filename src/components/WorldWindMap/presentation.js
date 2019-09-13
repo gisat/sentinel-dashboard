@@ -64,7 +64,7 @@ class Map extends Component {
             //check visibility change
             if(visibilityChanged) {
                 //visibility changed
-                const wwdLayers = getLayers(enabledLayersKeys);
+                const wwdLayers = getLayers(enabledLayersKeys, this.wwd);
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
@@ -139,9 +139,8 @@ class Map extends Component {
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
             const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
-            const wwdLayers = getLayers(enabledLayersKeys);
-            this.wwd.layers = wwdLayers;
-            this.wwd.redraw();
+            const wwdLayers = getLayers(enabledLayersKeys, this.wwd);
+            this.handleLayers(wwdLayers);
         }
     }
 

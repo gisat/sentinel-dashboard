@@ -3,6 +3,7 @@ import reducer from './reducer';
 import {getNowUTC} from '../utils/date'
 import moment from 'moment';
 import period from '../utils/period';
+import {getSatDataByKey} from './satData';
 
 const now = moment(getNowUTC());
 
@@ -134,13 +135,13 @@ const initialState = {
             },
         },
         satellites: [
-            {id: 'S-1A', name: 'S1-A', iconClass: 'sentinel-1', layers:['SLC', 'GRD', 'OCN']},
-            {id: 'S-1B', name: 'S1-B', iconClass: 'sentinel-1', layers:['SLC', 'GRD', 'OCN']},
-            {id: 'S-2A', name: 'S2-A', iconClass: 'sentinel-2', layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
-            {id: 'S-2B', name: 'S2-B', iconClass: 'sentinel-2', layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
-            {id: 'S-3A', name: 'S3-A', iconClass: 'sentinel-3', layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
-            {id: 'S-3B', name: 'S3-B', iconClass: 'sentinel-3', layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
-            {id: 'S-5P', name: 'S-5', iconClass: 'sentinel-5', layers:[]}
+            {id: 's1a', name: 'S1-A', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1a'), layers:['SLC', 'GRD', 'OCN']},
+            {id: 's1b', name: 'S1-B', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1b'), layers:['SLC', 'GRD', 'OCN']},
+            {id: 's2a', name: 'S2-A', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2a'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
+            {id: 's2b', name: 'S2-B', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2b'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
+            {id: 's3a', name: 'S3-A', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3a'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
+            {id: 's3b', name: 'S3-B', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3b'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
+            {id: 's5p', name: 'S-5', model: 'S5', iconClass: 'sentinel-5', satData: getSatDataByKey('s5p'), layers:[]}
         ], // All the available satellites.
         orbits: [
             {
