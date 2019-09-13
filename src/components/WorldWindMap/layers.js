@@ -13,6 +13,7 @@ const {
 } = WordWindX;
 const {
     RenderableLayer,
+    Position
 } = WorldWind;
 
 const username = 'copapps';
@@ -92,15 +93,28 @@ const getOrbitLayer = (layerConfig) => {
     }
 }
 
-const getSatelliteLayer = (layerConfig, wwd) => {
+const getSatelliteLayer = (layerConfig, time, wwd) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
     if(cacheLayer) {
+        //upadte time on change
+        if(time !== cacheLayer.time) {
+            const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
+            const position = EoUtils.getOrbitPosition(satrec, new Date(time));
+            cacheLayer.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+        }
         return cacheLayer;
     } else {
-        const layer = new SatelliteModelLayer({key: layerKey});
+        const layer = new SatelliteModelLayer({key: layerKey, time: time});
         layer.setRerender(() => wwd.redraw());
-        getModel(`${layerConfig.satData.filePath}/${layerConfig.satData.fileName}`, layerKey).then(model => layer.setModel(model));
+        getModel(`${layerConfig.satData.filePath}/${layerConfig.satData.fileName}`, layerKey).then(
+            (model) => {
+                layer.setModel(model)
+                const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
+                const position = EoUtils.getOrbitPosition(satrec, new Date(time));
+                layer.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+            }
+        );
         layersCache.set(layerKey, layer);
         return layer;
     }
@@ -108,18 +122,20 @@ const getSatelliteLayer = (layerConfig, wwd) => {
 
 export const getLayers = createCachedSelector([
     (layersConfig) => layersConfig,
-    (layersConfig, wwd) => wwd,
-], (layersConfig, wwd) => {
+    (layersConfig, time) => time,
+    (layersConfig, time, wwd) => wwd,
+], (layersConfig, time, wwd) => {
     const layers = [defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
-    const orbitLayers = orbitLayersConfigs.map(getOrbitLayer);
+    const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time));
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
-    const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, wwd));
+    const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
     return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers];
-})((layersConfig) => {
+})((layersConfig, time) => {
+    const stringTime = time ? time.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
@@ -127,7 +143,8 @@ export const getLayers = createCachedSelector([
     const orbitKeys = orbitLayersConfigs.map(l => l.key).join(',');
     const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
-    const cacheKey = `${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
+    //invalidate time
+    const cacheKey = `${stringTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
     return cacheKey;
 });
 

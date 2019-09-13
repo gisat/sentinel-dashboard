@@ -67,7 +67,8 @@ export const getActiveLayers = createCachedSelector(
     getSelectTimePastOrCurrent,
     getOrbitsSubstate,
     getSatellitesSubstate,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate) => {
+    (state, selectTime) => selectTime,
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, selectTime) => {
 
     const activeLayersWithDates = []
 
@@ -82,11 +83,12 @@ export const getActiveLayers = createCachedSelector(
     });
 
     const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
-    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData}));
+    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime}));
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers);
     
     return activeLayersWithDates;
-})((state) => {
+})((state, selectTime) => {
+    const stringSelectTime = selectTime ? selectTime.toString() : '';
     const activeLayers = common.getByPath(state, ['activeLayers']);
     const orbitSubstate = getOrbitsSubstate(state);
     const satellitesSubstate = getSatellitesSubstate(state);
@@ -96,7 +98,7 @@ export const getActiveLayers = createCachedSelector(
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
     const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
     const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
-    const cacheKey = `${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
+    const cacheKey = `${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
 

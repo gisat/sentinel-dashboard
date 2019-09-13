@@ -27,6 +27,7 @@ class Map extends Component {
         onProductsClick: PropTypes.func,
         layers: PropTypes.array,
         preventReload: PropTypes.bool,
+        time: PropTypes.object,
     }
 
     static defaultProps = {    
@@ -46,6 +47,8 @@ class Map extends Component {
         return layersChanged || preventMovingChanged;
     }
     componentDidUpdate (prevProps) {
+        const {time} = this.props;
+        
         const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
 
         if(prevProps.layers !== this.props.layers) {
@@ -64,7 +67,7 @@ class Map extends Component {
             //check visibility change
             if(visibilityChanged) {
                 //visibility changed
-                const wwdLayers = getLayers(enabledLayersKeys, this.wwd);
+                const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd);
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
@@ -78,7 +81,7 @@ class Map extends Component {
                 const disabledPrevLayersKeys = prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const enabledLayersKeys = this.props.layers.filter(l => !l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const newlyEnabledLayersKeys = disabledPrevLayersKeys.filter(l => enabledLayersKeys.includes(l));
-                const wwdLayers = getLayers(this.props.layers);
+                const wwdLayers = getLayers(this.props.layers, time);
 
                 wwdLayers.forEach(l => {
                     if(newlyEnabledLayersKeys.includes(l.displayName)) {
@@ -91,18 +94,23 @@ class Map extends Component {
                     //redraw
                     this.wwd.redraw();
                 })
+            } else if(time !== prevProps.time) {
+
+                const wwdLayers = getLayers(this.props.layers, time, this.wwd);
+                this.handleLayers(wwdLayers);
+                
             }
             
             if(!visibilityChanged && !isEqual(prevLayers, Layers)) {
                 //layers date changed
                 //TODO reload only changed layers
-                const wwdLayers = getLayers(enabledLayersKeys);
+                const wwdLayers = getLayers(enabledLayersKeys, time);
                 if(!this.props.preventReload) {
                     reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
                 }
             }
         } else if(prevProps.preventReload !== this.props.preventReload && !this.props.preventReload) {
-            const wwdLayers = getLayers(enabledLayersKeys);
+            const wwdLayers = getLayers(enabledLayersKeys, time);
             reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
         }
     }
@@ -134,12 +142,13 @@ class Map extends Component {
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
      */
     componentDidMount(){
+        const {time} = this.props;
         if(!this.wwdCreated) {
             this.wwd = new WorldWind.WorldWindow("wwd-results");
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
-            const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
-            const wwdLayers = getLayers(enabledLayersKeys, this.wwd);
+            const enabledLayers = this.props.layers.filter(l => !l.disabled);
+            const wwdLayers = getLayers(enabledLayers, time, this.wwd);
             this.handleLayers(wwdLayers);
         }
     }

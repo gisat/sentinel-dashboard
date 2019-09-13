@@ -22,6 +22,7 @@ class SatelliteModelLayer extends RenderableLayer {
         this._rerenderMap = null;
         this.key = options.key;
         this.model = null;
+        this.time = options.time;
     };
     
     setModel(model) {
@@ -52,6 +53,15 @@ class SatelliteModelLayer extends RenderableLayer {
             this.removeAllRenderables();
             this.addRenderable(this.model);
             this.doRerender();
+        }
+    }
+
+    /**
+     * @param position {Position} Position of the satellite.
+     */
+    setPosition(position) {
+        if(position) {
+            this.model.position(position);
         }
     }
     
