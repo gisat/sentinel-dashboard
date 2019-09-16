@@ -60,8 +60,17 @@ class SatelliteModelLayer extends RenderableLayer {
      * @param position {Position} Position of the satellite.
      */
     setPosition(position) {
-        if(position) {
+        if(position && this.model) {
             this.model.position(position);
+        }
+    }
+
+    /**
+     * @param position {Date} Time of the satellite.
+     */
+    setTime(time) {
+        if(time) {
+            this.time = time;
         }
     }
     

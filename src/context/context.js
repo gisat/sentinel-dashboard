@@ -3,7 +3,7 @@ import reducer from './reducer';
 import {getNowUTC} from '../utils/date'
 import moment from 'moment';
 import period from '../utils/period';
-import {getSatDataByKey} from './satData';
+import {getSatDataByKey, getDefaultSatOrbitBySatKey} from './satData';
 
 const now = moment(getNowUTC());
 
@@ -144,10 +144,13 @@ const initialState = {
             {id: 's5p', name: 'S-5', model: 'S5', iconClass: 'sentinel-5', satData: getSatDataByKey('s5p'), layers:[]}
         ], // All the available satellites.
         orbits: [
-            {
-                key: 'sat-1-2019-09-31',
-                specs: ['1 40697U 15028A   18124.08865983  .00000004  00000-0  17994-4 0  9993','2 40697  98.5686 199.4434 0001286  92.5669 267.5666 14.30817033149583'],
-            },
+            getDefaultSatOrbitBySatKey('s1a'),
+            getDefaultSatOrbitBySatKey('s1b'),
+            getDefaultSatOrbitBySatKey('s2a'),
+            getDefaultSatOrbitBySatKey('s2b'),
+            getDefaultSatOrbitBySatKey('s3a'),
+            getDefaultSatOrbitBySatKey('s3b'),
+            getDefaultSatOrbitBySatKey('s5p'),
         ]
     },
     periodLimit: stringPeriodLimit,

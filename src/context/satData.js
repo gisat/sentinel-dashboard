@@ -275,5 +275,17 @@ const satData = [
 export const getSatDataByKey = (satKey) => {
     return satData.find((s) => s.key === satKey);
 };
+export const getDefaultSatOrbitBySatKey = (satKey) => {
+    const sat = getSatDataByKey(satKey);
+    // const launchDate = `${sat.launchDate.getUTCFullYear()}-${sat.launchDate.getUTCMonth()}-${sat.launchDate.getUTCDate()}`
+    return {
+        // key: `${satKey}-${launchDate}`,
+        key: `orbit-${satKey}`,
+        specs: [
+            sat.tleLineOne,
+            sat.tleLineTwo,
+        ]
+    }
+};
 
 export default satData;

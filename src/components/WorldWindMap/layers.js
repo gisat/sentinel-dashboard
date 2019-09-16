@@ -3,13 +3,12 @@ import WordWindX from 'webworldwind-x';
 import createCachedSelector from 're-reselect';
 import './style.css';
 import SatelliteModelLayer from './SatelliteModelLayer';
+import OrbitLayer from './OrbitLayer';
 import {getModel} from './satellitesModels';
 const {
     SentinelCloudlessLayer,
     SciHubProducts,
     EoUtils,
-    Orbit,
-    Model,
 } = WordWindX;
 const {
     RenderableLayer,
@@ -78,16 +77,16 @@ const getSentinelLayer = (layerConfig) => {
     }
 }
 
-const getOrbitLayer = (layerConfig) => {
+const getOrbitLayer = (layerConfig, time = new Date()) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
     if(cacheLayer) {
+        if(time !== cacheLayer.time.toString()) {
+            cacheLayer.setTime(new Date(time));
+        }
         return cacheLayer;
     } else {
-        const satRec = EoUtils.computeSatrec(...layerConfig.specs);
-
-        const layer = new RenderableLayer(layerKey);
-        layer.addRenderable(new Orbit(satRec));
+        const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time});
         layersCache.set(layerKey, layer);
         return layer;
     }
@@ -102,6 +101,7 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
             const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
             const position = EoUtils.getOrbitPosition(satrec, new Date(time));
             cacheLayer.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+            cacheLayer.setTime(time);
         }
         return cacheLayer;
     } else {
