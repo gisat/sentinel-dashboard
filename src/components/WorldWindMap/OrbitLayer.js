@@ -46,7 +46,8 @@ class OrbitLayer extends RenderableLayer {
         if(time) {
             this.time = time;
             this.orbit.time(time);
-            this.orbit.update(true);
+            // this.orbit.update(true);
+            this.orbit.update();
         }
     }
     

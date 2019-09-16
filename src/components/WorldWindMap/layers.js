@@ -109,10 +109,16 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
         layer.setRerender(() => wwd.redraw());
         getModel(`${layerConfig.satData.filePath}/${layerConfig.satData.fileName}`, layerKey).then(
             (model) => {
-                layer.setModel(model)
                 const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
                 const position = EoUtils.getOrbitPosition(satrec, new Date(time));
-                layer.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+                const options = {
+                    rotations: layerConfig.satData.rotations,
+                    preRotations: layerConfig.satData.preRotations,
+                    scale: layerConfig.satData.scale,
+                    translations: layerConfig.satData.translations,
+                    ignoreLocalTransforms: layerConfig.satData.ignoreLocalTransforms,
+                }
+                layer.setModel(model, options, position)
             }
         );
         layersCache.set(layerKey, layer);

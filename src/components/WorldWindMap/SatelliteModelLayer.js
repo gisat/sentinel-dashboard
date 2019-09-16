@@ -2,12 +2,34 @@ import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 const {
     RenderableLayer,
-    Position,
 } = WorldWind;
 
 const {
     Model,
 } = WordWindX;
+
+const DEFAULT_MODEL_OPTIONS = {
+    rotations: {
+        x: 0,
+        y: 0,
+        z: 0,
+        headingAxis: [0, 0, 1],
+        headingAdd: -90,
+        headingMultiply: 1
+    },
+    preRotations: {
+        x: 0,
+        y: 0,
+        z: 0
+    },
+    scale: 500000,
+    translations: {
+        x: -0.1,
+        y: -0.1,
+        z: 0
+    },
+    ignoreLocalTransforms: true
+}
 
 /**
  * Class extending WorldWind.RenderableLayer. Layer can render only one model of satellite. It`s possible to set position data of model.
@@ -25,30 +47,15 @@ class SatelliteModelLayer extends RenderableLayer {
         this.time = options.time;
     };
     
-    setModel(model) {
+    /**
+     * 
+     * @param {Object} collada model 
+     * @param {Object} options
+     * @param {Position} position
+     */
+    setModel(model, options = DEFAULT_MODEL_OPTIONS, position) {
         if(model) {
-            this.model = new Model(model, {
-                rotations: {
-                    x: 0,
-                    y: 0,
-                    z: 0,
-                    headingAxis: [0, 0, 1],
-                    headingAdd: -90,
-                    headingMultiply: 1
-                },
-                preRotations: {
-                    x: 0,
-                    y: 0,
-                    z: 0
-                },
-                scale: 500000,
-                translations: {
-                    x: -0.1,
-                    y: -0.1,
-                    z: 0
-                },
-                ignoreLocalTransforms: true
-            }, new Position(51, 14, 100000));
+            this.model = new Model(model, options, position);
             
             this.removeAllRenderables();
             this.addRenderable(this.model);
