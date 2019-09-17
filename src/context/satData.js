@@ -20,7 +20,7 @@ const satData = [
         tleLineOne: '1 39634U 14016A   18124.03591006  .00000001  00000-0  10014-4 0  9998',
         tleLineTwo: '2 39634  98.1819 132.0838 0001369  78.7198 281.4156 14.59198520217480',
         hasModel: true,
-        filePath: '/satellites/sentinel1/',
+        filePath: 'satellites/sentinel1/',
         fileName: 's1.json',
         rotations: {
             x: 0,
@@ -62,7 +62,7 @@ const satData = [
         tleLineOne: '1 40697U 15028A   18124.08865983  .00000004  00000-0  17994-4 0  9993',
         tleLineTwo: '2 40697  98.5686 199.4434 0001286  92.5669 267.5666 14.30817033149583',
         hasModel: true,
-        filePath: '/satellites/senti2version6/',
+        filePath: 'satellites/senti2version6/',
         fileName: 's2.json',
         rotations: {
             x: 0,
@@ -94,7 +94,7 @@ const satData = [
         tleLineOne: '1 41335U 16011A   18124.14356592 -.00000000  00000-0  18017-4 0  9998',
         tleLineTwo: '2 41335  98.6266 192.0005 0001035 100.1921 259.9376 14.26736754115121',
         hasModel: true,
-        filePath: '/satellites/Sentinel3/',
+        filePath: 'satellites/Sentinel3/',
         fileName: 's3.json',
         rotations: {
             x: 0, //0
@@ -134,7 +134,7 @@ const satData = [
         tleLineOne: '1 41456U 16025A   18124.13828432 -.00000022  00000-0  49756-5 0  9992',
         tleLineTwo: '2 41456  98.1817 132.0102 0001487  82.9964 277.1419 14.59197806107664',
         hasModel: true,
-        filePath: '/satellites/sentinel1/',
+        filePath: 'satellites/sentinel1/',
         fileName: 's1.json',
         rotations: {
             x: 0,
@@ -172,7 +172,7 @@ const satData = [
         tleLineTwo: '2 42063  98.5687 199.4702 0001382  97.5073 262.6270 14.30817718 60503',
         groundPosition: {latitude: 5.2079, longitude: -52.7724, altitude: 0},
         hasModel: true,
-        filePath: '/satellites/senti2version6/',
+        filePath: 'satellites/senti2version6/',
         fileName: 's2.json',
         rotations: {
             x: 0,
@@ -209,7 +209,7 @@ const satData = [
 
         groundPosition: {latitude: 62.927860, longitude: 40.574830, altitude: 0},
         hasModel: true,
-        filePath: '/satellites/sentinel5p/',
+        filePath: 'satellites/sentinel5p/',
         fileName: 's5p.json',
         rotations: {
             x: 0,
@@ -246,7 +246,7 @@ const satData = [
             altitude: 0,
         },
         hasModel: true,
-        filePath: '/satellites/Sentinel3/',
+        filePath: 'satellites/Sentinel3/',
         fileName: 's3.json',
         rotations: {
             x: 0, //0
