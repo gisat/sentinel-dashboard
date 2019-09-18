@@ -107,7 +107,7 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
     } else {
         const layer = new SatelliteModelLayer({key: layerKey, time: time});
         layer.setRerender(() => wwd.redraw());
-        getModel(`${layerConfig.satData.filePath}/${layerConfig.satData.fileName}`, layerKey).then(
+        getModel(`${layerConfig.satData.filePath}${layerConfig.satData.fileName}`, layerKey).then(
             (model) => {
                 const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
                 const position = EoUtils.getOrbitPosition(satrec, new Date(time));
