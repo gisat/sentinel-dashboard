@@ -7,6 +7,7 @@ import {
     startTrackNowTime,
     setOrientation,
     updateTleData,
+    updateApsData,
     changeSelectTime,
     setFollowNow,
 } from './context/actions';
@@ -37,6 +38,9 @@ class App extends React.PureComponent {
         changeSelectTime(initTime, dispatch,initTime)
         //set Tle data
         updateTleData(dispatch, initTime);
+        
+        //set Acquisition plans data
+        updateApsData(dispatch);
 
         //Re-set follow now, because setting time in timeline set followNow to false.
         setTimeout(() => {

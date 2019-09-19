@@ -151,7 +151,8 @@ const initialState = {
             getDefaultSatOrbitBySatKey('s3a'),
             getDefaultSatOrbitBySatKey('s3b'),
             getDefaultSatOrbitBySatKey('s5p'),
-        ]
+        ],
+        acquisitionsPlans: null,
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],

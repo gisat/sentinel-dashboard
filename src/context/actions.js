@@ -4,6 +4,7 @@ import select from './selectors/';
 import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 import {getTle} from '../utils/tle';
+import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
 
 let timer = null;
 let nowTimer = null;
@@ -254,4 +255,25 @@ export const setOrbits = (orbits) => {
 export const updateTleData = (dispatch, selectTime) => {
     const selectTimeMoment = moment(selectTime);
     getTle(selectTimeMoment.format('YYYY-MM-DD')).then(data => dispatch(setOrbits(data)));
+}
+
+
+/**
+ * @param {Array.<Object>} - orbits
+ */
+export const setAcquisitionPlans = (aps) => {
+    return {
+        type: types.SET_ACQUISITION_PLANS,
+        payload: {
+            aps
+        }
+    }
+}
+
+/**
+ * 
+ */
+export const updateApsData = async (dispatch) => {
+    const aps = await getAllAcquisitionPlans()
+    dispatch(setAcquisitionPlans(aps));
 }

@@ -223,6 +223,11 @@ const setOrbits = (state, action) => {
     return {...state, data: {...state.data, orbits}};
 };
 
+const setAcquisitionPlans = (state, action) => {
+    const aps = action.payload.aps;
+    return {...state, data: {...state.data, acquisitionsPlans: aps}};
+};
+
 export default (state, action) => {
     switch(action.type) {
         case types.FOCUS_SATELLITE:
@@ -263,6 +268,8 @@ export default (state, action) => {
             return setActiveInfoModal(state, action);
         case types.SET_ORBITS:
             return setOrbits(state, action);
+        case types.SET_ACQUISITION_PLANS:
+            return setAcquisitionPlans(state, action);
         default:
             return state;
     }

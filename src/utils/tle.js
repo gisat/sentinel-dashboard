@@ -1,5 +1,3 @@
-import { is } from "css-select";
-
 const getUrl = (dateString) => `http://eoapps.solenix.ch/tle-server/${dateString}/resource.txt`
 
 //cache tle in Map
@@ -40,7 +38,6 @@ const transformTleFormat = (tle) => {
  * @param {string} dateString - Date string in format YYYY-MM-DD like "2019-06-07"
  */
 export const getTle = async (dateString) => {
-    console.log('getTle', dateString);
     
     let tle = null;
     if(cache.has(dateString)) {
