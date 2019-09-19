@@ -34,7 +34,7 @@ const getPlansForDate = (state, date) => {
         return substate.map(satAps => {
             return {
                 ...satAps,
-                aps:  satAps.aps.filter(aps => apsForTime(aps, dateString))
+                plans:  satAps.plans.filter(aps => apsForTime(aps, dateString))
             }
         })
     } else {

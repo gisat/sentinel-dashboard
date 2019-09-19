@@ -4,6 +4,7 @@ import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
 import {getSubstate as getSatellitesSubstate} from './data/satellites';
 import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
+import {getPlansKeys} from '../../utils/acquisitionPlans';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
@@ -60,7 +61,6 @@ export function getFocusedSattelite (state)  {return common.getByPath(state, ['f
 
 //round time on minutes to prevent rerender on every second?
 const getEndDataTime = getSelectTime;
-
 export const getActiveLayers = createCachedSelector(
     getPureActiveLayers,
     getBeginDataTime,
@@ -88,9 +88,8 @@ export const getActiveLayers = createCachedSelector(
     const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime}));
     let acquisitionPlanLayers = [];
     if(selectTimePastOrCurrent){
-        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:aps.key, name: aps.key, type: 'acquisitionPlan', plans: aps.aps, selectTime}));
+        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime}));
     };
-    console.log(acquisitionPlanLayers, selectTime);
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
     return activeLayersWithDates;
@@ -105,9 +104,9 @@ export const getActiveLayers = createCachedSelector(
     const acquisitionPlans = getPlansForDate(state, selectTime);
     let acquisitionPlanLayers = '';
     if(selectTimePastOrCurrent){
-        acquisitionPlanLayers = acquisitionPlans.map(aps => `${aps.key}-${aps.aps.map(a => `${a.start}_${a.end}`).join('')}`).join(',');
+        acquisitionPlanLayers = getPlansKeys(acquisitionPlans);
     };
-    
+
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
     const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
     const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');

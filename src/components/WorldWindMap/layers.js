@@ -4,6 +4,8 @@ import createCachedSelector from 're-reselect';
 import './style.css';
 import SatelliteModelLayer from './SatelliteModelLayer';
 import OrbitLayer from './OrbitLayer';
+import AcquisitionPlanLayer from './AcquisitionPlanLayer';
+import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getModel} from './satellitesModels';
 const {
     SentinelCloudlessLayer,
@@ -41,6 +43,10 @@ export function getProductByKey (productKey) {
 
 const filterOrbitLayersConfigs = (layersConfig) => {
     return layersConfig.filter(l => l.type === 'orbit');
+}
+
+const filterAcquisitionPlanLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'acquisitionPlan');
 }
 
 const filterSatelliteLayersConfigs = (layersConfig) => {
@@ -87,6 +93,31 @@ const getOrbitLayer = (layerConfig, time = new Date()) => {
         return cacheLayer;
     } else {
         const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time});
+        layersCache.set(layerKey, layer);
+        return layer;
+    }
+}
+
+const getAcquisitionPlanLayer = (layerConfig, wwd, time) => {
+    const layerKey = layerConfig.key;
+    const cacheLayer = layersCache.get(layerKey);
+    const plans = layerConfig.plans;
+    const range = 90 * 60 * 1000;
+    const startDate = new Date(time - range);
+    const endDate = new Date(time + range);
+
+    if(cacheLayer) {
+        const plansKeys = getPlansKeys(plans);
+        const cacheLayerPlansKeys = getPlansKeys(cacheLayer.plans);
+
+        if(plansKeys !== cacheLayerPlansKeys) {
+            cacheLayer.setPlans(plans, startDate, endDate);
+        }
+        return cacheLayer;
+    } else {
+        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName});
+        layer.setPlans(plans, startDate, endDate);
+        layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
         return layer;
     }
@@ -139,18 +170,22 @@ export const getLayers = createCachedSelector([
     const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time));
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
-    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers];
+    const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
+    const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time));
+    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers];
 })((layersConfig, time) => {
     const stringTime = time ? time.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
 
+    const acquisitionPlanLayers = filterAcquisitionPlanLayersConfigs(layersConfig);
+
     const orbitKeys = orbitLayersConfigs.map(l => l.key).join(',');
     const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
-    const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',')
-    //invalidate time
-    const cacheKey = `${stringTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
+    const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',');
+    const acquisitionPlanLayersKeys = acquisitionPlanLayers.map((aps) => `${aps.key}_${getPlansKeys(aps.plans)}`);
+    const cacheKey = `${stringTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
     return cacheKey;
 });
 

@@ -1,11 +1,13 @@
 const getSatAPSUrl = (satKey) => `http://eoapps.solenix.ch/aps/${satKey}/`;
-const getSatIntervalAPSUrl = (satKey, ASPfile) => `http://eoapps.solenix.ch/aps/${satKey}/${ASPfile}`;
+const getSatIntervalAPSUrl = (satKey, start, end) => `http://eoapps.solenix.ch/aps/${satKey}/${satKey.toUpperCase()}_${start}_${end}.kml`;
 // const satellites = ['s1a', 's1b', 's2a', 's2b', 's3a', 's3b', 's5p'];
 const satellites = ['s1a', 's1b', 's2a', 's2b'];
 //cache tle in Map
 const cache = new Map();
 
-const parseAPSfiles = (result) => {
+export const getPlansKeys = (aps) => aps && aps.length ? aps.map(a => `${a.start}_${a.end}`).join('') : '';
+
+const parseAPSfiles = (result, satKey) => {
         const kmls = result.split('\n');
 
         return kmls.reduce((acc, kmlName) => {
@@ -17,6 +19,8 @@ const parseAPSfiles = (result) => {
                     start: kml[1],
                     end: kml[2],
                     name: kmlName,
+                    satName: satKey,
+                    url: getSatIntervalAPSUrl(satKey, kml[1], kml[2]),
                 }];
             }
         }, [])
@@ -39,7 +43,7 @@ export const getAcquisitionPlans = async (satKey) => {
             return aps;
         }
     } else {
-        const request = fetch(getSatAPSUrl(satKey)).then(response => response.text()).then(text => parseAPSfiles(text));
+        const request = fetch(getSatAPSUrl(satKey)).then(response => response.text()).then(text => parseAPSfiles(text, satKey));
         cache.set(satKey, request);
         return await request;
     }
@@ -51,7 +55,7 @@ export const getAllAcquisitionPlans = async () => {
             const aps = await getAcquisitionPlans(satKey);
             return {
                 key: satKey,
-                aps,
+                plans: aps,
             }
         })
     );
