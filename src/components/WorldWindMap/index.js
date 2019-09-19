@@ -31,7 +31,7 @@ const WorldWindMap = (props) => {
     // prevent reloading layers while moving timeline
     const timelineState = select.components.timeline.getSubstate(state);
     const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
-    const selectTime = select.rootSelectors.getSelectTime(state);
+    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
 
     const layers = select.rootSelectors.getActiveLayers(state, selectTime);
 

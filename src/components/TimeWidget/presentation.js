@@ -7,10 +7,9 @@ class TimeWidget extends React.PureComponent{
 
     componentDidMount() {
         if(this.props.nowActive) {
-            this.props.onStartTimer();
+            // this.props.onStartTimer();
         }
     }
-
     render() {
         const {time, mouseTime, nowActive, onStartTimer, onStopTimer, active, onSelectActive} = this.props;
         const currentTime = time ? moment(time) : null;

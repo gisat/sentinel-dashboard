@@ -33,7 +33,7 @@ const MapsTimeline = (props) => {
 	const periodLimit = select.rootSelectors.getPeriodLimit(state);
 	const timelineState = select.components.timeline.getSubstate(state);
 	const timelineOverlays = select.components.timeline.getOverlays(state);
-	const time = new Date(select.rootSelectors.getSelectTime(state));
+    const time = new Date(select.rootSelectors.getSelectTime(state));
 
 	const onTimeChange = (timelineState) => {
         const {state} = props;
@@ -45,7 +45,7 @@ const MapsTimeline = (props) => {
 
         if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
             dispatch(stopTimer());
-            dispatch(changeSelectTime(timelineState.centerTime.toString()));
+            dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state)));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== curTimelineState.activeTimeLevel) {

@@ -6,6 +6,9 @@ import {Context} from './context/context';
 import {
     startTrackNowTime,
     setOrientation,
+    updateTleData,
+    changeSelectTime,
+    setFollowNow,
 } from './context/actions';
 import select from './context/selectors/';
 import ProductsModal from './components/ProductsModal/';
@@ -30,6 +33,15 @@ class App extends React.PureComponent {
     componentDidMount() {
         const {state, dispatch} = this.context;
         startTrackNowTime(state, dispatch);
+        const initTime = new Date().toString();
+        changeSelectTime(initTime, dispatch,initTime)
+        //set Tle data
+        updateTleData(dispatch, initTime);
+
+        //Re-set follow now, because setting time in timeline set followNow to false.
+        setTimeout(() => {
+            dispatch(setFollowNow(true));
+        }, 500)
     }
 
     onResize(width, height) {

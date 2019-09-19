@@ -218,6 +218,11 @@ const updateActiveLayer = (state, action) => {
     }
 }
 
+const setOrbits = (state, action) => {
+    const orbits = action.payload.orbits;
+    return {...state, data: {...state.data, orbits}};
+};
+
 export default (state, action) => {
     switch(action.type) {
         case types.FOCUS_SATELLITE:
@@ -256,6 +261,8 @@ export default (state, action) => {
             return updateInfoModal(state, action);
         case types.SET_ACTIVE_INFO_MODAL:
             return setActiveInfoModal(state, action);
+        case types.SET_ORBITS:
+            return setOrbits(state, action);
         default:
             return state;
     }

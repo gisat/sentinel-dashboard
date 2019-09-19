@@ -3,6 +3,7 @@ import moment from 'moment';
 import select from './selectors/';
 import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
+import {getTle} from '../utils/tle';
 
 let timer = null;
 let nowTimer = null;
@@ -125,7 +126,9 @@ export const scrollToTime = (dispatch, selectTime, newTime, period, callback) =>
                 callback();
             }
         } else {
-            dispatch(changeSelectTime(moment(selectTime).add(peace * index).toDate().toString()));
+            const newSelectedTime = moment(selectTime).add(peace * index).toDate().toString();
+            const selectedTime = moment(selectTime).add(peace * (index - 1)).toDate().toString();
+            dispatch(changeSelectTime(newSelectedTime, dispatch, selectedTime));
         }
     }, 60)
 };
@@ -134,17 +137,16 @@ export const scrollToTime = (dispatch, selectTime, newTime, period, callback) =>
  * 
  * @param {string} time 
  */
-export const changeSelectTime = time => {
-    const selectTime = moment(select.rootSelectors.getSelectTime());
-    const selectYearDay = `${selectTime.year()}-${selectTime.dayOfYear()}`
+export const changeSelectTime = (time, dispatch, selectTime) => {
+    const selectTimeMoment = moment(selectTime);
+    const selectYearDay = `${selectTimeMoment.year()}-${selectTimeMoment.dayOfYear()}`
     const momentTime = moment(time);
     const timeYearDay = `${momentTime.year()}-${momentTime.dayOfYear()}`
     const newTimeIsSameDay = selectYearDay === timeYearDay;
 
     //Check if new time is in another day. If so, reload orbits
     if(!newTimeIsSameDay) {
-        console.log("reload orbits", selectYearDay, timeYearDay);
-        //todo discart current orbit loader
+        updateTleData(dispatch, selectTime)
     }
 
     return {
@@ -232,4 +234,24 @@ export const updateActiveLayer = (layerKey, change) => {
             change
         }
     }
+}
+
+/**
+ * @param {Array.<Object>} - orbits
+ */
+export const setOrbits = (orbits) => {
+    return {
+        type: types.SET_ORBITS,
+        payload: {
+            orbits
+        }
+    }
+}
+
+/**
+ * 
+ */
+export const updateTleData = (dispatch, selectTime) => {
+    const selectTimeMoment = moment(selectTime);
+    getTle(selectTimeMoment.format('YYYY-MM-DD')).then(data => dispatch(setOrbits(data)));
 }
