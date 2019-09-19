@@ -3,6 +3,7 @@ import momentjs from 'moment';
 import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
 import {getSubstate as getSatellitesSubstate} from './data/satellites';
+import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
@@ -67,8 +68,9 @@ export const getActiveLayers = createCachedSelector(
     getSelectTimePastOrCurrent,
     getOrbitsSubstate,
     getSatellitesSubstate,
+    getPlansForDate,
     (state, selectTime) => selectTime,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, selectTime) => {
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, selectTime) => {
 
     const activeLayersWithDates = []
 
@@ -84,7 +86,12 @@ export const getActiveLayers = createCachedSelector(
 
     const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
     const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime}));
-    activeLayersWithDates.push(...orbitLayers, ...satellitesLayers);
+    let acquisitionPlanLayers = [];
+    if(selectTimePastOrCurrent){
+        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:aps.key, name: aps.key, type: 'acquisitionPlan', plans: aps.aps, selectTime}));
+    };
+    console.log(acquisitionPlanLayers, selectTime);
+    activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
     return activeLayersWithDates;
 })((state, selectTime) => {
@@ -94,11 +101,17 @@ export const getActiveLayers = createCachedSelector(
     const satellitesSubstate = getSatellitesSubstate(state);
     const beginTime = getBeginDataTime(state);
     const endTime = getEndDataTime(state);
+    const selectTimePastOrCurrent = getSelectTimePastOrCurrent(state);
+    const acquisitionPlans = getPlansForDate(state, selectTime);
+    let acquisitionPlanLayers = '';
+    if(selectTimePastOrCurrent){
+        acquisitionPlanLayers = acquisitionPlans.map(aps => `${aps.key}-${aps.aps.map(a => `${a.start}_${a.end}`).join('')}`).join(',');
+    };
     
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
     const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
     const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
-    const cacheKey = `${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}`;
+    const cacheKey = `${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayers}`;
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
 

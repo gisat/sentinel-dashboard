@@ -6,8 +6,8 @@ import {removeItemByIndex,replaceItemOnIndex} from '../utils/arrayManipulation';
 const deactivateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-
-    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(activeIndex > -1) {
@@ -23,8 +23,8 @@ const deactivateLayer = (state, action) => {
 const activateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-
-    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(activeIndex === -1) {
@@ -40,8 +40,8 @@ const activateLayer = (state, action) => {
 const toggleLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-
-    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(activeIndex > -1) {
@@ -199,8 +199,8 @@ const updateActiveLayer = (state, action) => {
     const layerKey = action.payload.layerKey.layerKey;
     const satKey = action.payload.layerKey.satKey;
     const change = action.payload.change;
-
-    const activeLayers = select.rootSelectors.getActiveLayers(state);
+    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
     const layerIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(layerIndex > -1) {
@@ -225,7 +225,7 @@ const setOrbits = (state, action) => {
 
 const setAcquisitionPlans = (state, action) => {
     const aps = action.payload.aps;
-    return {...state, data: {...state.data, acquisitionsPlans: aps}};
+    return {...state, data: {...state.data, acquisitionPlans: aps}};
 };
 
 export default (state, action) => {
