@@ -88,7 +88,7 @@ export const getActiveLayers = createCachedSelector(
     const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime}));
     let acquisitionPlanLayers = [];
     if(selectTimePastOrCurrent){
-        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime}));
+        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key}));
     };
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
