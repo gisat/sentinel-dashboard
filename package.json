@@ -10,7 +10,7 @@
     "react-modal": "^3.9.1",
     "react-resize-detector": "^4.2.0",
     "react-scripts": "3.0.1",
-    "webworldwind-esa": "^0.10.0-alpha.4",
+    "webworldwind-gisat": "0.10.2",
     "webworldwind-x": "^2.4.8"
   },
   "scripts": {

@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-esa';
+import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 import createCachedSelector from 're-reselect';
 import './style.css';

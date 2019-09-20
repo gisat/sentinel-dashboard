@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-esa';
+import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 const {
     RenderableLayer,

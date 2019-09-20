@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-esa';
+import WorldWind from 'webworldwind-gisat';
 const {
     Color
 } = WorldWind;

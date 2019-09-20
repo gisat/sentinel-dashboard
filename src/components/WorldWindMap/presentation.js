@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import WorldWind from 'webworldwind-esa';
+import WorldWind from 'webworldwind-gisat';
 import WorldWindX from 'webworldwind-x';
 import ClickPickController from './utils/ClickPickController';
 import {isEqual} from 'lodash';
