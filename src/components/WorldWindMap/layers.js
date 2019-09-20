@@ -102,21 +102,22 @@ const getAcquisitionPlanLayer = (layerConfig, wwd, time) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
     const plans = layerConfig.plans;
-    const range = 90 * 60 * 1000;
-    const startDate = new Date(time - range);
-    const endDate = new Date(time + range);
 
     if(cacheLayer) {
         const plansKeys = getPlansKeys(plans);
         const cacheLayerPlansKeys = getPlansKeys(cacheLayer.plans);
-
+        
         if(plansKeys !== cacheLayerPlansKeys) {
-            cacheLayer.setPlans(plans, startDate, endDate);
+            cacheLayer.setPlans(plans);
+        }
+
+        if(time !== cacheLayer.time) {
+            cacheLayer.setTime(time);
         }
         return cacheLayer;
     } else {
-        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName});
-        layer.setPlans(plans, startDate, endDate);
+        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName, time: time});
+        layer.setPlans(plans);
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
         return layer;

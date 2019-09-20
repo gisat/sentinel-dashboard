@@ -35,6 +35,7 @@ const DEFAULT_MODEL_OPTIONS = {
  * Class extending WorldWind.RenderableLayer. Layer can render only one model of satellite. It`s possible to set position data of model.
  * @param options {Object}
  * @param options.key {String}
+ * @param options.time {Date} Time of the satellite.
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
@@ -73,7 +74,7 @@ class SatelliteModelLayer extends RenderableLayer {
     }
 
     /**
-     * @param position {Date} Time of the satellite.
+     * @param time {Date} Time of the satellite.
      */
     setTime(time) {
         if(time) {
