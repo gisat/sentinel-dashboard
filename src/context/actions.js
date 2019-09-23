@@ -147,7 +147,7 @@ export const changeSelectTime = (time, dispatch, selectTime) => {
 
     //Check if new time is in another day. If so, reload orbits
     if(!newTimeIsSameDay) {
-        updateTleData(dispatch, time)
+        updateTleData(dispatch, time);
     }
 
     return {
@@ -254,7 +254,11 @@ export const setOrbits = (orbits) => {
  */
 export const updateTleData = (dispatch, selectTime) => {
     const selectTimeMoment = moment(selectTime);
-    getTle(selectTimeMoment.format('YYYY-MM-DD')).then(data => dispatch(setOrbits(data)));
+    getTle(selectTimeMoment.format('YYYY-MM-DD')).then((data) => {
+        if(data && data.length > 0) {
+            return dispatch(setOrbits(data));
+        }
+    });
 }
 
 
