@@ -14,7 +14,6 @@ const {
 } = WordWindX;
 const {
     RenderableLayer,
-    Position
 } = WorldWind;
 
 const username = 'copapps';
@@ -83,16 +82,25 @@ const getSentinelLayer = (layerConfig) => {
     }
 }
 
-const getOrbitLayer = (layerConfig, time = new Date()) => {
+const getOrbitLayer = (layerConfig, time = new Date(), wwd) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
+
+    //set specs
+
     if(cacheLayer) {
-        if(time !== cacheLayer.time.toString()) {
+        if(time.toString() !== cacheLayer.time.toString()) {
             cacheLayer.setTime(new Date(time));
         }
+
+        if(layerConfig.specs[0] !== (cacheLayer.satRec && cacheLayer.satRec[0]) || layerConfig.specs[1] !== (cacheLayer.satRec && cacheLayer.satRec[1])) {
+            cacheLayer.setSatRec(layerConfig.specs);
+        }
+
         return cacheLayer;
     } else {
         const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time});
+        layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
         return layer;
     }
@@ -129,12 +137,15 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
     const cacheLayer = layersCache.get(layerKey);
     if(cacheLayer) {
         //upadte time on change
-        if(time !== cacheLayer.time) {
-            const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
-            const position = EoUtils.getOrbitPosition(satrec, new Date(time));
-            cacheLayer.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+        if(time.toString() !== cacheLayer.time.toString()) {
             cacheLayer.setTime(time);
         }
+
+        //if changed TLE in config
+        if((layerConfig.tle && layerConfig.tle[0]) !== (cacheLayer.Tle && cacheLayer.Tle[0]) || (layerConfig.tle && layerConfig.tle[1]) !== (cacheLayer.Tle && cacheLayer.Tle[1])) {
+            cacheLayer.setTle(layerConfig.tle);
+        }
+
         return cacheLayer;
     } else {
         const layer = new SatelliteModelLayer({key: layerKey, time: time});
@@ -151,6 +162,7 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
                     ignoreLocalTransforms: layerConfig.satData.ignoreLocalTransforms,
                 }
                 layer.setModel(model, options, position)
+                layer.setTle([layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo]);
             }
         );
         layersCache.set(layerKey, layer);
@@ -168,7 +180,7 @@ export const getLayers = createCachedSelector([
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
-    const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time));
+    const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time, wwd));
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);

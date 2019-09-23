@@ -42,7 +42,7 @@ const generateId = () => {
  * @param options.key {String}
  * @param options.satName {String}
  * @param options.time {Date} Time of the satellite.
- * @param options.range {number} Renge in milliseconds.
+ * @param options.range {number} Renge in milliseconds. Default is 90 minutes.
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
@@ -55,7 +55,7 @@ class AcquisitionPlanLayer extends RenderableLayer {
         this.plans = null;
         this.time = options.time || new Date();
 
-        this.range = options.range || 90 * 60 * 1000;
+        this.range = options.range || 90 * 60 * 1000; 
         this.loading = new Set();
     };
 

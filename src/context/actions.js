@@ -147,7 +147,7 @@ export const changeSelectTime = (time, dispatch, selectTime) => {
 
     //Check if new time is in another day. If so, reload orbits
     if(!newTimeIsSameDay) {
-        updateTleData(dispatch, selectTime)
+        updateTleData(dispatch, time)
     }
 
     return {

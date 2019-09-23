@@ -20,34 +20,41 @@ class OrbitLayer extends RenderableLayer {
 	constructor(options) {
         super(options);
         this._rerenderMap = null;
+        this.satRec = null;
         this.key = options.key;
-        this.orbit = new Orbit(EoUtils.computeSatrec(...options.satRec));
+        const timeWindow = 2 * 90 * 60 * 1000;
+        this.orbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), timeWindow);
         this.addRenderable(this.orbit);
         this.time = null;
+        this.satRec = null;
         this.setSatRec(options.satRec);
         this.setTime(options.time);
     };
 
     
     /**
-     * @param position {Array.<lte>} Lte.
+     * @param {Array.<lte>} satRec  Lte.
      */
     setSatRec(satRec) {
         if(satRec) {
+            this.satRec = satRec;
             const satrec = EoUtils.computeSatrec(...satRec);
             this.orbit.satrec(satrec);
+            this.orbit.update();
+            this.doRerender();
         }
     }
 
     /**
-     * @param position {Date} Time of the orbit.
+     * @param {Date} time Time of the orbit.
      */
     setTime(time) {
         if(time) {
             this.time = time;
             this.orbit.time(time);
-            // this.orbit.update(true);
-            this.orbit.update();
+            this.orbit.update(true);
+            // this.orbit.update();
+            this.doRerender();
         }
     }
     

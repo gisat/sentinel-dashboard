@@ -85,8 +85,16 @@ export const getActiveLayers = createCachedSelector(
     });
 
     const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
-    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime}));
+
+
+    const getOrbitForLayer = (orbitKey) => {
+        const orbit = orbitsSubstate.find(o => o.key === orbitKey);
+        return (orbit && orbit.specs) || null;
+    }
+
+    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
     let acquisitionPlanLayers = [];
+    //todo filter by visible APS data
     if(selectTimePastOrCurrent){
         acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key}));
     };

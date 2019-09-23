@@ -2,10 +2,12 @@ import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 const {
     RenderableLayer,
+    Position,
 } = WorldWind;
 
 const {
     Model,
+    EoUtils,
 } = WordWindX;
 
 const DEFAULT_MODEL_OPTIONS = {
@@ -46,6 +48,7 @@ class SatelliteModelLayer extends RenderableLayer {
         this.key = options.key;
         this.model = null;
         this.time = options.time;
+        this.Tle = null;
     };
     
     /**
@@ -73,12 +76,36 @@ class SatelliteModelLayer extends RenderableLayer {
         }
     }
 
+    
+    /**
+     * @param position {Array.<lte>} Lte.
+     */
+    setTle(Tle) {
+        if(Tle) {
+            this.Tle = Tle;
+            this.update();
+        }
+    }
+    
+    /**
+     * @param position {Array.<lte>} Lte.
+     */
+    update() {
+        if(this.Tle && this.time) {
+            const satrec = EoUtils.computeSatrec(...this.Tle);
+            const position = EoUtils.getOrbitPosition(satrec, new Date(this.time));
+            this.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+            this.doRerender();
+        }
+    }
+
     /**
      * @param time {Date} Time of the satellite.
      */
     setTime(time) {
         if(time) {
             this.time = time;
+            this.update();
         }
     }
     
