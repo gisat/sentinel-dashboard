@@ -1,11 +1,29 @@
 import React from 'react';
 
 export default props => (
-    <g transform="matrix(.15695 0 0 .15695 -42.935 -16.345)">
-        <path d="m308.53 197c0-37.017 29.983-67 67-67 37.017 0 67 29.983 67 67s-29.983 67-67 67c-37.017 0-67-29.983-67-67z" markerEnd="" markerMid="" markerStart="" strokeDashoffset="" strokeLinejoin="round" strokeWidth="7" fillOpacity="0"/>
-        <path d="m273.56 198.05h69.668" fill="#ffffff" markerEnd="" markerMid="" markerStart="" strokeDashoffset="" strokeLinejoin="round" strokeWidth="7"/>
-        <path transform="rotate(-89.72 375.88 139)" d="m341.05 139h69.668" fill="#ffffff" markerEnd="" markerMid="" markerStart="" strokeDashoffset="" strokeLinejoin="round" strokeWidth="7"/>
-        <path transform="rotate(-89.72 375.5 264.68)" d="m340.67 264.68h69.668" fill="#ffffff" markerEnd="" markerMid="" markerStart="" strokeDashoffset="" strokeLinejoin="round" strokeWidth="7"/>
-        <path d="m407.78 198.14h69.668" fill="#ffffff" markerEnd="" markerMid="" markerStart="" strokeDashoffset="" strokeLinejoin="round" strokeWidth="7"/>
+    <g>
+        <g transform="matrix(.029895 0 0 .029895 1.0698 1.0507)">
+            <path d="m500 10c-270.2 0-490 219.8-490 490s219.8 490 490 490 490-219.8 490-490-219.8-490-490-490zm0 896.3c-224 0-406.3-182.3-406.3-406.3s182.3-406.3 406.3-406.3 406.3 182.3 406.3 406.3-182.3 406.3-406.3 406.3z"/>
+        </g>
+        <g transform="matrix(.58975 0 0 1.0043 -4.8033 -.3654)">
+            <rect x="9.322" y="14.812" width="13.449" height="2.3305"/>
+        <circle transform="scale(1,-1)" cx="22.732" cy="-15.977" r="1.1622"/>
+        <circle cx="9.3099" cy="15.978" r="1.1653"/>
+        </g>
+        <g transform="matrix(0 .58975 -1.0043 0 32.365 17.909)">
+            <rect x="9.322" y="14.812" width="13.449" height="2.3305"/>
+        <circle transform="scale(1,-1)" cx="22.732" cy="-15.977" r="1.1622"/>
+        <circle cx="9.3099" cy="15.978" r="1.1653"/>
+        </g>
+        <g transform="matrix(.58975 0 0 1.0043 17.909 -.33431)">
+            <rect x="9.322" y="14.812" width="13.449" height="2.3305"/>
+        <circle transform="scale(1,-1)" cx="22.732" cy="-15.977" r="1.1622"/>
+        <circle cx="9.3099" cy="15.978" r="1.1653"/>
+        </g>
+        <g transform="matrix(0 .58975 -1.0043 0 32.148 -4.8033)">
+            <rect x="9.322" y="14.812" width="13.449" height="2.3305"/>
+        <circle transform="scale(1,-1)" cx="22.732" cy="-15.977" r="1.1622"/>
+        <circle cx="9.3099" cy="15.978" r="1.1653"/>
+        </g>
     </g>
 );
