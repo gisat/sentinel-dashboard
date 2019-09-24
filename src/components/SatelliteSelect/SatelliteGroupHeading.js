@@ -16,11 +16,13 @@ const SatelliteGroupHeading = props => {
         selectProps,
         groupData,
         restProps,
-        onClick
+        onClick,
+        onAcquisitionPlanClick,
       } = props;
 
     const active = groupData.active;
     const activeAPS = groupData.activeAPS;
+    const availableAPS = groupData.availableAPS;
 
     //TODO -> extract into file
     const color = 'rgb(189, 189, 189)';
@@ -63,10 +65,15 @@ const SatelliteGroupHeading = props => {
         ...(active && activeStyle)
     }
 
-    const apsIconStyle = {
+    const apsWrapStyle = {
         flex: '2 2 auto',
         maxWidth: '1.25rem',
+        maxHeight: '2rem',
         marginLeft: '0.25rem',
+    }
+
+    const apsIconStyle = {
+        maxWidth: '1.25rem',
         color,
         fill: color,
         stroke: color,
@@ -81,14 +88,18 @@ const SatelliteGroupHeading = props => {
                     {props.children}
                 </span>
                 <Icon icon={'location'} style={posIconStyle}/>
-                <Icon icon={'clock'} style={apsIconStyle}/>
+                {availableAPS ? <div style={apsWrapStyle} onClick={(e) => {
+                    e.stopPropagation();e.preventDefault();onAcquisitionPlanClick(groupData.value)}
+                    }>
+                    <Icon icon={'clock'} style={apsIconStyle}/>
+                </div> : null}
             </div>
     );
 };
 
-const getSatelliteGroupHeading = (onClick) => {
+const getSatelliteGroupHeading = (onClick, onAcquisitionPlanClick) => {
     return (props) => {
-        return <SatelliteGroupHeading {...props} onClick={onClick} />
+        return <SatelliteGroupHeading {...props} onAcquisitionPlanClick={onAcquisitionPlanClick} onClick={onClick} />
     } 
 }
 export default SatelliteGroupHeading;

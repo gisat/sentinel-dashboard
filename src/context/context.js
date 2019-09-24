@@ -152,7 +152,10 @@ const initialState = {
             getDefaultSatOrbitBySatKey('s3b'),
             getDefaultSatOrbitBySatKey('s5p'),
         ],
-        acquisitionsPlans: null,
+        acquisitionPlans: [],
+    },
+    map: {
+        acquisitionPlans: []
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],

@@ -4,6 +4,7 @@ import select from '../../context/selectors/';
 import {withContext} from '../../context/withContext';
 import {
     toggleLayer,
+    toggleAcquisitionPlan,
     updateComponent,
     toggleSatelliteFocus,
 } from '../../context/actions';
@@ -17,6 +18,10 @@ const SetalliteSelect = (props) => {
 
     const onLayerClick = (evt) => {
         dispatch(toggleLayer(evt.satKey, evt.id))
+    }
+
+    const onAcquisitionPlanClick = (satKey) => {
+        dispatch(toggleAcquisitionPlan(state, satKey));
     }
 
     const onSatteliteClick = (satKey) => {
@@ -40,6 +45,7 @@ const SetalliteSelect = (props) => {
             open={satelliteSelectState.open}
             onLayerClick={onLayerClick}
             onSatteliteClick={onSatteliteClick}
+            onAcquisitionPlanClick={onAcquisitionPlanClick}
             onCollapsClick={onSatelliteCollapsClick}
             maxHeight = {maxHeight}
             />

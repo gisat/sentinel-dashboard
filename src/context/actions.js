@@ -301,3 +301,41 @@ export const updateApsData = async (dispatch) => {
     const aps = await getAllAcquisitionPlans()
     dispatch(setAcquisitionPlans(aps));
 }
+
+/**
+ * 
+ */
+export const mapAddVisibleAcquisitionPlanKey = (acquisitionPlanKey) => {
+    return {
+        type: types.MAP_ADD_VISIBLE_ACQUISITION_PLAN,
+        payload: {
+            key: acquisitionPlanKey
+        }
+    }
+}
+
+/**
+ * 
+ */
+export const mapRemoveVisibleAcquisitionPlanKey = (acquisitionPlanKey) => {
+    return {
+        type: types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN,
+        payload: {
+            key: acquisitionPlanKey
+        }
+    }
+}
+
+/**
+ * 
+ */
+export const toggleAcquisitionPlan = (state, acquisitionPlanKey) => {
+    const acquisitionPlanVisible = select.map.isVisibleAcquisitionPlanByKey(state, acquisitionPlanKey);
+    const action = acquisitionPlanVisible ? types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN : types.MAP_ADD_VISIBLE_ACQUISITION_PLAN;
+    return {
+        type: action,
+        payload: {
+            key: acquisitionPlanKey
+        }
+    }
+}

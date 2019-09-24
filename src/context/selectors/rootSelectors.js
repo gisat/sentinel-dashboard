@@ -4,6 +4,7 @@ import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
 import {getSubstate as getSatellitesSubstate} from './data/satellites';
 import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
+import {getVisibleAcquisitionsPlans} from './map';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
@@ -69,8 +70,9 @@ export const getActiveLayers = createCachedSelector(
     getOrbitsSubstate,
     getSatellitesSubstate,
     getPlansForDate,
+    getVisibleAcquisitionsPlans,
     (state, selectTime) => selectTime,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, selectTime) => {
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime) => {
 
     const activeLayersWithDates = []
 
@@ -94,9 +96,12 @@ export const getActiveLayers = createCachedSelector(
 
     const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
     let acquisitionPlanLayers = [];
+    
     //todo filter by visible APS data
-    if(selectTimePastOrCurrent){
-        acquisitionPlanLayers = acquisitionPlans.map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key}));
+
+    if(selectTimePastOrCurrent) {
+
+        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key}));
     };
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
@@ -110,9 +115,10 @@ export const getActiveLayers = createCachedSelector(
     const endTime = getEndDataTime(state);
     const selectTimePastOrCurrent = getSelectTimePastOrCurrent(state);
     const acquisitionPlans = getPlansForDate(state, selectTime);
+    const visibleAcquisitionsPlans = getVisibleAcquisitionsPlans(state);
     let acquisitionPlanLayers = '';
     if(selectTimePastOrCurrent){
-        acquisitionPlanLayers = getPlansKeys(acquisitionPlans);
+        acquisitionPlanLayers = getPlansKeys(acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)));
     };
 
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
