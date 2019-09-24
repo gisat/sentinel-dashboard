@@ -1,7 +1,7 @@
 import moment from 'moment';
 import types from './types';
 import select from './selectors/';
-import {removeItemByIndex,replaceItemOnIndex} from '../utils/arrayManipulation';
+import {removeItemByIndex,replaceItemOnIndex, addItemToIndex} from '../utils/arrayManipulation';
 import WorldWindX from 'webworldwind-x';
 
 const {
@@ -250,6 +250,17 @@ const setAcquisitionPlans = (state, action) => {
     return {...state, data: {...state.data, acquisitionPlans: aps}};
 };
 
+const mapAddVisibleAcquisitionPlan = (state, action) => {
+    const acquisitionPlanKey = action.payload.key;
+    return {...state, map: {...state.map, acquisitionPlans: [...state.map.acquisitionPlans, acquisitionPlanKey]}};
+};
+
+const mapRemoveVisibleAcquisitionPlan = (state, action) => {
+    const acquisitionPlanKey = action.payload.key;
+    const acquisitionPlanKeyIndex = state.map.acquisitionPlans.indexOf(acquisitionPlanKey);
+    return {...state, map: {...state.map, acquisitionPlans: removeItemByIndex(state.map.acquisitionPlans, acquisitionPlanKeyIndex)}};
+};
+
 export default (state, action) => {
     switch(action.type) {
         case types.FOCUS_SATELLITE:
@@ -294,6 +305,10 @@ export default (state, action) => {
             return setAcquisitionPlans(state, action);
         case types.SET_WWD:
             return setWwd(state, action);
+        case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:
+            return mapAddVisibleAcquisitionPlan(state, action);
+        case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:
+            return mapRemoveVisibleAcquisitionPlan(state, action);
         default:
             return state;
     }

@@ -74,7 +74,9 @@ class AcquisitionPlanLayer extends RenderableLayer {
         }
     }
 
-    async update() {
+
+
+    async getFootprints(range) {
         //TODO - call loading callback
         this.removeAllRenderables();
         this.doRerender();
@@ -82,8 +84,8 @@ class AcquisitionPlanLayer extends RenderableLayer {
 
         //filter plans by acquisitionPlans.cache
         
-        const startDate = new Date(this.time - this.range);
-        const endDate = new Date(this.time + this.range);
+        const startDate = new Date(this.time - range);
+        const endDate = new Date(this.time + range);
         // await Promise.all(this.plans.map(plan => acquisitionPlans.parse({...plan, filterDate: startDate.toISOString()}).catch((err) => {console.error(err)})));
         const filteredPlans = filterPlansByUrl(this.plans, acquisitionPlans.cache[this.satName]);
 
@@ -100,11 +102,13 @@ class AcquisitionPlanLayer extends RenderableLayer {
         filteredPlans.forEach(plan => this.loading.delete(`${plan.url}_${updateId}`));
 
         acquisitionPlans.terminateWorkers();
-        const { interiors, outlines } = acquisitionPlans.getFootprints({ satName: this.satName, startDate , endDate });
+        return acquisitionPlans.getFootprints({ satName: this.satName, startDate , endDate });
+    }
 
+    async update() {
+        const { interiors, outlines } = await this.getFootprints(this.range);
         this.addRenderables(interiors);
         this.addRenderables(outlines);
-
         this.doRerender();
     }
 
