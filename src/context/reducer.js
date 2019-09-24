@@ -2,6 +2,11 @@ import moment from 'moment';
 import types from './types';
 import select from './selectors/';
 import {removeItemByIndex,replaceItemOnIndex} from '../utils/arrayManipulation';
+import WorldWindX from 'webworldwind-x';
+
+const {
+    EoUtils
+} = WorldWindX;
 
 const deactivateLayer = (state, action) => {
     const satKey = action.payload.satKey;
@@ -104,7 +109,20 @@ const setCurrentTime = (state, action) => {
         followNow = true;
         selectTimeState = setSelectTime(state, {
             payload: currentTime
-        })
+        });
+
+        const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
+        if(focusedSatellite) {
+            const orbitInfo = state.data.orbits
+                .filter(orbit => {
+                    return orbit.key === 'orbit-' + focusedSatellite
+                })[0];
+            if (state.wwd && orbitInfo) {
+                const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+                const position = EoUtils.getOrbitPosition(satrec, new Date(currentTime));
+                state.wwd.goTo(position);
+            }
+        }
     }
     
     const selectTimeMoment = moment(selectTime);
