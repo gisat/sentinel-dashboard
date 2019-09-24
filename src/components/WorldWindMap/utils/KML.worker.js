@@ -1,6 +1,6 @@
 import xml2js from './xml2js';
 
-self.addEventListener('message', onMessage);
+self.addEventListener('message', onMessage);// eslint-disable-line no-restricted-globals
 
 const WORKER_ID = 'kmlWorker';
 
@@ -12,7 +12,7 @@ function onMessage(e) {
         case 'downloadAndParseKmls':
             downloadAndParseKmls(url, satName, filterDate)
                 .then(({ err, shapes }) => {
-                    self.postMessage({
+                    self.postMessage({// eslint-disable-line no-restricted-globals
                         type,
                         satName,
                         url,
@@ -24,7 +24,7 @@ function onMessage(e) {
             break;
 
         default:
-            self.postMessage({
+            self.postMessage({// eslint-disable-line no-restricted-globals
                 type,
                 satName,
                 url,
