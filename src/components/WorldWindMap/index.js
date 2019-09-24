@@ -32,13 +32,14 @@ const WorldWindMap = (props) => {
     const timelineState = select.components.timeline.getSubstate(state);
     const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
     const selectTime = new Date(select.rootSelectors.getSelectTime(state));
-
+    const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
     const layers = select.rootSelectors.getActiveLayers(state, selectTime);
 
     return (
         <Presentation 
             time={selectTime}
             layers = {layers}
+            focusedSatellite = {focusedSatellite}
             onLayerChanged={onLayerChanged}
             onProductsClick={onProductsClick}
             preventReload={preventReloadLayers}

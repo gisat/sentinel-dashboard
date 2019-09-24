@@ -47,7 +47,11 @@ class Map extends Component {
         return layersChanged || preventMovingChanged;
     }
     componentDidUpdate (prevProps) {
-        const {time} = this.props;
+        const {time, focusedSatellite} = this.props;
+
+        if(focusedSatellite !== prevProps.focusedSatellite) {
+            console.log("focused satellite changed", focusedSatellite)
+        }
         
         const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
 
