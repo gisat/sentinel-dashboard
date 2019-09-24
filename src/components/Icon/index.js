@@ -48,6 +48,7 @@ import RotateRightCircularArrow from './components/RotateRightCircularArrow';
 import LoaderOval from './components/Loader-oval';
 import Location from './components/Location.js';
 import Warning from './components/Warning.js';
+import Clock from './components/Clock.js';
 
 import Sentinel1 from './components/satellites/Sentinel1.js';
 import Sentinel2 from './components/satellites/Sentinel2.js';
@@ -161,6 +162,8 @@ const icon = key => {
 			return <Location />;
 		case 'loader-oval':
 			return <LoaderOval />;
+		case 'clock':
+			return <Clock />;
 		// case 'times':
 		// 	return getTimes();
 		default:
