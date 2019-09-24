@@ -31,6 +31,7 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
         const positions = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
         state.wwd.goTo(positions);
     }
+    state.wwd.worldWindowController._isFixed = !satteliteIsFocused;
 
     if (satteliteIsFocused) {
         return {

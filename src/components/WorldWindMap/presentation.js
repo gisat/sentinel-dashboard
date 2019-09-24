@@ -12,6 +12,7 @@ import {
 } from './layers';
 import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
+import FixedPointController from "../../worldwind/FixedPointController";
 
 const {
     SentinelCloudlessLayer
