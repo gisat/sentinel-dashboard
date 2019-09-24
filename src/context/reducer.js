@@ -194,6 +194,10 @@ const setActiveInfoModal = (state, action) => {
     return {...state, infoModal: {...state.infoModal, active: modalKey}};
 }
 
+const setWwd = (state, action) => {
+    return {...state, wwd: action.payload};
+}
+
 const updateActiveLayer = (state, action) => {
     //get layer by key
     const layerKey = action.payload.layerKey.layerKey;
@@ -270,6 +274,8 @@ export default (state, action) => {
             return setOrbits(state, action);
         case types.SET_ACQUISITION_PLANS:
             return setAcquisitionPlans(state, action);
+        case types.SET_WWD:
+            return setWwd(state, action);
         default:
             return state;
     }

@@ -11,6 +11,7 @@ import {
     reloadLayersRenderable
 } from './layers';
 import './style.css';
+import EnabledController from "../../worldwind/EnabledController";
 
 const {
     SentinelCloudlessLayer
@@ -148,12 +149,13 @@ class Map extends Component {
     componentDidMount(){
         const {time} = this.props;
         if(!this.wwdCreated) {
-            this.wwd = new WorldWind.WorldWindow("wwd-results");
+            this.wwd = new WorldWind.WorldWindow("wwd-results", null, EnabledController);
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
             const wwdLayers = getLayers(enabledLayers, time, this.wwd);
             this.handleLayers(wwdLayers);
+            this.props.onWwdCreated(this.wwd);
         }
     }
 

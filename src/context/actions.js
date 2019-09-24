@@ -5,6 +5,11 @@ import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 import {getTle} from '../utils/tle';
 import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
+import WordWindX from 'webworldwind-x';
+const {
+    EoUtils
+} = WordWindX;
+
 
 let timer = null;
 let nowTimer = null;
@@ -19,6 +24,14 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
     const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
     const satteliteIsFocused = focusedSattelite === satelliteId;
 
+    const orbitInfo = state.data.orbits
+        .filter(orbit => {return orbit.key === 'orbit-' + satelliteId})[0];
+    if(state.wwd && orbitInfo && !satteliteIsFocused) {
+        const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+        const positions = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
+        state.wwd.goTo(positions);
+    }
+
     if (satteliteIsFocused) {
         return {
             type: types.FOCUS_SATELLITE,
@@ -29,6 +42,13 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
             type: types.FOCUS_SATELLITE,
             payload: satelliteId
         };
+    }
+};
+
+export const setWwd = (wwd) => {
+    return {
+        type: types.SET_WWD,
+        payload: wwd
     }
 };
 

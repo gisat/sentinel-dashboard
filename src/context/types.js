@@ -20,5 +20,6 @@ export default {
     'COMPONENTS': {
         'SET': 'COMPONENTS.SET',
         'UPDATE': 'COMPONENTS.UPDATE',
-    }
+    },
+    'SET_WWD': 'SET_WWD'
 }

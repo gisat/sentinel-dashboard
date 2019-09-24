@@ -6,6 +6,7 @@ import {
     updateActiveLayer,
     updateInfoModal,
     setActiveInfoModal,
+    setWwd
 } from '../../context/actions';
 
 const WorldWindMap = (props) => {
@@ -28,6 +29,10 @@ const WorldWindMap = (props) => {
         dispatch(setActiveInfoModal(modalKey));
     }
 
+    const onWwdCreated = (wwd) => {
+        dispatch(setWwd(wwd));
+    };
+
     // prevent reloading layers while moving timeline
     const timelineState = select.components.timeline.getSubstate(state);
     const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
@@ -42,6 +47,7 @@ const WorldWindMap = (props) => {
             focusedSatellite = {focusedSatellite}
             onLayerChanged={onLayerChanged}
             onProductsClick={onProductsClick}
+            onWwdCreated={onWwdCreated}
             preventReload={preventReloadLayers}
             />
     )
