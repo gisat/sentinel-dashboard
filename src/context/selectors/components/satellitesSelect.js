@@ -37,6 +37,8 @@ const getSatelitesSelectOptions = createSelector(
                     value: satConfig.id,
                     icon: satConfig.iconClass,
                     active: focusedSattelite === satConfig.id,
+                    // activeAPS: activeLayerCfg ? true : false,
+                    activeAPS: true,
                 },
                 label: satConfig.name,
                 options: ['']

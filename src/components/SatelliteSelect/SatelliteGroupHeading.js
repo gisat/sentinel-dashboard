@@ -20,14 +20,22 @@ const SatelliteGroupHeading = props => {
       } = props;
 
     const active = groupData.active;
+    const activeAPS = groupData.activeAPS;
 
     //TODO -> extract into file
     const color = 'rgb(189, 189, 189)';
     const activeColor = 'rgb(93, 93, 253)';
+    const activeGreenColor = '#0f9914';
     const activeStyle = {
         color: activeColor,
         fill: activeColor,
         stroke: activeColor,
+    }
+
+    const activeAPSStyle = {
+        color: activeGreenColor,
+        fill: activeGreenColor,
+        stroke: activeGreenColor,
     }
 
     const satIconStyle = {
@@ -54,6 +62,17 @@ const SatelliteGroupHeading = props => {
         stroke: color,
         ...(active && activeStyle)
     }
+
+    const apsIconStyle = {
+        flex: '2 2 auto',
+        maxWidth: '1.25rem',
+        marginLeft: '0.25rem',
+        color,
+        fill: color,
+        stroke: color,
+        '&:hover': activeAPSStyle,
+        ...(activeAPS && activeAPSStyle),
+    }
     
     return (
               <div css={{...getStyles('groupHeading', { theme, ...restProps }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''}`)} onClick={() => {onClick(groupData.value)}} >
@@ -62,6 +81,7 @@ const SatelliteGroupHeading = props => {
                     {props.children}
                 </span>
                 <Icon icon={'location'} style={posIconStyle}/>
+                <Icon icon={'clock'} style={apsIconStyle}/>
             </div>
     );
 };
