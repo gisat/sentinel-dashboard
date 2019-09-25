@@ -80,6 +80,7 @@ class FixedPointController  {
 
             lookAt.heading += forwardDegrees;
             lookAt.tilt += (sideDegrees * this.sign);
+            console.log(lookAt.tilt);
 
             this.applyLimits(lookAt);
             this.worldWindow.redraw();
@@ -188,8 +189,8 @@ class FixedPointController  {
             state.roll += 180;
         }
 
-        if(state.range >= (state.altitude * 0.9)) {
-            state.range = state.altitude * 0.9;
+        if(state.range >= (state.lookAtLocation.altitude * 0.9)) {
+            state.range = state.lookAtLocation.altitude * 0.9;
         }
     };
 }

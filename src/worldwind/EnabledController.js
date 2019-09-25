@@ -90,6 +90,14 @@ class EnabledController extends BasicWorldWindowController {
             }
         }
     }
+
+    applyLimits() {
+        if(!this._isFixed) {
+            super.applyLimits()
+        } else {
+            this.fixedController.applyLimits(this.wwd.navigator);
+        }
+    }
 }
 
 export default EnabledController;

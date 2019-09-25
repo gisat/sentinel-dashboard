@@ -26,12 +26,18 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
 
     const orbitInfo = state.data.orbits
         .filter(orbit => {return orbit.key === 'orbit-' + satelliteId})[0];
+
+    state.wwd.worldWindowController._isFixed = !satteliteIsFocused;
+    state.wwd.navigator.camera._isFixed = !satteliteIsFocused;
     if(state.wwd && orbitInfo && !satteliteIsFocused) {
         const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
         const positions = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
-        state.wwd.goTo(positions);
+        state.wwd.goTo(positions, () => {
+            console.log('Done');
+        });
+
+        state.wwd.navigator.camera.applyLimits();
     }
-    state.wwd.worldWindowController._isFixed = !satteliteIsFocused;
 
     if (satteliteIsFocused) {
         return {

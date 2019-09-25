@@ -12,7 +12,7 @@ import {
 } from './layers';
 import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
-import FixedPointController from "../../worldwind/FixedPointController";
+import FreeCamera from '../../worldwind/FreeCamera';
 
 const {
     SentinelCloudlessLayer
@@ -150,7 +150,7 @@ class Map extends Component {
     componentDidMount(){
         const {time} = this.props;
         if(!this.wwdCreated) {
-            this.wwd = new WorldWind.WorldWindow("wwd-results", null, EnabledController);
+            this.wwd = new WorldWind.WorldWindow("wwd-results", null, EnabledController, FreeCamera);
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
