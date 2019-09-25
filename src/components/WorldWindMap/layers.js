@@ -5,6 +5,7 @@ import './style.css';
 import SatelliteModelLayer from './SatelliteModelLayer';
 import OrbitLayer from './OrbitLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
+import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getModel} from './satellitesModels';
 const {
@@ -132,6 +133,44 @@ const getAcquisitionPlanLayer = (layerConfig, wwd, time) => {
     }
 }
 
+const getSwathLayer = (layerConfig, wwd, time) => {
+    const layerKey = `swath_${layerConfig.key}`;
+    const layerAcquisitionKey = layerConfig.key;
+    const cacheLayer = layersCache.get(layerKey);
+    const cacheLayerAcquisition = layersCache.get(layerAcquisitionKey);
+    // const plans = layerConfig.plans;
+
+    if(cacheLayer) {
+        //if changed TLE in config
+        if((layerConfig.tle && layerConfig.tle[0]) !== (cacheLayer.Tle && cacheLayer.Tle[0]) || (layerConfig.tle && layerConfig.tle[1]) !== (cacheLayer.Tle && cacheLayer.Tle[1])) {
+            cacheLayer.setTle(layerConfig.tle);
+        }
+
+        if(time.toString() !== cacheLayer.time.toString()) {
+            cacheLayer.setTime(time);
+            const swath = cacheLayerAcquisition.getFootprints(0);
+            swath.then(data => {
+                //FIXME - remove
+                // console.log(data && data.outlines);
+                if(data && data.outlines && data.outlines.length > 0) {
+                    const color = data.interiors[0].attributes.interiorColor;
+                    cacheLayer.setColor(color);
+                    cacheLayer.setVisible(true);
+                } else {
+                    cacheLayer.setVisible(false);
+                }
+            })
+        }
+
+        return cacheLayer;
+    } else {
+        const layer = new SwathLayer({key: layerKey, satName: layerConfig.satName, time: time, tle: layerConfig.tle});
+        layer.setRerender(() => wwd.redraw());
+        layersCache.set(layerKey, layer);
+        return layer;
+    }
+}
+
 const getSatelliteLayer = (layerConfig, time, wwd) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
@@ -185,7 +224,8 @@ export const getLayers = createCachedSelector([
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time));
-    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers];
+    const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
+    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
 })((layersConfig, time) => {
     const stringTime = time ? time.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);

@@ -78,8 +78,6 @@ class AcquisitionPlanLayer extends RenderableLayer {
 
     async getFootprints(range) {
         //TODO - call loading callback
-        this.removeAllRenderables();
-        this.doRerender();
         const updateId = generateId();
 
         //filter plans by acquisitionPlans.cache
@@ -106,6 +104,8 @@ class AcquisitionPlanLayer extends RenderableLayer {
     }
 
     async update() {
+        this.removeAllRenderables();
+        this.doRerender();
         const { interiors, outlines } = await this.getFootprints(this.range);
         this.addRenderables(interiors);
         this.addRenderables(outlines);
