@@ -173,9 +173,10 @@ export const changeSelectTime = (time, dispatch, selectTime) => {
     const newTimeIsSameDay = selectYearDay === timeYearDay;
 
     //Check if new time is in another day. If so, reload orbits
-    if(!newTimeIsSameDay) {
-        updateTleData(dispatch, time);
-    }
+    // future TLE are not available at the moment
+    // if(!newTimeIsSameDay) {
+    //     updateTleData(dispatch, time);
+    // }
 
     return {
         type: types.CHANGE_SELECTTIME,
