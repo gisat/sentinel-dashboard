@@ -154,6 +154,8 @@ const getSwathLayer = (layerConfig, wwd, time) => {
                 // console.log(data && data.outlines);
                 if(data && data.outlines && data.outlines.length > 0) {
                     const color = data.interiors[0].attributes.interiorColor;
+                    const type = data.interiors[0].kmlProps.Mode;
+                    cacheLayer.setType(type);
                     cacheLayer.setColor(color);
                     cacheLayer.setVisible(true);
                 } else {

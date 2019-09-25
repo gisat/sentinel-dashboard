@@ -10,6 +10,48 @@ const {
     Swath
 } = WordWindX;
 
+const getParams = (satName, type) => {
+
+    let translateDistance = null;
+
+    //swath width - so that the swath is the same width as the acq plan
+    let swathWidth;
+
+    //controls how big the swath is, higher values means a smaller swath
+    const swathHeight = 35;
+
+    if (satName === 's1a' || satName === 's1b') {
+        if (type === 'IW') {
+            //red
+            translateDistance = 490;
+            swathWidth = 130;
+        }
+        else if (type === 'EW') {
+            //green
+            translateDistance = 435;
+            swathWidth = 210;
+        }
+        else if (type === 'SM') {
+            //black
+            translateDistance = 308;
+            swathWidth = 41;
+        }
+        else {
+            return;
+        }
+    }
+    else if (satName === 's2a' || satName === 's2b') {
+        swathWidth = 145;
+        translateDistance = undefined;
+    }
+
+    return {
+        swathWidth,
+        swathHeight,
+        translateDistance,
+    }
+}
+
 /**
  * Class extending WorldWind.RenderableLayer. Layer can render only one model of satellite. It`s possible to set position data of model.
  * @param options {Object}
@@ -24,9 +66,11 @@ class SwathLayer extends RenderableLayer {
         super(options);
         this._rerenderMap = null;
         this.key = options.key;
+        this.satName = options.satName;
         this.time = options.time;
         this.Tle = options.tle;
         this.swath = null;
+        this.type = null;
         this.color = Color.RED;
     };
 
@@ -36,6 +80,16 @@ class SwathLayer extends RenderableLayer {
     setTle(Tle) {
         if(Tle) {
             this.Tle = Tle;
+            this.update();
+        }
+    }
+
+    /**
+     * @param type {string}
+     */
+    setType(type) {
+        if(type) {
+            this.type = type;
             this.update();
         }
     }
@@ -68,28 +122,29 @@ class SwathLayer extends RenderableLayer {
      */
     update() {
         this.removeAllRenderables();
-        if(this.visible && this.time && this.Tle) {
+        if(this.visible && this.time && this.Tle && this.type) {
             const satRec = utils.computeSatrec(...this.Tle);
 
             const currentPosition = utils.getOrbitPosition(satRec, this.time);
-            console.log(currentPosition);
             
-            const nextPosition = utils.getOrbitPosition(satRec, new Date(this.time + 10000));
-            const nNextPosition = utils.getOrbitPosition(satRec, new Date(this.time + 20000));
+            const nextPosition = utils.getOrbitPosition(satRec, new Date(this.time.getTime() + 10000));
+            const nNextPosition = utils.getOrbitPosition(satRec, new Date(this.time.getTime() + 20000));
             const headingRad = utils.headingAngleRadians(currentPosition.latitude, currentPosition.longitude, nextPosition.latitude, nextPosition.longitude);
             const currentHeading = utils.rad2deg(headingRad);
             const nextHeadingRad = utils.headingAngleRadians(nextPosition.latitude, nextPosition.longitude, nNextPosition.latitude, nNextPosition.longitude);
             const nextHeading = utils.rad2deg(nextHeadingRad);
 
-            this.swath = new Swath({
-                currentPosition,
-                nextPosition,
-                currentHeading,
-                nextHeading
-                //fixme - translateDistance, swathWidth, swathHeight
-            }, this.color, 490, 130, 35);
-
-            this.addRenderable(this.swath);
+            const {swathWidth, swathHeight, translateDistance} = getParams(this.satName, this.type);
+            if(swathWidth && swathHeight) {
+                this.swath = new Swath({
+                    currentPosition,
+                    nextPosition,
+                    currentHeading,
+                    nextHeading
+                }, this.color, translateDistance, swathWidth, swathHeight);
+    
+                this.addRenderable(this.swath);
+            }
         }
         this.doRerender();
     }
