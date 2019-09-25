@@ -95,6 +95,7 @@ class Select extends React.PureComponent {
                     alignItems: 'center',
                     cursor: 'pointer',
                     display: 'flex',
+                    flexFlow: 'column',
                     padding: '0 .75rem',
                     '&:hover': {
                         backgroundColor: hoverBackgroundColor

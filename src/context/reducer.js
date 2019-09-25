@@ -3,6 +3,7 @@ import types from './types';
 import select from './selectors/';
 import {removeItemByIndex,replaceItemOnIndex, addItemToIndex} from '../utils/arrayManipulation';
 import WorldWindX from 'webworldwind-x';
+import {merge, cloneDeep} from 'lodash';
 
 const {
     EoUtils
@@ -250,6 +251,19 @@ const setAcquisitionPlans = (state, action) => {
     return {...state, data: {...state.data, acquisitionPlans: aps}};
 };
 
+const dataUpdateAcquisitionPlan = (state, action) => {
+    const key = action.payload.key;
+    const url = action.payload.url;
+    const update = action.payload.update;
+    const acquisitionPlansKeyIndex = state.data.acquisitionPlans.findIndex((acquisitionPlans) => acquisitionPlans.key === key);
+    const acquisitionPlanUrlIndex = state.data.acquisitionPlans[acquisitionPlansKeyIndex].plans.findIndex((acquisitionPlan) => acquisitionPlan.url === url);
+    
+    const updatedAcquisitionPlan = merge(cloneDeep(state.data.acquisitionPlans[acquisitionPlansKeyIndex].plans[acquisitionPlanUrlIndex]), update);
+    const updatedAcquisitionPlans = replaceItemOnIndex(state.data.acquisitionPlans[acquisitionPlansKeyIndex].plans, acquisitionPlanUrlIndex, updatedAcquisitionPlan);
+    
+    return {...state, data: {...state.data, acquisitionPlans: [...replaceItemOnIndex(state.data.acquisitionPlans, acquisitionPlansKeyIndex, {...state.data.acquisitionPlans[acquisitionPlansKeyIndex],plans: updatedAcquisitionPlans})]}};
+};
+
 const mapAddVisibleAcquisitionPlan = (state, action) => {
     const acquisitionPlanKey = action.payload.key;
     return {...state, map: {...state.map, acquisitionPlans: [...state.map.acquisitionPlans, acquisitionPlanKey]}};
@@ -303,6 +317,8 @@ export default (state, action) => {
             return setOrbits(state, action);
         case types.SET_ACQUISITION_PLANS:
             return setAcquisitionPlans(state, action);
+        case types.DATA_UPDATE_ACQUISITIONPLANS:
+            return dataUpdateAcquisitionPlan(state, action);
         case types.SET_WWD:
             return setWwd(state, action);
         case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:

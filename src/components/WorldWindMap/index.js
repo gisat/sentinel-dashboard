@@ -6,14 +6,23 @@ import {
     updateActiveLayer,
     updateInfoModal,
     setActiveInfoModal,
-    setWwd
+    setWwd,
+    dataUpdateAcquisitionPlan,
 } from '../../context/actions';
 
 const WorldWindMap = (props) => {
     const {dispatch, state} = props;
 
     const onLayerChanged = (layerKey, change) => {
-        dispatch(updateActiveLayer(layerKey, change))
+        if(layerKey.indexOf('acquisitionPlans_') === 0) {
+            if(change.plans && change.plans.length > 0) {
+                change.plans.forEach((url) => {
+                    dispatch(dataUpdateAcquisitionPlan(layerKey, change.sat, url, change.update));
+                });
+            };
+        } else {
+            dispatch(updateActiveLayer(layerKey, change))
+        }     
     }
 
     const onProductsClick = (products) => {

@@ -4,6 +4,7 @@ import React from 'react';
 import { css, jsx } from '@emotion/core'
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
+import Loader from './Loader';
 
 import Icon from '../Icon';
 
@@ -83,16 +84,25 @@ const SatelliteGroupHeading = props => {
     
     return (
               <div css={{...getStyles('groupHeading', { theme, ...restProps }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''}`)} onClick={() => {onClick(groupData.value)}} >
-                <Icon icon={groupData.icon} style={satIconStyle}/>
-                <span style={labelStyle}>
-                    {props.children}
-                </span>
-                <Icon icon={'location'} style={posIconStyle}/>
-                {availableAPS ? <div style={apsWrapStyle} onClick={(e) => {
-                    e.stopPropagation();e.preventDefault();onAcquisitionPlanClick(groupData.value)}
-                    }>
-                    <Icon icon={'clock'} style={apsIconStyle}/>
-                </div> : null}
+                    <div style={{display: "flex",minWidth: '100%'}}>
+                        <Icon icon={groupData.icon} style={satIconStyle}/>
+                        <span style={labelStyle}>
+                            {props.children}
+                        </span>
+                        <Icon icon={'location'} style={posIconStyle}/>
+                        {availableAPS ? <div style={apsWrapStyle} onClick={(e) => {
+                            console.log("on click");
+                            
+                            e.stopPropagation();e.preventDefault();onAcquisitionPlanClick(groupData.value)}
+                            }>
+                            <Icon icon={'clock'} style={apsIconStyle}/>
+                        </div> : null}
+                    </div>
+                    {groupData.loading ? <div style={{minWidth: '100%'}}>
+                        <div style={{position: 'absolute',height: '1px',minWidth: '100%', marginLeft: '-12px'}}>
+                            <Loader lkey={groupData.value}/>
+                        </div>
+                    </div> : null}
             </div>
     );
 };
