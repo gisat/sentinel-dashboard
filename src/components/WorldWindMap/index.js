@@ -14,7 +14,7 @@ const WorldWindMap = (props) => {
     const {dispatch, state} = props;
 
     const onLayerChanged = (layerKey, change) => {
-        if(layerKey.indexOf('acquisitionPlans_') === 0) {
+        if(layerKey && layerKey.layerKey && layerKey.layerKey.indexOf('acquisitionPlans_') === 0) {
             if(change.plans && change.plans.length > 0) {
                 change.plans.forEach((url) => {
                     dispatch(dataUpdateAcquisitionPlan(layerKey, change.sat, url, change.update));

@@ -13,7 +13,7 @@ const deactivateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
     const selectTime = new Date(select.rootSelectors.getSelectTime(state));
-    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
+    const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(activeIndex > -1) {
@@ -30,7 +30,7 @@ const activateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
     const selectTime = new Date(select.rootSelectors.getSelectTime(state));
-    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
+    const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(activeIndex === -1) {
@@ -47,9 +47,9 @@ const toggleLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
     const selectTime = new Date(select.rootSelectors.getSelectTime(state));
-    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
+    const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
-
+    
     if(activeIndex > -1) {
         return deactivateLayer(state, {
             payload: {
@@ -223,7 +223,7 @@ const updateActiveLayer = (state, action) => {
     const satKey = action.payload.layerKey.satKey;
     const change = action.payload.change;
     const selectTime = new Date(select.rootSelectors.getSelectTime(state));
-    const activeLayers = select.rootSelectors.getActiveLayers(state, selectTime);
+    const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const layerIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
     if(layerIndex > -1) {

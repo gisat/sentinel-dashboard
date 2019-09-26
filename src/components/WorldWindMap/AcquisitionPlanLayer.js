@@ -96,11 +96,17 @@ class AcquisitionPlanLayer extends RenderableLayer {
 
         //dont filter in cache
         if(typeof this.onLayerChanged === 'function') {
-            this.onLayerChanged(this.key, {update: {loading: true}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
+            this.onLayerChanged({
+                satKey: this.satName,
+                layerKey: this.key
+            }, {update: {loading: true}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
         }
         await Promise.all(unloadedPlans.map(plan => acquisitionPlans.parse({...plan, filterDate: getDate(plan.start).toISOString()}).catch((err) => {console.error(err)})));
         if(typeof this.onLayerChanged === 'function') {
-            this.onLayerChanged(this.key, {update: {loading: false}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
+            this.onLayerChanged({
+                satKey: this.satName,
+                layerKey: this.key
+            }, {update: {loading: false}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
         }
 
         //remove loading urls
