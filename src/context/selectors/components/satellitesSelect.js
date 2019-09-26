@@ -3,7 +3,7 @@ import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getVisibleAcquisitionsPlans} from '../map';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
-import {getPlansForDate} from '../data/acquisitionPlans';
+import {getPlansForDate, getLoadingAcquisitionsPlans} from '../data/acquisitionPlans';
 import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent} from '../rootSelectors';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
@@ -16,7 +16,8 @@ const getSatelitesSelectOptions = createSelector(
     getSelectTimePastOrCurrent,
     getVisibleAcquisitionsPlans,
     getPlansForDate,
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData) => {
+    getLoadingAcquisitionsPlans,
+    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData, loadingAcquisitionsPlans) => {
         
         const getLayerOption = (layerKey, satKey) => {
             const layer = getLayerByKey(layersSubState, layerKey);
@@ -43,6 +44,7 @@ const getSatelitesSelectOptions = createSelector(
                     active: focusedSattelite === satConfig.id,
                     activeAPS: visibleAcquisitionsPlans.includes(satConfig.id),
                     availableAPS: selectTimePastOrCurrent && acquisitionPlansData.some((p) => p.key === satConfig.id && p.plans.length > 0),
+                    loading: loadingAcquisitionsPlans.some(l => l.key === satConfig.id), //todo
                 },
                 label: satConfig.name,
                 options: ['']

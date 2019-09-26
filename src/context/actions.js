@@ -193,9 +193,10 @@ export const changeSelectTime = (time, dispatch, selectTime) => {
     const newTimeIsSameDay = selectYearDay === timeYearDay;
 
     //Check if new time is in another day. If so, reload orbits
-    if(!newTimeIsSameDay) {
-        updateTleData(dispatch, time);
-    }
+    // future TLE are not available at the moment
+    // if(!newTimeIsSameDay) {
+    //     updateTleData(dispatch, time);
+    // }
 
     return {
         type: types.CHANGE_SELECTTIME,
@@ -349,6 +350,20 @@ export const mapRemoveVisibleAcquisitionPlanKey = (acquisitionPlanKey) => {
         type: types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN,
         payload: {
             key: acquisitionPlanKey
+        }
+    }
+}
+
+/**
+ * 
+ */
+export const dataUpdateAcquisitionPlan = (layerKey, satName, url, update) => {
+    return {
+        type: types.DATA_UPDATE_ACQUISITIONPLANS,
+        payload: {
+            key: satName,
+            url,
+            update,
         }
     }
 }

@@ -43,6 +43,7 @@ const generateId = () => {
  * @param options.satName {String}
  * @param options.time {Date} Time of the satellite.
  * @param options.range {number} Renge in milliseconds. Default is 90 minutes.
+ * @param options.onLayerChanged {func}
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
@@ -53,6 +54,7 @@ class AcquisitionPlanLayer extends RenderableLayer {
         this.key = options.key;
         this.satName = options.satName;
         this.plans = null;
+        this.onLayerChanged = options.onLayerChanged || null;
         this.time = options.time || new Date();
 
         this.range = options.range || 90 * 60 * 1000; 
@@ -77,7 +79,6 @@ class AcquisitionPlanLayer extends RenderableLayer {
 
 
     async getFootprints(range) {
-        //TODO - call loading callback
         const updateId = generateId();
 
         //filter plans by acquisitionPlans.cache
@@ -94,8 +95,14 @@ class AcquisitionPlanLayer extends RenderableLayer {
         filteredPlans.forEach(plan => this.loading.add(`${plan.url}_${updateId}`));
 
         //dont filter in cache
+        if(typeof this.onLayerChanged === 'function') {
+            this.onLayerChanged(this.key, {update: {loading: true}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
+        }
         await Promise.all(unloadedPlans.map(plan => acquisitionPlans.parse({...plan, filterDate: getDate(plan.start).toISOString()}).catch((err) => {console.error(err)})));
-        
+        if(typeof this.onLayerChanged === 'function') {
+            this.onLayerChanged(this.key, {update: {loading: false}, plans: unloadedPlans.map(p => p.url), sat: this.satName});
+        }
+
         //remove loading urls
         filteredPlans.forEach(plan => this.loading.delete(`${plan.url}_${updateId}`));
 

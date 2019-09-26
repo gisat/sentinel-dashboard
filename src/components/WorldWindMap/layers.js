@@ -107,7 +107,7 @@ const getOrbitLayer = (layerConfig, time = new Date(), wwd) => {
     }
 }
 
-const getAcquisitionPlanLayer = (layerConfig, wwd, time) => {
+const getAcquisitionPlanLayer = (layerConfig, wwd, time, onLayerChanged) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
     const plans = layerConfig.plans;
@@ -125,7 +125,7 @@ const getAcquisitionPlanLayer = (layerConfig, wwd, time) => {
         }
         return cacheLayer;
     } else {
-        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName, time: time});
+        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName, time: time, onLayerChanged});
         layer.setPlans(plans);
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
@@ -215,7 +215,8 @@ export const getLayers = createCachedSelector([
     (layersConfig) => layersConfig,
     (layersConfig, time) => time,
     (layersConfig, time, wwd) => wwd,
-], (layersConfig, time, wwd) => {
+    (layersConfig, time, wwd, onLayerChanged) => onLayerChanged,
+], (layersConfig, time, wwd, onLayerChanged) => {
     const layers = [defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
@@ -225,7 +226,7 @@ export const getLayers = createCachedSelector([
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
-    const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time));
+    const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));
     const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
     return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
 })((layersConfig, time) => {

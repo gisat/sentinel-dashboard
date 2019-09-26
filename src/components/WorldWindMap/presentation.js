@@ -103,7 +103,7 @@ class Map extends Component {
                 })
             } else if(time !== prevProps.time) {
 
-                const wwdLayers = getLayers(this.props.layers, time, this.wwd);
+                const wwdLayers = getLayers(this.props.layers, time, this.wwd, this.props.onLayerChanged);
                 this.handleLayers(wwdLayers);
                 
             }
@@ -158,7 +158,7 @@ class Map extends Component {
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
-            const wwdLayers = getLayers(enabledLayers, time, this.wwd);
+            const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged);
             this.handleLayers(wwdLayers);
             this.props.onWwdCreated(this.wwd);
         }

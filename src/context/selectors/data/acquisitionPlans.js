@@ -42,7 +42,32 @@ const getPlansForDate = (state, date) => {
     }
 }
 
+const getLoadingAcquisitionsPlans = (state) => {
+    const substate = getSubstate(state);
+    if(substate && substate.length) {
+        return substate.reduce((acc, satAps) => {
+            const loadingPlans = satAps.plans.reduce((acc, plan) => {
+                if(plan.loading) {
+                    return [...acc, plan];
+                } else {
+                    return acc;
+                }
+            }, []);
+
+            if(loadingPlans && loadingPlans.length > 0) {
+                return [...acc, {key: satAps.key, plans: loadingPlans}]
+            } else {
+                return acc;
+            }
+        }, [])
+    } else {
+        return [];
+    }
+
+}
+
 export {
     getSubstate,
     getPlansForDate,
+    getLoadingAcquisitionsPlans,
 }
