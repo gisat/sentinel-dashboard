@@ -236,7 +236,7 @@ class Timeline extends React.PureComponent {
 				Object.assign(updateContext, {activeLevel: this.getActiveLevel(updateContext.dayWidth, levels).level})
 			}
 
-			if(updateContext.dayWidth && !options.centerTime) {
+			if(updateContext.dayWidth && !options.centerTime && !options.lockCenter) {
 				Object.assign(updateContext, {centerTime: this.getTime(this.getXAxisWidth() / 2, updateContext.dayWidth, updateContext.periodLimit.start).toDate()})
 			}
 

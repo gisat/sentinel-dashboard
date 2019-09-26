@@ -610,7 +610,10 @@ class TimelineEventsWrapper extends React.PureComponent {
 			periodLimit: {
 				start: start.toDate().toString(),
 				end: end.toDate().toString()
-			}
+			},
+			//Its possible, that center for new limit is not same as current centerTime because rounding. New center time is usualy lower by one second.
+			//this option lock modify select time on zoom when periodLimitOnCenter is set to true.
+			lockCenter: periodLimitOnCenter,
 		});
 	}
 
