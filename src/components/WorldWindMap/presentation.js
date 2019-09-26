@@ -13,6 +13,7 @@ import {
 import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
 import FreeCamera from '../../worldwind/FreeCamera';
+import Animator from '../../worldwind/Animator';
 
 const {
     SentinelCloudlessLayer
@@ -151,6 +152,9 @@ class Map extends Component {
         const {time} = this.props;
         if(!this.wwdCreated) {
             this.wwd = new WorldWind.WorldWindow("wwd-results", null, EnabledController, FreeCamera);
+            this.wwd.animator = new Animator(this.wwd);
+
+            window.wwd = this.wwd;
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);

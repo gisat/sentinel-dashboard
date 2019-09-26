@@ -5,10 +5,15 @@ import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 import {getTle} from '../utils/tle';
 import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
+import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 const {
     EoUtils
 } = WordWindX;
+
+const {
+    Position
+} = WorldWind;
 
 
 let timer = null;
@@ -31,15 +36,30 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
     state.wwd.navigator.camera._isFixed = !satteliteIsFocused;
     if(state.wwd && orbitInfo && !satteliteIsFocused) {
         const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-        const positions = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
-        state.wwd.goTo(positions, () => {
-            console.log('Done');
-        });
+        const position = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
+        // The range needs to be changed gradually to tha altitude of the satellite.
+        // This one needs to properly clean to the satellite.
 
-        state.wwd.navigator.camera.applyLimits();
+        state.wwd.navigator.range = 2 * position.altitude;
+        state.wwd.navigator.lookAtLocation.latitude = position.latitude;
+        state.wwd.navigator.lookAtLocation.longitude = position.longitude;
+        state.wwd.navigator.lookAtLocation.altitude = position.altitude;
+        state.wwd.redraw();
     }
 
     if (satteliteIsFocused) {
+        const currentPosition = state.wwd.navigator.lookAtLocation;
+        // Simply clean heading, roll and tilt to 0 gradually. The range should change to twice the current.
+        // No position change necessary.
+        state.wwd.navigator.range = 2 * currentPosition.altitude;
+        state.wwd.navigator.lookAtLocation.latitude = currentPosition.latitude;
+        state.wwd.navigator.lookAtLocation.longitude = currentPosition.longitude;
+        state.wwd.navigator.lookAtLocation.altitude = currentPosition.altitude;
+        state.wwd.navigator.heading = 0;
+        state.wwd.navigator.tilt = 0;
+        state.wwd.navigator.roll = 0;
+        state.wwd.redraw();
+
         return {
             type: types.FOCUS_SATELLITE,
             payload: null

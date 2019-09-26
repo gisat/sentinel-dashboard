@@ -1,3 +1,13 @@
+import WorldWind from 'webworldwind-gisat';
+
+const {
+    ArgumentError,
+    Location,
+    Logger,
+    Position,
+    Vec3
+} = WorldWind;
+
 class Animator {
     /**
      * Constructs a GoTo animator.
@@ -55,15 +65,29 @@ class Animator {
      * @param {Location | Position} position The location or position to move the navigator to. If this
      * argument contains an "altitude" property, as {@link Position} does, the end point of the navigation is
      * at the specified altitude. Otherwise the end point is at the current altitude of the navigator.
+     * @param fromSatellite
+     * @param toSatellite
      * @param {Function} completionCallback If not null or undefined, specifies a function to call when the
      * animation completes. The completion callback is called with a single argument, this animator.
      * @throws {ArgumentError} If the specified location or position is null or undefined.
      */
-    goTo(position, completionCallback) {
+    goTo(position, finalRange, completionCallback) {
         if (!position) {
             throw new ArgumentError(Logger.logMessage(Logger.LEVEL_SEVERE, "GoToAnimator", "goTo",
                 "missingPosition"));
         }
+
+        // I need to build a simple navigator, which takes the Great Circle Distance between the current state and
+        // the next state and then gradually moves to the new state. It will be done in a simple linear way.
+
+        // What is the difference between
+        const heading = this.wwd.navigator.heading;
+        const rotation = this.wwd.navigator.roll;
+        const tilt = this.wwd.navigator.tilt;
+        const range = finalRange - this.wwd.navigator.range;
+        this.finalRange = finalRange;
+
+        // Get gradually to the range that represents the altitude of the satellite.
 
         this.completionCallback = completionCallback;
 
@@ -79,7 +103,7 @@ class Animator {
         this.startPosition = new Position(
             this.wwd.navigator.lookAtLocation.latitude,
             this.wwd.navigator.lookAtLocation.longitude,
-            this.wwd.navigator.range);
+            this.wwd.navigator.lookAtLocation.altitude + this.wwd.navigator.range);
         this.startTime = Date.now();
 
         // Determination of the pan and range velocities requires the distance to be travelled.
@@ -142,6 +166,11 @@ class Animator {
         // Determine the range velocity, in meters per millisecond.
         this.rangeVelocity = rangeDistance / animationDuration; // meters per millisecond
 
+        this.headingVelocity = heading / animationDuration;
+        this.rotationVelocity = rotation / animationDuration;
+        this.tiltVelocity = tilt / animationDuration;
+        this.rangeVelocity = range / animationDuration;
+
         // Set up the animation timer.
         var thisAnimator = this;
         var timerCallback = function () {
@@ -172,11 +201,39 @@ class Animator {
 
         var continueAnimation = this.updateRange(currentPosition);
         continueAnimation = this.updateLocation(currentPosition) || continueAnimation;
+        continueAnimation = this.updateTilt() || continueAnimation;
+        continueAnimation = this.updateHeading() || continueAnimation;
+        continueAnimation = this.updateRotation() || continueAnimation;
 
         this.wwd.redraw();
 
         return continueAnimation;
     };
+
+    updateTilt() {
+        this.wwd.navigator.tilt -= this.tiltVelocity;
+
+        return this.wwd.navigator.tilt > 0;
+    }
+
+    updateHeading() {
+        this.wwd.navigator.heading -= this.headingVelocity;
+
+        return this.wwd.navigator.heading > 0;
+    }
+
+    updateRotation() {
+        this.wwd.navigator.roll -= this.rotationVelocity;
+
+        return this.wwd.navigator.roll > 0;
+    }
+
+    // This breaks something and I have no idea why.
+    updateRange() {
+        this.wwd.navigator.range -= this.rangeVelocity;
+
+        return Math.abs(this.finalRange - this.wwd.navigator.range) < 10;
+    }
 
     // Gradually change the tilt, heading and rotation to 0. Even during the short time.
     // Intentionally not documented.
@@ -238,10 +295,4 @@ class Animator {
     };
 }
 
-
-
-
-
-
-
-
+export default Animator;

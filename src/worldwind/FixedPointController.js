@@ -80,7 +80,6 @@ class FixedPointController  {
 
             lookAt.heading += forwardDegrees;
             lookAt.tilt += (sideDegrees * this.sign);
-            console.log(lookAt.tilt);
 
             this.applyLimits(lookAt);
             this.worldWindow.redraw();
@@ -95,30 +94,7 @@ class FixedPointController  {
      * the fixed point.
      * @param recognizer
      */
-    handleWheelEvent (recognizer) {
-        // Normalize the wheel delta based on the wheel delta mode. This produces a roughly consistent delta across
-        // browsers and input devices
-        var normalizedDelta,
-            lookAt = this.lookAt;
-
-        if (recognizer.deltaMode == WheelEvent.DOM_DELTA_PIXEL) {
-            normalizedDelta = recognizer.deltaY;
-        } else if (recognizer.deltaMode == WheelEvent.DOM_DELTA_LINE) {
-            normalizedDelta = recognizer.deltaY * 40;
-        } else if (recognizer.deltaMode == WheelEvent.DOM_DELTA_PAGE) {
-            normalizedDelta = recognizer.deltaY * 400;
-        }
-
-        // Compute a zoom scale factor by adding a fraction of the normalized delta to 1. When multiplied by the
-        // navigator's range, this has the effect of zooming out or zooming in depending on whether the delta is
-        // positive or negative, respectfully.
-        var scale = 1 + (normalizedDelta / 1000);
-
-        lookAt.range = lookAt.range * scale;
-
-        this.applyLimits(lookAt);
-        this.worldWindow.redraw();
-    };
+    handleWheelEvent (recognizer) {};
 
     handleRotation(recognizer) {
     }
@@ -130,24 +106,7 @@ class FixedPointController  {
      * Basically it handles a pinch gesture done by touching the screen.
      * @param recognizer
      */
-    handlePinch(recognizer) {
-        var state = recognizer.state,
-            scale = recognizer.scale,
-            lookAt = this.lookAt;
-
-        if (state === BEGAN) {
-            this.beginRange = lookAt.range;
-        } else if (state === CHANGED) {
-            if (scale !== 0) {
-                // Apply the change in pinch scale to this navigator's range, relative to the range when the gesture
-                // began.
-                lookAt.range = this.beginRange / scale;
-
-                this.applyLimits(lookAt);
-                this.worldWindow.redraw();
-            }
-        }
-    };
+    handlePinch(recognizer) {};
 
     /**
      * Heading must always remain in the bounds: -2PI, 2PI
@@ -189,8 +148,8 @@ class FixedPointController  {
             state.roll += 180;
         }
 
-        if(state.range >= (state.lookAtLocation.altitude * 0.9)) {
-            state.range = state.lookAtLocation.altitude * 0.9;
+        if(state.range >= (2 * state.lookAtLocation.altitude)) {
+            state.range = 2 * state.lookAtLocation.altitude;
         }
     };
 }
