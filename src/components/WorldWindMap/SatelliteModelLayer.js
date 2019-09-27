@@ -1,5 +1,5 @@
 import WorldWind from 'webworldwind-gisat';
-import WordWindX from 'webworldwind-x';
+import WorldWindX from 'webworldwind-x';
 const {
     RenderableLayer,
     Position,
@@ -8,7 +8,7 @@ const {
 const {
     Model,
     EoUtils,
-} = WordWindX;
+} = WorldWindX;
 
 const DEFAULT_MODEL_OPTIONS = {
     rotations: {

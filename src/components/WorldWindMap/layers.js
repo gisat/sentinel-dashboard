@@ -11,6 +11,7 @@ import {getModel} from './satellitesModels';
 const {
     SentinelCloudlessLayer,
     SciHubProducts,
+    StarFieldLayer,
     EoUtils,
 } = WordWindX;
 const {
@@ -23,6 +24,7 @@ const csiRenderablesCache = new window.Map();
 const layersCache = new window.Map();
 const productsScihub = new SciHubProducts(csiRenderablesCache, fetchWithCredentials);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
+const defaultStarfieldLayer = new StarFieldLayer();
 
 const productsRequests = new window.Map();
 export function getLayerKeyFromConfig (layerConfig) {
@@ -217,7 +219,7 @@ export const getLayers = createCachedSelector([
     (layersConfig, time, wwd) => wwd,
     (layersConfig, time, wwd, onLayerChanged) => onLayerChanged,
 ], (layersConfig, time, wwd, onLayerChanged) => {
-    const layers = [defaultBackgroundLayer];
+    const layers = [defaultStarfieldLayer, defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
