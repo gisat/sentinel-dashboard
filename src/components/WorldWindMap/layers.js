@@ -250,7 +250,7 @@ export const getLayers = createCachedSelector([
 const getSciProducts = async (layerConfig) => {
     try {
         const productsLocal = productsScihub.products({
-            shortName: layerConfig.satKey,
+            shortName: layerConfig.satData.shortName,
             products: [layerConfig.layerKey],
             beginTime: layerConfig.beginTime,
             endTime: layerConfig.endTime

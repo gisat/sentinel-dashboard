@@ -6,6 +6,7 @@ import {getSubstate as getSatellitesSubstate} from './data/satellites';
 import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
 import {getVisibleAcquisitionsPlans} from './map';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
+import {getSatDataByKey} from '../satData';
 export const getSelectTimePastOrCurrent = (state) => common.getByPath(state, ['selectTimePastOrCurrent']);
 
 export const getCurrentTime = createCachedSelector(
@@ -81,7 +82,8 @@ export const getActiveLayers = createCachedSelector(
             type: 'sentinelData',
             beginTime: new Date(beginTime),
             endTime: new Date(endTime),
-            disabled: selectTimePastOrCurrent
+            disabled: selectTimePastOrCurrent,
+            satData: getSatDataByKey(l.satKey),
         }
         activeLayersWithDates.push(layer);
     });
