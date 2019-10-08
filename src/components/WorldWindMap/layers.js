@@ -191,19 +191,19 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
 
         return cacheLayer;
     } else {
-        const layer = new SatelliteModelLayer({key: layerKey, time: time});
+        const options = {
+            rotations: layerConfig.satData.rotations,
+            preRotations: layerConfig.satData.preRotations,
+            scale: layerConfig.satData.scale,
+            translations: layerConfig.satData.translations,
+            ignoreLocalTransforms: layerConfig.satData.ignoreLocalTransforms,
+        }
+        const layer = new SatelliteModelLayer({key: layerKey, time: time}, options);
         layer.setRerender(() => wwd.redraw());
         getModel(`${layerConfig.satData.filePath}${layerConfig.satData.fileName}`, layerKey).then(
             (model) => {
                 const satrec = EoUtils.computeSatrec(layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo);
                 const position = EoUtils.getOrbitPosition(satrec, new Date(time));
-                const options = {
-                    rotations: layerConfig.satData.rotations,
-                    preRotations: layerConfig.satData.preRotations,
-                    scale: layerConfig.satData.scale,
-                    translations: layerConfig.satData.translations,
-                    ignoreLocalTransforms: layerConfig.satData.ignoreLocalTransforms,
-                }
                 layer.setModel(model, options, position)
                 layer.setTle([layerConfig.satData.tleLineOne, layerConfig.satData.tleLineTwo]);
             }

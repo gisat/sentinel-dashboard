@@ -42,8 +42,9 @@ const DEFAULT_MODEL_OPTIONS = {
  * @constructor
  */
 class SatelliteModelLayer extends RenderableLayer {
-	constructor(options) {
+	constructor(options, satelliteOptions) {
         super(options);
+        this._satelliteOptions = satelliteOptions;
         this._rerenderMap = null;
         this.key = options.key;
         this.model = null;
@@ -60,7 +61,7 @@ class SatelliteModelLayer extends RenderableLayer {
     setModel(model, options = DEFAULT_MODEL_OPTIONS, position) {
         if(model) {
             this.model = new Model(model, options, position);
-            
+
             this.removeAllRenderables();
             this.addRenderable(this.model);
             this.doRerender();
@@ -95,7 +96,30 @@ class SatelliteModelLayer extends RenderableLayer {
             const satrec = EoUtils.computeSatrec(...this.Tle);
             const position = EoUtils.getOrbitPosition(satrec, new Date(this.time));
             this.setPosition(new Position(position.latitude, position.longitude, position.altitude));
+            if(this.model) {
+                this.alignWithOrbit(this.time, position, EoUtils.computeSatrec(...this.Tle), this._satelliteOptions.rotations, this.model._model);
+            }
             this.doRerender();
+        }
+    }
+
+    alignWithOrbit(date, currentPosition, satrec, rotations, model) {
+        const now = date.getTime();
+        const nextPosition = EoUtils.getOrbitPosition(satrec, new Date(now + 10000));
+        const headingRad = EoUtils.headingAngleRadians(currentPosition.latitude, currentPosition.longitude, nextPosition.latitude, nextPosition.longitude);
+        const heading = EoUtils.rad2deg(headingRad);
+        const angle = (heading + rotations.headingAdd) * rotations.headingMultiply;
+
+        if (heading !== 0) {
+            if (rotations.headingAxis[0] === 1) {
+                model.xRotation = angle;
+            }
+            else if (rotations.headingAxis[1] === 1) {
+                model.yRotation = angle;
+            }
+            else if (rotations.headingAxis[2] === 1) {
+                model.zRotation = angle;
+            }
         }
     }
 
