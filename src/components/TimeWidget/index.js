@@ -34,7 +34,7 @@ const TimeWidget = (props) => {
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
         const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
         dispatch(setFollowNow(true));
-        scrollToTime(dispatch, scrollTime, moment(getNowUTC()), periodLimit, () => {
+        scrollToTime(state, dispatch, scrollTime, moment(getNowUTC()), periodLimit, () => {
             dispatch(setFollowNow(true));
         });
     }

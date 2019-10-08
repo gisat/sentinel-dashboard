@@ -67,7 +67,7 @@ const MapsTimeline = (props) => {
         dispatch(stopTimer());
 
         dispatch(setPreventReloadLayers(true));
-        scrollToTime(dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, periodLimit, () => {
+        scrollToTime(state, dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, periodLimit, () => {
             dispatch(setPreventReloadLayers(false));
         });
 	}

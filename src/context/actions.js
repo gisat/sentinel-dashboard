@@ -36,7 +36,7 @@ export const toggleSatelliteFocus = (satelliteId, state) => {
     state.wwd.navigator.camera._isFixed = !satteliteIsFocused;
     if(state.wwd && orbitInfo && !satteliteIsFocused) {
         const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-        const position = EoUtils.getOrbitPosition(satrec, new Date(state.currentTime));
+        const position = EoUtils.getOrbitPosition(satrec, new Date(state.selectTime));
         // The range needs to be changed gradually to tha altitude of the satellite.
         // This one needs to properly clean to the satellite.
 
@@ -155,7 +155,7 @@ export const zoomToTimeLevel = (dispatch, level, levelDayWidth, currentDayWidth)
     }, 60)
 };
 
-export const scrollToTime = (dispatch, selectTime, newTime, period, callback) => {
+export const scrollToTime = (state, dispatch, selectTime, newTime, period, callback) => {
     window.clearInterval(intervalKeyScroll);
     const steps = 12;
     let timeInPeriod = newTime;
@@ -176,6 +176,25 @@ export const scrollToTime = (dispatch, selectTime, newTime, period, callback) =>
         } else {
             const newSelectedTime = moment(selectTime).add(peace * index).toDate().toString();
             const selectedTime = moment(selectTime).add(peace * (index - 1)).toDate().toString();
+            // If the focus is there, move the navigator with the satellite.
+
+            const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
+
+            if(focusedSattelite && state.wwd.worldWindowController._isFixed) {
+                const orbitInfo = state.data.orbits
+                    .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
+                const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+                const position = EoUtils.getOrbitPosition(satrec, new Date(newSelectedTime));
+                // The range needs to be changed gradually to tha altitude of the satellite.
+                // This one needs to properly clean to the satellite.
+
+                state.wwd.navigator.range = 2 * position.altitude;
+                state.wwd.navigator.lookAtLocation.latitude = position.latitude;
+                state.wwd.navigator.lookAtLocation.longitude = position.longitude;
+                state.wwd.navigator.lookAtLocation.altitude = position.altitude;
+                state.wwd.redraw();
+            }
+
             dispatch(changeSelectTime(newSelectedTime, dispatch, selectedTime));
         }
     }, 60)
