@@ -1,5 +1,5 @@
-const getSatAPSUrl = (satKey) => `http://eoapps.solenix.ch/aps/${satKey}/`;
-const getSatIntervalAPSUrl = (satKey, start, end) => `http://eoapps.solenix.ch/aps/${satKey}/${satKey.toUpperCase()}_${start}_${end}.kml`;
+const getSatAPSUrl = (satKey) => `https://eoapps.solenix.ch/aps/${satKey}/`;
+const getSatIntervalAPSUrl = (satKey, start, end) => `https://eoapps.solenix.ch/aps/${satKey}/${satKey.toUpperCase()}_${start}_${end}.kml`;
 // const satellites = ['s1a', 's1b', 's2a', 's2b', 's3a', 's3b', 's5p'];
 const satellites = ['s1a', 's1b', 's2a', 's2b'];
 //cache tle in Map

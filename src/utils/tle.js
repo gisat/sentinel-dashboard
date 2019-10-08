@@ -1,4 +1,4 @@
-const getUrl = (dateString) => `http://eoapps.solenix.ch/tle-server/${dateString}/resource.txt`
+const getUrl = (dateString) => `https://eoapps.solenix.ch/tle-server/${dateString}/resource.txt`
 
 //cache tle in Map
 const cache = new Map();
