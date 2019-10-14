@@ -178,24 +178,7 @@ export const scrollToTime = (state, dispatch, selectTime, newTime, period, callb
             const selectedTime = moment(selectTime).add(peace * (index - 1)).toDate().toString();
             // If the focus is there, move the navigator with the satellite.
 
-            const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
-
-            if(focusedSattelite && state.wwd.worldWindowController._isFixed) {
-                const orbitInfo = state.data.orbits
-                    .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
-                const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-                const position = EoUtils.getOrbitPosition(satrec, new Date(newSelectedTime));
-                // The range needs to be changed gradually to tha altitude of the satellite.
-                // This one needs to properly clean to the satellite.
-
-                state.wwd.navigator.range = 2 * position.altitude;
-                state.wwd.navigator.lookAtLocation.latitude = position.latitude;
-                state.wwd.navigator.lookAtLocation.longitude = position.longitude;
-                state.wwd.navigator.lookAtLocation.altitude = position.altitude;
-                state.wwd.redraw();
-            }
-
-            dispatch(changeSelectTime(newSelectedTime, dispatch, selectedTime));
+            dispatch(changeSelectTime(newSelectedTime, dispatch, selectedTime, state));
         }
     }, 60)
 };
@@ -204,18 +187,29 @@ export const scrollToTime = (state, dispatch, selectTime, newTime, period, callb
  * 
  * @param {string} time 
  */
-export const changeSelectTime = (time, dispatch, selectTime) => {
+export const changeSelectTime = (time, dispatch, selectTime, state) => {
     const selectTimeMoment = moment(selectTime);
     const selectYearDay = `${selectTimeMoment.year()}-${selectTimeMoment.dayOfYear()}`
     const momentTime = moment(time);
     const timeYearDay = `${momentTime.year()}-${momentTime.dayOfYear()}`
     const newTimeIsSameDay = selectYearDay === timeYearDay;
 
-    //Check if new time is in another day. If so, reload orbits
-    // future TLE are not available at the moment
-    // if(!newTimeIsSameDay) {
-    //     updateTleData(dispatch, time);
-    // }
+    const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
+
+    if(focusedSattelite && state.wwd.worldWindowController._isFixed) {
+        const orbitInfo = state.data.orbits
+            .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
+        const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+        const position = EoUtils.getOrbitPosition(satrec, new Date(time));
+        // The range needs to be changed gradually to tha altitude of the satellite.
+        // This one needs to properly clean to the satellite.
+
+        state.wwd.navigator.range = 2 * position.altitude;
+        state.wwd.navigator.lookAtLocation.latitude = position.latitude;
+        state.wwd.navigator.lookAtLocation.longitude = position.longitude;
+        state.wwd.navigator.lookAtLocation.altitude = position.altitude;
+        state.wwd.redraw();
+    }
 
     return {
         type: types.CHANGE_SELECTTIME,

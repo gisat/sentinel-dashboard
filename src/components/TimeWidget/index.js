@@ -25,7 +25,7 @@ const TimeWidget = (props) => {
     }
 
     const onSetTime = (time) => {
-        dispatch(changeSelectTime(time.toString(), dispatch, select.rootSelectors.getSelectTime(state)));
+        dispatch(changeSelectTime(time.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
     }
 
     const onStartTimer = () => {

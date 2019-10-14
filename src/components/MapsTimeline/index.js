@@ -44,8 +44,9 @@ const MapsTimeline = (props) => {
         }
 
         if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
+            console.log('onTimeChange');
             dispatch(stopTimer());
-            dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state)));
+            dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== curTimelineState.activeTimeLevel) {
