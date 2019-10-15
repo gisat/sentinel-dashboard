@@ -213,8 +213,8 @@ const satData = [
         fileName: 's5p.json',
         rotations: {
             x: 0,
-            y: 0,
-            z: 0,
+            y: 180,
+            z: 180,
             headingAxis: [0, 0, 1],
             headingAdd: -90,
             headingMultiply: 1
