@@ -1,14 +1,16 @@
 import WorldWind from 'webworldwind-gisat';
 import WorldWindX from 'webworldwind-x';
+import Model from '../../worldwind/Model';
+
 const {
     RenderableLayer,
     Position,
 } = WorldWind;
 
 const {
-    Model,
-    EoUtils,
+    EoUtils
 } = WorldWindX;
+
 
 const DEFAULT_MODEL_OPTIONS = {
     rotations: {
@@ -119,12 +121,6 @@ class SatelliteModelLayer extends RenderableLayer {
             }
             else if (rotations.headingAxis[2] === 1) {
                 model.zRotation = angle;
-                if(this.key === 's3a') {
-                    model.zRotation += 178;
-                }
-                if(this.key === 's3b') {
-                    model.zRotation += 25;
-                }
             }
         }
     }

@@ -98,10 +98,10 @@ const satData = [
         fileName: 's3.json',
         rotations: {
             x: 0, //0
-            y: 180, //180
-            z: 165, //165
+            y: 0, //180
+            z: 0, //165
             headingAxis: [0, 0, 1], //0,0,1
-            headingAdd: -20, //-20
+            headingAdd: 180, //-20
             headingMultiply: 1 //1
         },
         preRotations: {
@@ -250,7 +250,7 @@ const satData = [
         fileName: 's3.json',
         rotations: {
             x: 0, //0
-            y: 180, //180
+            y: 0, //180
             z: 0, //165
             headingAxis: [0, 0, 1], //0,0,1
             headingAdd: 180, //-20
@@ -259,7 +259,7 @@ const satData = [
         preRotations: {
             x: 0,
             y: 180,
-            z: 20
+            z: 0
         },
         scale: 1000000,
         translations: {
