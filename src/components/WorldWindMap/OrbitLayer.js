@@ -26,8 +26,8 @@ class OrbitLayer extends RenderableLayer {
         this.satRec = null;
         this.key = options.key;
         this.timeWindow = 90 * 60 * 1000; //90 minutes
-        this._beforeCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(1, 1, 0, 1));
-        this._afterCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(213 / 255, 214  / 255, 210 / 255, 1));
+        this._beforeCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(213 / 255, 214  / 255, 210 / 255, 1));
+        this._afterCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(1, 1, 0, 1));
         this.addRenderable(this._beforeCurrentOrbit);
         this.addRenderable(this._afterCurrentOrbit);
         this.currentTime = null;
