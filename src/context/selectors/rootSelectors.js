@@ -61,6 +61,16 @@ export function getLandscape (state)  {return common.getByPath(state, ['landscap
 
 export function getFocusedSattelite (state)  {return common.getByPath(state, ['focus'])};
 
+const getReleasedSatellites = (satellite, date) => {
+    return satellite.satData.launchDate.getTime() < new Date(date).getTime();
+}
+
+const filterByReleasedSatellite = (orbit, satellites, date) => {
+    const satKey = orbit.key.split("orbit-")[1];
+    const satellite = satellites.find((s) => s.id === satKey);
+    return getReleasedSatellites(satellite, date);
+}
+
 //round time on minutes to prevent rerender on every second?
 const getEndDataTime = getSelectTime;
 export const getActiveLayers = createCachedSelector(
@@ -88,15 +98,13 @@ export const getActiveLayers = createCachedSelector(
         activeLayersWithDates.push(layer);
     });
 
-    const orbitLayers = orbitsSubstate.map(o => ({...o, type: 'orbit'}));
-
-
+    const orbitLayers = orbitsSubstate.filter((o) =>filterByReleasedSatellite(o, satellitesSubstate, selectTime)).map(o => ({...o, type: 'orbit'}));    
     const getOrbitForLayer = (orbitKey) => {
         const orbit = orbitsSubstate.find(o => o.key === orbitKey);
         return (orbit && orbit.specs) || null;
     }
-
-    const satellitesLayers = satellitesSubstate.map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
+    
+    const satellitesLayers = satellitesSubstate.filter((s) => getReleasedSatellites(s, selectTime)).map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
     let acquisitionPlanLayers = [];
     
     //todo filter by visible APS data
