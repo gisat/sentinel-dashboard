@@ -85,15 +85,15 @@ const getSentinelLayer = (layerConfig) => {
     }
 }
 
-const getOrbitLayer = (layerConfig, time = new Date(), wwd) => {
+const getOrbitLayer = (layerConfig, time = new Date(), wwd, currentTime) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
 
     //set specs
 
     if(cacheLayer) {
-        if(time.toString() !== cacheLayer.time.toString()) {
-            cacheLayer.setTime(new Date(time));
+        if(time.toString() !== cacheLayer.selectTime.toString() || currentTime.toString() !== cacheLayer.currentTime.toString()) {
+            cacheLayer.setTime(new Date(currentTime), new Date(time));
         }
 
         if(layerConfig.specs[0] !== (cacheLayer.satRec && cacheLayer.satRec[0]) || layerConfig.specs[1] !== (cacheLayer.satRec && cacheLayer.satRec[1])) {
@@ -102,7 +102,7 @@ const getOrbitLayer = (layerConfig, time = new Date(), wwd) => {
 
         return cacheLayer;
     } else {
-        const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time});
+        const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time, currentTime});
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
         return layer;
@@ -218,21 +218,23 @@ export const getLayers = createCachedSelector([
     (layersConfig, time) => time,
     (layersConfig, time, wwd) => wwd,
     (layersConfig, time, wwd, onLayerChanged) => onLayerChanged,
-], (layersConfig, time, wwd, onLayerChanged) => {
+    (layersConfig, time, wwd, onLayerChanged, currentTime) => currentTime,
+], (layersConfig, time, wwd, onLayerChanged, currentTime) => {
     const layers = [defaultStarfieldLayer, defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
-    const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time, wwd));
+    const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time, wwd, currentTime));
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));
     const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
     return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
-})((layersConfig, time) => {
+})((layersConfig, time, wwd, onLayerChanged, currentTime) => {
     const stringTime = time ? time.toString() : '';
+    const stringCurrentTime = currentTime ? currentTime.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
@@ -243,7 +245,7 @@ export const getLayers = createCachedSelector([
     const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',');
     const acquisitionPlanLayersKeys = acquisitionPlanLayers.map((aps) => `${aps.key}_${getPlansKeys(aps.plans)}`);
-    const cacheKey = `${stringTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
+    const cacheKey = `${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
     return cacheKey;
 });
 
