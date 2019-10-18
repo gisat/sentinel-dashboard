@@ -43,6 +43,14 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             }
         }
 
+        let sector = ' se []';
+        if(shape.sector) {
+            sector = shape.sector.minLatitude + ',' +
+                shape.sector.maxLatitude + ',' +
+                shape.sector.minLongitude + ',' +
+                shape.sector.maxLongitude;
+        }
+
         return 'dn ' + shape.displayName +
             ' at ' + (!shape._attributesStateKey ? 'null' : shape._attributesStateKey) +
             ' hi ' + shape.highlighted +
@@ -52,10 +60,7 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             ' po ' + shape.polarThrottle +
             ' img ' + !!shape.image +
             ' se ' + '[' +
-            shape.sector.minLatitude + ',' +
-            shape.sector.maxLatitude + ',' +
-            shape.sector.minLongitude + ',' +
-            shape.sector.maxLongitude +
+            sector +
             ']';
     }
 
