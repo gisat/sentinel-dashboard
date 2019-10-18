@@ -8,9 +8,9 @@ import AcquisitionPlanLayer from './AcquisitionPlanLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getModel} from './satellitesModels';
+import SciHubProducts from '../../worldwind/products/Products';
 const {
     SentinelCloudlessLayer,
-    SciHubProducts,
     StarFieldLayer,
     EoUtils,
 } = WordWindX;

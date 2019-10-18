@@ -1,3 +1,7 @@
+import './worldwind/www-overrides/SurfaceShapeTileBuilder';
+import './worldwind/www-overrides/SurfaceShapeTile';
+import './worldwind/www-overrides/TiledImageLayer';
+
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {ContextProvider} from './context/context';
