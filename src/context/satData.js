@@ -111,9 +111,9 @@ const satData = [
         },
         scale: 1000000,
         translations: {
-            x: -0.01, //-0.01
-            y: 1.9, //1.9
-            z: -0.07 //-0.07
+            x: 0.01, //-0.01
+            y: 1.98, //1.9
+            z: 0.07 //-0.07
         },
         ignoreLocalTransforms: true,
         launchDate: new Date('2016-02-16T17:57:00.000Z'),
@@ -213,8 +213,8 @@ const satData = [
         fileName: 's5p.json',
         rotations: {
             x: 0,
-            y: 180,
-            z: 180,
+            y: 0,
+            z: 0,
             headingAxis: [0, 0, 1],
             headingAdd: -90,
             headingMultiply: 1
