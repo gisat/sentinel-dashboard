@@ -2,6 +2,7 @@ import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 import KMLWorker from './utils/KML.worker'
 import {AcquisitionPlansParser} from './utils/AcquisitionPlansParser'
+import TexturedSurfacePolygon from "../../worldwind/textured/TexturedSurfacePolygon";
 
 const {
     RenderableLayer,
@@ -17,6 +18,7 @@ const numWorkers = Workers.getCoreCount();
 const workers = new Workers(KMLWorker, numWorkers);
 const acquisitionPlans = new AcquisitionPlans(satNames, workers);
 acquisitionPlans.parser = new AcquisitionPlansParser(workers);
+acquisitionPlans.parser.InteriorCtor = TexturedSurfacePolygon;
 
 /**
  * 
