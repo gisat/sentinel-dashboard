@@ -251,12 +251,20 @@ export const getLayers = createCachedSelector([
 
 const getSciProducts = async (layerConfig) => {
     try {
+        let beginTime = layerConfig.beginTime;
+        let endTime = layerConfig.endTime;
+        if(layerConfig.satData.shortName === 'S-2A' ||
+            layerConfig.satData.shortName === 'S-2B') {
+            beginTime = new Date(layerConfig.beginTime.getTime() + (15 * 60 * 1000));
+            endTime = new Date(layerConfig.endTime.getTime() - (15 * 60 * 1000));
+        }
+
         const productsLocal = productsScihub.products({
             shortName: layerConfig.satData.shortName,
             products: [layerConfig.layerKey],
-            beginTime: layerConfig.beginTime,
-            endTime: layerConfig.endTime
-        })
+            beginTime: beginTime,
+            endTime: endTime
+        });
         return await productsLocal;
     } catch {
         console.error('Can not get products.')
@@ -297,6 +305,9 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
         const request = products[productIndex].renderable().then((result) => {
             if(rejected) {
                 return
+            }
+            if(result.boundaries && result.boundaries.length > 0 && result.boundaries[0].length < 4) {
+                return;
             }
 
             const error = result instanceof Error;
