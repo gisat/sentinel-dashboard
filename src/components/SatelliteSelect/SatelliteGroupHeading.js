@@ -22,6 +22,7 @@ const SatelliteGroupHeading = props => {
       } = props;
 
     const active = groupData.active;
+    const disabled = groupData.disabled;
     const activeAPS = groupData.activeAPS;
     const availableAPS = groupData.availableAPS;
 
@@ -83,7 +84,7 @@ const SatelliteGroupHeading = props => {
     }
     
     return (
-              <div css={{...getStyles('groupHeading', { theme, ...restProps }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''}`)} onClick={() => {onClick(groupData.value)}} >
+              <div css={{...getStyles('groupHeading', { theme, ...restProps, disabled }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`)} onClick={() => {!disabled && onClick(groupData.value)}} >
                     <div style={{display: "flex",minWidth: '100%'}}>
                         <Icon icon={groupData.icon} style={satIconStyle}/>
                         <span style={labelStyle}>

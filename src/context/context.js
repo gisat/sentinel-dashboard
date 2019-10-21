@@ -159,7 +159,7 @@ const initialState = {
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],
-    focus: 'S-1A', // Fix camera on sattelite
+    focus: null, // Fix camera on sattelite
     selectTime: null,
     currentTime: getNowUTC(),
     landscape: true,
