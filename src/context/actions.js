@@ -5,6 +5,7 @@ import {getInside} from '../utils/period';
 import {getNowUTC} from '../utils/date';
 import {getTle} from '../utils/tle';
 import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
+import satellitesUtils from '../utils/satellites';
 import WorldWind from 'webworldwind-gisat';
 import WordWindX from 'webworldwind-x';
 const {
@@ -196,19 +197,27 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
 
     const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
 
-    if(focusedSattelite && state.wwd.worldWindowController._isFixed) {
-        const orbitInfo = state.data.orbits
-            .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
-        const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-        const position = EoUtils.getOrbitPosition(satrec, new Date(time));
-        // The range needs to be changed gradually to tha altitude of the satellite.
-        // This one needs to properly clean to the satellite.
+    if(focusedSattelite) {
+        const satellite = select.data.satellites.getSatelliteByKey(state, focusedSattelite);
+        const isReleased = satellitesUtils.isSatelliteReleaseBeforeDate(satellite, selectTime)
 
-        state.wwd.navigator.range = 2 * position.altitude;
-        state.wwd.navigator.lookAtLocation.latitude = position.latitude;
-        state.wwd.navigator.lookAtLocation.longitude = position.longitude;
-        state.wwd.navigator.lookAtLocation.altitude = position.altitude;
-        state.wwd.redraw();
+        if(isReleased && state.wwd.worldWindowController._isFixed) {
+            const orbitInfo = state.data.orbits
+            .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
+            const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+            const position = EoUtils.getOrbitPosition(satrec, new Date(time));
+            // The range needs to be changed gradually to tha altitude of the satellite.
+            // This one needs to properly clean to the satellite.
+            
+            state.wwd.navigator.range = 2 * position.altitude;
+            state.wwd.navigator.lookAtLocation.latitude = position.latitude;
+            state.wwd.navigator.lookAtLocation.longitude = position.longitude;
+            state.wwd.navigator.lookAtLocation.altitude = position.altitude;
+            state.wwd.redraw();
+        } else if(!isReleased && state.wwd.worldWindowController._isFixed){
+            //release focused satellite if selected date is before satellite release
+            dispatch(toggleSatelliteFocus(focusedSattelite, state));
+        }
     }
 
     return {

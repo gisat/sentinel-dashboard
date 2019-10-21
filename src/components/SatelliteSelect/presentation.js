@@ -90,6 +90,15 @@ class Select extends React.PureComponent {
                 borderColor: 'rgba(236, 235, 255, 0.66)',
             }),
             groupHeading:(provided, state) => {
+                const disabled = state.disabled;
+                const disabledStyle = {
+                    backgroundColor: disabledBackgroundColor,
+                    color: activeColor,
+                    fill: activeColor,
+                    stroke: activeColor,
+                    cursor: 'not-allowed',
+                }
+
                 const style = {
                     ...provided,
                     alignItems: 'center',
@@ -100,6 +109,7 @@ class Select extends React.PureComponent {
                     '&:hover': {
                         backgroundColor: hoverBackgroundColor
                     },
+                    ...(disabled && disabledStyle),
                   }
 
                   return style;

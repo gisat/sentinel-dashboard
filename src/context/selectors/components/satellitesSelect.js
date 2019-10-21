@@ -4,7 +4,8 @@ import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getVisibleAcquisitionsPlans} from '../map';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
 import {getPlansForDate, getLoadingAcquisitionsPlans} from '../data/acquisitionPlans';
-import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent} from '../rootSelectors';
+import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent, getSelectTime} from '../rootSelectors';
+import satellitesUtils from '../../../utils/satellites';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
@@ -17,16 +18,18 @@ const getSatelitesSelectOptions = createSelector(
     getVisibleAcquisitionsPlans,
     getPlansForDate,
     getLoadingAcquisitionsPlans,
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData, loadingAcquisitionsPlans) => {
+    getSelectTime,
+    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData, loadingAcquisitionsPlans, selectTime) => {
         
-        const getLayerOption = (layerKey, satKey) => {
+        const getLayerOption = (layerKey, satConfig) => {
+            const satKey = satConfig.id;
             const layer = getLayerByKey(layersSubState, layerKey);
             const activeLayerCfg = getActiveLayerByKey(activeLayers, layerKey, satKey)
             
             return {
                 id: layerKey,
                 label: layer.name,
-                disabled: selectTimePastOrCurrent,
+                disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
                 satKey: satKey,
                 active: activeLayerCfg ? true : false,
                 status: activeLayerCfg && activeLayerCfg.status,
@@ -41,6 +44,7 @@ const getSatelitesSelectOptions = createSelector(
                 groupData: {
                     value: satConfig.id,
                     icon: satConfig.iconClass,
+                    disabled: !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
                     active: focusedSattelite === satConfig.id,
                     activeAPS: visibleAcquisitionsPlans.includes(satConfig.id),
                     availableAPS: selectTimePastOrCurrent && acquisitionPlansData.some((p) => p.key === satConfig.id && p.plans.length > 0),
@@ -51,7 +55,7 @@ const getSatelitesSelectOptions = createSelector(
             }
 
             if(satConfig.layers && satConfig.layers.length > 0) {
-                satOption.options = satConfig.layers.map((layerKey) => getLayerOption(layerKey, satConfig.id));
+                satOption.options = satConfig.layers.map((layerKey) => getLayerOption(layerKey, satConfig));
             }
 
             return satOption;

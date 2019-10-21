@@ -79,12 +79,13 @@ export const getActiveLayers = createCachedSelector(
     const activeLayersWithDates = []
 
     activeLayers.forEach(l => {
+        const satData = getSatDataByKey(l.satKey);
         const layer = {...l,
             type: 'sentinelData',
             beginTime: new Date(beginTime),
             endTime: new Date(endTime),
-            disabled: selectTimePastOrCurrent,
-            satData: getSatDataByKey(l.satKey),
+            disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate({satData}, selectTime),
+            satData,
         }
         activeLayersWithDates.push(layer);
     });
