@@ -785,9 +785,6 @@ export default class TexturedSurfaceShape extends SurfaceShape {
         angles = angles.filter(el => {
             if (el.angle < 170 || el.angle > 190) {
                 return true;
-            } else if (el.angle > 170 && el.angle < 190) {
-                el.angle = 170;
-                return true;
             }
             return false;
         });
