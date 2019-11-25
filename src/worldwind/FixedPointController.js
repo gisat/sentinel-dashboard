@@ -69,9 +69,24 @@ class FixedPointController  {
             speedFactor = 20,
             lookAt = this.lookAt;
 
+        // Speed should depend on the distance compared to the lastPoint.
+
         if (state === BEGAN) {
             this.lastPoint.set(recognizer.clientX, recognizer.clientY);
+
+            this.previousX = recognizer.clientX;
+            this.previousY = recognizer.clientY;
         } else if (state === CHANGED) {
+            if((Math.abs(recognizer.clientX - this.previousX) < 1) && (Math.abs(recognizer.clientY - this.previousY) < 1)) {
+                this.previousX = recognizer.clientX;
+                this.previousY = recognizer.clientY;
+
+                return;
+            }
+
+            this.previousX = recognizer.clientX;
+            this.previousY = recognizer.clientY;
+
             var canvas = this.worldWindow.canvas,
                 distance = WWMath.max(1, lookAt.range), // The distance should be relevant only with respect to the range object we are using.
                 metersPerPixel = WWMath.perspectivePixelSize(canvas.clientWidth, canvas.clientHeight, distance),
