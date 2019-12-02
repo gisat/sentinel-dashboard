@@ -76,7 +76,8 @@ export const getActiveLayers = createCachedSelector(
     getPlansForDate,
     getVisibleAcquisitionsPlans,
     (state, selectTime) => selectTime,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime) => {
+    getFocusedSattelite,
+    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite) => {
 
     const activeLayersWithDates = []
 
@@ -92,7 +93,11 @@ export const getActiveLayers = createCachedSelector(
         activeLayersWithDates.push(layer);
     });
 
-    const orbitLayers = orbitsSubstate.filter((o) =>satellitesUtils.filterByReleasedSatellite(o, satellitesSubstate, selectTime)).map(o => ({...o, type: 'orbit'}));    
+    const orbitLayers = orbitsSubstate.filter((o) =>
+        satellitesUtils.filterByReleasedSatellite(o, satellitesSubstate, selectTime)
+        ).filter((o) =>
+            satellitesUtils.filterByActiveSatellite(o, focusedSatellite)
+        ).map(o => ({...o, type: 'orbit'}));    
     const getOrbitForLayer = (orbitKey) => {
         const orbit = orbitsSubstate.find(o => o.key === orbitKey);
         return (orbit && orbit.specs) || null;

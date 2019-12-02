@@ -18,9 +18,19 @@ const filterByReleasedSatellite = (orbit, satellites, date) => {
     const satKey = orbit.key.split("orbit-")[1];
     const satellite = satellites.find((s) => s.id === satKey);
     return isSatelliteReleaseBeforeDate(satellite, date);
-}
+};
+
+const filterByActiveSatellite = (orbit, activeSatelliteKey) => {
+    if(activeSatelliteKey) {
+        const satKey = orbit.key.split("orbit-")[1];
+        return satKey === activeSatelliteKey;
+    } else {
+        return true;
+    }
+};
 
 export default {
     isSatelliteReleaseBeforeDate,
-    filterByReleasedSatellite
+    filterByReleasedSatellite,
+    filterByActiveSatellite,
 }
