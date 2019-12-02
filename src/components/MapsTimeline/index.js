@@ -9,6 +9,7 @@ import {
     updateComponent,
     scrollToTime,
     changeSelectTime,
+    stopFollowNow,
     stopTimer,
 } from '../../context/actions';
 
@@ -45,6 +46,7 @@ const MapsTimeline = (props) => {
 
         if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
             console.log('onTimeChange');
+            dispatch(stopFollowNow());
             dispatch(stopTimer());
             dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
         }
@@ -65,6 +67,7 @@ const MapsTimeline = (props) => {
 	const onTimeClick = (evt) => {
         const {state} = props;
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
+        dispatch(stopFollowNow());
         dispatch(stopTimer());
 
         dispatch(setPreventReloadLayers(true));

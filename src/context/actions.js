@@ -186,8 +186,9 @@ export const scrollToTime = (state, dispatch, selectTime, newTime, period, callb
 
 /**
  * 
- * @param {string} time 
- */
+ * @param {string} time New time
+ * @param {function} dispatch
+ * @param {string} selectTime */
 export const changeSelectTime = (time, dispatch, selectTime, state) => {
     const selectTimeMoment = moment(selectTime);
     const selectYearDay = `${selectTimeMoment.year()}-${selectTimeMoment.dayOfYear()}`
@@ -248,6 +249,17 @@ export const setFollowNow = followNow => {
       };
 }
 
+/**
+ * 
+ * @param {bool} trackTime 
+ */
+export const setTrackTime = trackTime => {
+    return {
+        type: types.TRACK_TIME,
+        payload: trackTime
+      };
+}
+
 export const updateComponent = (component, data) => {
 	return {
 		type: types.COMPONENTS.UPDATE,
@@ -267,7 +279,7 @@ export const setComponent = (component, path, value) => {
 
 export const startTrackNowTime = (state, dispatch) => {
     window.clearInterval(nowTimer);
-    nowTimer = window.setInterval(() => dispatch(nowTick(state)), 1000);
+    nowTimer = window.setInterval(() => dispatch(nowTick()), 1000);
     dispatch(nowTick())
 }
 
@@ -277,8 +289,15 @@ const nowTick = () => {
 };
 
 export const stopTimer = () => {
-  clearInterval(timer);
-  return setFollowNow(false);
+    return setTrackTime(false);
+}
+
+export const startTimer = (state, dispatch) => {
+    return setTrackTime(true);
+}
+
+export const stopFollowNow = () => {
+    return setFollowNow(false);
 }
 
 /**

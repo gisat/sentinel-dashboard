@@ -4,14 +4,49 @@ import classnames from 'classnames';
 import './style.css';
 
 class TimeWidget extends React.PureComponent{
+    constructor(props) {
+        super(props);
+        this.state = {
+            timer: null,
+        }
 
-    componentDidMount() {
-        if(this.props.nowActive) {
-            // this.props.onStartTimer();
+        this.tick = this.tick.bind(this);
+        this.stopTimer = this.stopTimer.bind(this);
+        this.startTimer = this.startTimer.bind(this);
+    }
+
+    tick() {
+        const {onSetTime, trackTimeActive, time} = this.props;
+        const selectTime = time ? moment(time) : null;
+
+        if(trackTimeActive && selectTime && this.state.timer) {
+            onSetTime(selectTime.add(1, 'second').toDate().toString());
         }
     }
+
+    stopTimer() {
+        const {onStopTimer,onStopFollowNow, nowActive} = this.props;
+        if(nowActive) {
+            onStopFollowNow();
+        }
+        if(this.state.timer) {
+            window.clearInterval(this.state.timer);
+            this.setState({timer: null});
+            onStopTimer();
+        }
+    }
+    startTimer() {
+        const {onStartTimer} = this.props;
+        if(this.state.timer) {
+            this.stopTimer();
+        }
+        const timer = window.setInterval(this.tick, 1000);
+        this.setState({timer});
+        onStartTimer();
+    }
+
     render() {
-        const {time, mouseTime, nowActive, onStartTimer, onStopTimer, active, onSelectActive} = this.props;
+        const {time, mouseTime, nowActive, active, onSelectActive, onStartFollowNow, onStopFollowNow, trackTimeActive} = this.props;
         const currentTime = time ? moment(time) : null;
         const mouseTimeMom = mouseTime ? moment(mouseTime) : null;
         const timeMom = mouseTimeMom || currentTime;
@@ -22,7 +57,12 @@ class TimeWidget extends React.PureComponent{
             <div className={classes}>
                 {timeMom ?
                 <>
-                    <div onClick={() => nowActive ? onStopTimer() : onStartTimer()} className={`now time-cell ${nowActive ? 'active' : '' }`}>
+                    <div onClick={() => (trackTimeActive || nowActive) ? this.stopTimer() : this.startTimer()} className={`now time-cell ${(trackTimeActive || nowActive) ? 'active' : '' }`}>
+                        Play
+                        <span className={'indicator'}>
+                        </span>
+                    </div>
+                    <div onClick={() => nowActive ? onStopFollowNow() : onStartFollowNow()} className={`now time-cell ${nowActive ? 'active' : '' }`}>
                         NOW
                         <span className={'indicator'}>
                         </span>

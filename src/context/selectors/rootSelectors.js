@@ -56,6 +56,8 @@ export const getPureActiveLayers = createCachedSelector(
 
 export function getFollowNow (state)  {return common.getByPath(state, ['followNow'])};
 
+export function getTrackTimeActive (state)  {return common.getByPath(state, ['trackTime'])};
+
 export function getPeriodLimit (state)  {return common.getByPath(state, ['periodLimit'])};
 
 export function getLandscape (state)  {return common.getByPath(state, ['landscape'])};

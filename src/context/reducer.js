@@ -150,6 +150,13 @@ const setFollowNow = (state, action) => {
     };
 }
 
+const setTrackTime = (state, action) => {
+    return {
+        ...state,
+        trackTime: action.payload
+    };
+}
+
 const setTimeLineDayWidth = (state, action) => {
     return {
         ...state,
@@ -276,6 +283,9 @@ const mapRemoveVisibleAcquisitionPlan = (state, action) => {
 };
 
 export default (state, action) => {
+    //change state logging
+    // console.log("beforeState", state, "action", action);
+    
     switch(action.type) {
         case types.FOCUS_SATELLITE:
             return focusSatelite(state, action)
@@ -295,6 +305,8 @@ export default (state, action) => {
             return setActiveTimeLevel(state, action);
         case types.FOLLOW_NOW:
             return setFollowNow(state, action);
+        case types.TRACK_TIME:
+            return setTrackTime(state, action);
         case types.CHANGE_TIME_LINE_DAY_WIDTH:
             return setTimeLineDayWidth(state, action);
         case types.TIME_LINE_SET_MOUSE_TIME:

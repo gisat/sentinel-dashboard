@@ -11,6 +11,8 @@ import {
     zoomToTimeLevel,
     changeSelectTime,
     stopTimer,
+    startTimer,
+    stopFollowNow,
 } from '../../context/actions';
 
 const TimeWidget = (props) => {
@@ -28,20 +30,29 @@ const TimeWidget = (props) => {
         dispatch(changeSelectTime(time.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
     }
 
-    const onStartTimer = () => {
+    const onStartFollowNow = () => {
         const {state} = props;
         const selectTime = select.rootSelectors.getSelectTime(state);
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
         const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
+        dispatch(stopTimer());
         dispatch(setFollowNow(true));
         scrollToTime(state, dispatch, scrollTime, moment(getNowUTC()), periodLimit, () => {
             dispatch(setFollowNow(true));
         });
     }
 
+    const onStopFollowNow = () => {
+        dispatch(stopFollowNow());
+    }
+
+    const onStartTimer = () => {
+        dispatch(startTimer());
+    }
+
     const onStopTimer = () => {
         dispatch(stopTimer());
-    }
+    }    
 
     return (
         <Presentation 
@@ -49,9 +60,12 @@ const TimeWidget = (props) => {
             active={timelineState.activeTimeLevel}
             onSelectActive={onSetActiveTimeLevel}
             onSetTime={onSetTime}
+            onStartFollowNow={onStartFollowNow}
+            onStopFollowNow={onStopFollowNow}
             onStartTimer={onStartTimer}
             onStopTimer={onStopTimer}
             nowActive={select.rootSelectors.getFollowNow(state)}
+            trackTimeActive={select.rootSelectors.getTrackTimeActive(state)}
             mouseTime={timelineState.mouseTime}
             />
     )

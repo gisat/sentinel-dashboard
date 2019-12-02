@@ -165,6 +165,7 @@ const initialState = {
     landscape: true,
     infoModal: {},
     followNow: true,
+    trackTime: false,
     preventReloadLayers: false,
     selectTimePastOrCurrent: false,
     components:{
