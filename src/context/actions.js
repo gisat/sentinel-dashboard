@@ -6,7 +6,7 @@ import {getNowUTC} from '../utils/date';
 import {getTle} from '../utils/tle';
 import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
 import satellitesUtils from '../utils/satellites';
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 const {
     EoUtils

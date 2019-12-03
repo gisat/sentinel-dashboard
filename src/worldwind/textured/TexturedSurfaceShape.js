@@ -1,7 +1,7 @@
 import libtess from './libtess';
 import ScreenColorProgram from './ScreenColorProgram';
 import ScreenTextureProgram from './ScreenTextureProgram';
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 
 const {
     Angle,

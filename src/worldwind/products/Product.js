@@ -1,5 +1,5 @@
 import QuickLook from "./QuickLook";
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import TexturedSurfacePolygon from '../textured/TexturedSurfacePolygon';
 
 const {

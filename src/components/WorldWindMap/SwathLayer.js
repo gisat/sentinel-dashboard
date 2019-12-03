@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import utils from './utils/eo/utils';
 const {
@@ -7,7 +7,7 @@ const {
 } = WorldWind;
 
 const {
-    Swath
+    SwathCone
 } = WordWindX;
 
 const getParams = (satName, type) => {
@@ -136,7 +136,7 @@ class SwathLayer extends RenderableLayer {
 
             const {swathWidth, swathHeight, translateDistance} = getParams(this.satName, this.type);
             if(swathWidth && swathHeight) {
-                this.swath = new Swath({
+                this.swath = new SwathCone({
                     currentPosition,
                     nextPosition,
                     currentHeading,

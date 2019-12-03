@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import createCachedSelector from 're-reselect';
 import './style.css';
@@ -9,10 +9,10 @@ import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
-import SentinelCloudlessLayer from '../../worldwind/layer/SentinelCloudlessLayer';
 const {
     StarFieldLayer,
     EoUtils,
+    SentinelCloudlessLayer,
 } = WordWindX;
 const {
     RenderableLayer,

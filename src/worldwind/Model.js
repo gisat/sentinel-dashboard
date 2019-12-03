@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import ColladaScene from "./collada/ColladaScene";
 
 const {

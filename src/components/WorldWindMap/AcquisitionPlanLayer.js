@@ -1,4 +1,4 @@
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
 import KMLWorker from './utils/KML.worker'
 import {AcquisitionPlansParser} from './utils/AcquisitionPlansParser'

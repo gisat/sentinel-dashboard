@@ -1,5 +1,5 @@
 import toGeoJSON from './togeojson';
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 
 export class AcquisitionPlansParser {
 

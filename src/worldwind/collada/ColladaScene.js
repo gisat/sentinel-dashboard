@@ -17,7 +17,7 @@
 /**
  * @exports ColladaScene
  */
-import WorldWind from 'webworldwind-gisat';
+import WorldWind from 'webworldwind-esa';
 
 const {
     ArgumentError,

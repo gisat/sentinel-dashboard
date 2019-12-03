@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
-import WorldWind from 'webworldwind-gisat';
-import WorldWindX from 'webworldwind-x';
+import WorldWindow from '../../worldwind/WorldWindow';
 import ClickPickController from './utils/ClickPickController';
 import {isEqual} from 'lodash';
 import {
@@ -14,10 +13,6 @@ import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
 import FreeCamera from '../../worldwind/FreeCamera';
 import Animator from '../../worldwind/Animator';
-
-const {
-    SentinelCloudlessLayer
-} = WorldWindX;
 
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
@@ -154,7 +149,7 @@ class Map extends Component {
     componentDidMount(){
         const {time, currentTime} = this.props;
         if(!this.wwdCreated) {
-            this.wwd = new WorldWind.WorldWindow("wwd-results", null, EnabledController, FreeCamera);
+            this.wwd = new WorldWindow("wwd-results", null, EnabledController, FreeCamera);
             this.wwd.animator = new Animator(this.wwd);
 
             window.wwd = this.wwd;
