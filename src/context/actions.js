@@ -209,8 +209,8 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
             const position = EoUtils.getOrbitPosition(satrec, new Date(time));
             // The range needs to be changed gradually to tha altitude of the satellite.
             // This one needs to properly clean to the satellite.
+            // state.wwd.navigator.range = 2 * position.altitude;
             
-            state.wwd.navigator.range = 2 * position.altitude;
             state.wwd.navigator.lookAtLocation.latitude = position.latitude;
             state.wwd.navigator.lookAtLocation.longitude = position.longitude;
             state.wwd.navigator.lookAtLocation.altitude = position.altitude;

@@ -109,7 +109,30 @@ class FixedPointController  {
      * the fixed point.
      * @param recognizer
      */
-    handleWheelEvent (recognizer) {};
+    handleWheelEvent (event) {
+        const lookAt = this.lookAt;
+        // Normalize the wheel delta based on the wheel delta mode. This produces a roughly consistent delta across
+        // browsers and input devices.
+        var normalizedDelta;
+        if (event.deltaMode === WheelEvent.DOM_DELTA_PIXEL) {
+            normalizedDelta = event.deltaY;
+        } else if (event.deltaMode === WheelEvent.DOM_DELTA_LINE) {
+            normalizedDelta = event.deltaY * 40;
+        } else if (event.deltaMode === WheelEvent.DOM_DELTA_PAGE) {
+            normalizedDelta = event.deltaY * 400;
+        }
+
+        // Compute a zoom scale factor by adding a fraction of the normalized delta to 1. When multiplied by the
+        // navigator's range, this has the effect of zooming out or zooming in depending on whether the delta is
+        // positive or negative, respectfully.
+        var scale = 1 + (normalizedDelta / 1000);
+
+        // Apply the scale to this navigator's properties.
+        lookAt.range *= scale;
+
+        this.applyLimits(lookAt);
+        this.worldWindow.redraw();
+    };
 
     handleRotation(recognizer) {
     }
@@ -149,6 +172,8 @@ class FixedPointController  {
             } else {
                 state.roll = 180;
             }
+        } else if (state.tilt > 100) {
+            state.tilt = 100;
         }
 
         if(state.heading < 0) {
@@ -163,8 +188,12 @@ class FixedPointController  {
             state.roll += 180;
         }
 
-        if(state.range >= (2 * state.lookAtLocation.altitude)) {
-            state.range = 2 * state.lookAtLocation.altitude;
+        if(state.range >= (40 * state.lookAtLocation.altitude)) {
+            state.range = 40 * state.lookAtLocation.altitude;
+        }
+
+        if(state.range <= 230000) {
+            state.range = 230000;
         }
     };
 }
