@@ -29,8 +29,8 @@ const getSatelitesSelectOptions = createSelector(
             return {
                 id: layerKey,
                 label: layer.name,
-                disabled: false,
-                // disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
+                // disabled: false,
+                disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
                 satKey: satKey,
                 active: activeLayerCfg ? true : false,
                 status: activeLayerCfg && activeLayerCfg.status,

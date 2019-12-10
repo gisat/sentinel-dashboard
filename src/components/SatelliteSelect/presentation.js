@@ -138,9 +138,9 @@ class Select extends React.PureComponent {
                     cursor: 'not-allowed',
                 }
 
-                const disabledActiveStyle = {
-                    backgroundColor: disabledActiveBackgroundColor,
-                }
+                // const disabledActiveStyle = {
+                //     backgroundColor: disabledActiveBackgroundColor,
+                // }
 
                 const active = state.data.active;
                 const disabled = state.data.disabled;
@@ -159,8 +159,8 @@ class Select extends React.PureComponent {
                         backgroundColor: hoverBackgroundColor
                     },
                     ...(active && activeStyle),
-                    ...(disabled && disabledStyle),
-                    ...(disabled && active && disabledActiveStyle),
+                    // ...(disabled && disabledStyle),
+                    // ...(disabled && active && disabledActiveStyle),
                   }
 
                   return style;

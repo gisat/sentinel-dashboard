@@ -74,7 +74,7 @@ const CachedLayerOption = React.memo(LayerOption);
 
 const getLayerOption = (onClick) => {    
     return (props) => {
-        return <CachedLayerOption {...props} onClick={() => !props.data.disabled && onClick(props.data)} />
+        return <CachedLayerOption {...props} onClick={() => onClick(props.data)} />
     } 
 }
 
