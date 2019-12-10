@@ -129,6 +129,10 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             if (!this._contoursPrepered) {
                 if (interiorGeometry.length === 1) {
                     const {anglesMap, topLeftIndex} = this.getCorners(interiorGeometry[0], this._contoursInfo[0].wo);
+                    if(!anglesMap){
+                        //discarted getCorners
+                        return;
+                    }
                     const uvs = this.computeUvs(this._contoursInfo[0].wo, anglesMap, topLeftIndex, this._interiorGeometry[0]);
                     this._contoursInfo[0].anglesMap = anglesMap;
                     this._contoursInfo[0].topLeftIndex = topLeftIndex;
@@ -788,6 +792,11 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             }
             return false;
         });
+
+        if(angles.length < 4) {
+            //discart when angles count is less than 4
+            return {};
+        }
 
         /*var p0 = points[angles[0].index];
         var p1 = points[angles[1].index];

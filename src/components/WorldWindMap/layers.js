@@ -7,8 +7,10 @@ import OrbitLayer from './OrbitLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
+import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
+import TexturedSurfacePolygon from "../../worldwind/textured/TexturedSurfacePolygon";
 const {
     StarFieldLayer,
     EoUtils,
@@ -16,6 +18,8 @@ const {
 } = WordWindX;
 const {
     RenderableLayer,
+    SurfacePolygon,
+    Location,
 } = WorldWind;
 
 const username = 'copapps';
@@ -303,25 +307,42 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
     for(let productIndex = 0; productIndex < products.length; productIndex++) {
         const key = products[productIndex].id();
         const request = products[productIndex].renderable().then((result) => {
+            
+            
             if(rejected) {
                 return
             }
-            if(result.boundaries && result.boundaries.length > 0 && result.boundaries[0].length < 4) {
-                return;
-            }
+            const boundaries = getBoundaries(result);
 
-            const error = result instanceof Error;
-            if(!error) {
+            let uncompleateBoundaries = false;
+            if(boundaries && boundaries.length > 0 && boundaries[0].length < 4) {
+                uncompleateBoundaries = true;
+            }
+            const error = result.error instanceof Error;
+
+            if(!error && !uncompleateBoundaries) {
                 loadedCount++;
                 result['userProperties'] = {
                     key
                 }
+
                 layer.addRenderable(result);
                 redrawCallback();
                 onLayerChanged(changedLayer, {status, loadedCount, totalCount});
             } else {
+                //Add also not loaded footprints
+                loadedCount++;
+                const polygon = productBounds(boundaries);
+                layer.addRenderable(polygon);
+
                 errors.push(error);
+
+                redrawCallback();
+                // onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+
             }
+        }, (err) => {
+            // debugger
         });
         requests.push(request);
     }

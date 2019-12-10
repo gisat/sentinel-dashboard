@@ -83,9 +83,8 @@ export default class Product {
         const shapeAttributes = new ShapeAttributes(null);
         shapeAttributes.drawOutline = true;
         shapeAttributes.drawInterior = true;
-        shapeAttributes.outlineColor = new Color(1, 0, 0, 1);
-        shapeAttributes.interiorColor = new Color(1, 1, 0, 0.3);
-        shapeAttributes.outlineWidth = 1;
+        shapeAttributes.outlineColor = new Color(1, 0, 0, .5);
+        shapeAttributes.outlineWidth = 4;
         return shapeAttributes;
     }
 }

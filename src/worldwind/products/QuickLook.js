@@ -14,23 +14,26 @@ export default class QuickLook {
         if(this._image) {
             return this._image;
         }
-
-        // The request needs to be authorized
-        const response = await this._fetch(this._icon, {
-            headers: {
-                "Accept": "blob",
+        try {
+            // The request needs to be authorized
+            const response = await this._fetch(this._icon, {
+                headers: {
+                    "Accept": "blob",
+                }
+            });
+            if(!response.ok) {
+                throw new Error('ERROR QuickLook#icon Status: ' + response.status);
             }
-        });
-        if(!response.ok) {
-            throw new Error('ERROR QuickLook#icon Status: ' + response.status);
+            const blobData = await response.blob();
+            const url = window.URL.createObjectURL(blobData);
+            const image = await this.createImage(url);
+            window.URL.revokeObjectURL(url);
+    
+            this._image = image;
+            return image;    
+        } catch (err) {
+            throw new Error('ERROR QuickLook#icon Status: ' + err.message);
         }
-        const blobData = await response.blob();
-        const url = window.URL.createObjectURL(blobData);
-        const image = await this.createImage(url);
-        window.URL.revokeObjectURL(url);
-
-        this._image = image;
-        return image;
     }
 
     async createImage(url) {
