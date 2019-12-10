@@ -67,15 +67,16 @@ class Map extends Component {
             const disabledLayers = new Set(this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l)).sort())
 
             const visibilityChanged = !isEqual(prevVisibleLayers, visibleLayers);
+            const newlyEnabledLayersKeys = [...visibleLayers].filter(l => !prevVisibleLayers.has(l));
             //check visibility change
-            if(visibilityChanged) {
+            if(visibilityChanged && !newlyEnabledLayersKeys.some(lk => disabledLayers.has(lk))) {
                 //visibility changed
                 const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, this.props.onLayerChanged, currentTime);
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
                 //reload only new layers
-                const newlyEnabledLayersKeys = [...visibleLayers].filter(l => !prevVisibleLayers.has(l));
+                
                 const newlyEnabledLayersCfg = this.props.layers.filter((cfg) => newlyEnabledLayersKeys.includes(getLayerKeyFromConfig(cfg)));
                 reloadLayersRenderable(newlyEnabledLayersCfg, wwdLayers, this.wwd, this.props.onLayerChanged);
             }  else if(!isEqual(disabledPrevLayers, disabledLayers)) {
@@ -115,8 +116,10 @@ class Map extends Component {
         }
         
         if(prevProps.preventReload !== this.props.preventReload && !this.props.preventReload) {
+            const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
             const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, this.props.onLayerChanged, currentTime);
-            reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
+            //dont reload disabled layers
+            reloadLayersRenderable(enabledLayersKeys.filter(lk => !disabledLayersKeys.includes(lk)), wwdLayers, this.wwd, this.props.onLayerChanged);
         }
     }
 
