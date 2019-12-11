@@ -72,21 +72,16 @@ class OrbitLayer extends RenderableLayer {
             if(currentTime.getTime() < this.startTime.getTime()) {
                 //all in future
                 this._afterCurrentOrbit.time(this.startTime, this.endTime);
-                this._afterCurrentOrbit.update(true);
                 this.addRenderable(this._afterCurrentOrbit);
             } else if(this.startTime.getTime() < currentTime.getTime() && currentTime.getTime() < this.endTime.getTime()) {
                 //select time visible
                 this._beforeCurrentOrbit.time(this.startTime, currentTime);
-                this._beforeCurrentOrbit.update(true);
                 this._afterCurrentOrbit.time(currentTime, this.endTime);
-                this._afterCurrentOrbit.update(true)
-
                 this.addRenderable(this._beforeCurrentOrbit);
                 this.addRenderable(this._afterCurrentOrbit);
             } else if(currentTime.getTime() > this.endTime.getTime()) {
                 //all in past
                 this._beforeCurrentOrbit.time(this.startTime, this.endTime);
-                this._beforeCurrentOrbit.update(true);
                 this.addRenderable(this._beforeCurrentOrbit);
             }
 

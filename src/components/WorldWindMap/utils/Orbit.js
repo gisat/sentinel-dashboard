@@ -40,10 +40,16 @@ class Orbits extends Renderable {
         this._trail = this.trail(this.trailAttributes(color));
         // this._futureTrail = this.trail(this.trailAttributes(new Color(1, 1, 0, 1)));
 
+        if(endTime.getTime() === startTime.getTime()) {
+            this._currentEndTime = new Date(startTime.getTime() + orbitPoints * 1000);
+            this._previousEndTime = new Date(startTime.getTime() + orbitPoints * 1000);
+        } else {
+            this._currentEndTime = endTime;
+            this._previousEndTime = endTime;
+        }
+
         this._currentStartTime = startTime;
-        this._currentEndTime = endTime;
         this._previousStartTime = startTime;
-        this._previousEndTime = endTime;
 
         this.populate();
     }
@@ -103,7 +109,9 @@ class Orbits extends Renderable {
      */
     update(force = false) {
         const startDate = this._currentStartTime.getTime();
+        const now = startDate;
         const previousStartTime = this._previousStartTime.getTime();
+        const previousTime = previousStartTime;
         const changeStart = startDate - previousStartTime;
         const endDate = this._currentEndTime.getTime();
         const previousEndTime = this._previousEndTime.getTime();
@@ -117,88 +125,81 @@ class Orbits extends Renderable {
             return;
         }
 
-        // const isInFuture = change > 0;
-
         const timeWindow = endDate - startDate;
 
-        //FIXME - improve update 
-
-        // const tick = Math.floor(timeWindow / this._orbitPoints);
-        // let positionsToReplace = Math.ceil(Math.abs(now - previousTime) / tick);
-        // if(positionsToReplace > this._orbitPoints) {
+        const tick = Math.floor(timeWindow / this._orbitPoints);
+        let positionsToReplace = (Math.ceil(Math.abs(now - previousTime) / tick)) + Math.ceil(Math.abs(endDate - previousEndTime) / tick);
+        if(positionsToReplace > this._orbitPoints) {
             this.populate();
             return;
-        // }
-/**
-        if(isInFuture) {
-            this._pastTrail.positions.pop();
-
-            // Add to the start date.
-            const startDate = (now + (this._timeWindow / 2)) - (positionsToReplace * tick);
-            const positionsToTransfer = [];
-            const positionsToAdd = [];
-            for(let positionIndex = 0; positionIndex < positionsToReplace; positionIndex++) {
-                // const time = new Date(startDate + positionIndex * tick);
-                const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
-                position.time = time.getTime();
-
-                // this._pastTrail.positions.shift();
-
-                // positionsToTransfer.push(this._futureTrail.positions.shift());
-                // positionsToAdd.push(position);
-            }
-
-            this._pastTrail.positions = this._pastTrail.positions.concat(positionsToTransfer);
-            this._futureTrail.positions = this._futureTrail.positions.concat(positionsToAdd);
-
-            this._pastTrail.positions.push(this._futureTrail.positions[0]);
-        } else {
-            // const startDate = now - (this._timeWindow / 2);
-            const positionsToTransfer = [];
-            const positionsToAdd = [];
-            for(let positionIndex = 0; positionIndex < positionsToReplace; positionIndex++) {
-                const time = new Date(startDate + positionIndex * tick);
-                const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
-                position.time = time.getTime();
-
-                // this._futureTrail.positions.pop();
-
-                // positionsToTransfer.push(this._pastTrail.positions.pop());
-                // positionsToAdd.push(position);
-            }
-
-            this._futureTrail.positions = positionsToTransfer.concat(this._futureTrail.positions);
-            this._pastTrail.positions = positionsToAdd.concat(this._pastTrail.positions);
         }
-         */
+
+        //if start change
+        //update start
+        if(changeStart) {
+            //change to future
+            if(changeStart > 0) {
+                //remove olded possitions than current startDate
+                let i = 0;
+                while (this._trail.positions[i].time < startDate) {
+                    this._trail.positions.shift();
+                }
+            }
+
+            if(changeStart < 0) {
+                //add possitions to startDate
+                const positionsToReplace = Math.ceil(Math.abs(now - previousTime) / tick);
+                for(let positionIndex = 0; positionIndex < positionsToReplace; positionIndex++) {
+                    const time = new Date(previousTime + positionIndex * tick);
+                    const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
+                    position.time = time.getTime();
+                    this._trail.positions = [position, ...this._trail.positions];
+                }
+            }
+        }
+        
+
+        //if end change
+        //update end
+        if(changeEnd) {
+            //change to future
+            if(changeEnd > 0) {
+                //change to future
+                const positionsToReplace = Math.ceil(Math.abs(endDate - previousEndTime) / tick);
+                for(let positionIndex = 0; positionIndex < positionsToReplace; positionIndex++) {
+                    const time = new Date(previousEndTime + positionIndex * tick);
+                    const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
+                    position.time = time.getTime();
+                    this._trail.positions.push(position);
+                }
+            }
+
+            if(changeEnd < 0) {
+                //remove olded possitions than current endDate
+                let i = this._trail.positions.length - 1;
+                while (this._trail.positions[i].time > endDate) {
+                    this._trail.positions.pop();
+                    i = this._trail.positions.length - 1;
+                }
+            }
+        }
+        this._trail.positions = [...this._trail.positions];
     }
 
     populate() {
-        // const now = this._currentStartTime.getTime();
         const startDate = this._currentStartTime.getTime();
         const endDate = this._currentEndTime.getTime();
         const timeWindow = endDate - startDate;
         const tick = Math.floor(timeWindow / this._orbitPoints);
 
         const positions = [];
-        // const pastPositions = [];
         for(let positionIndex = 0; positionIndex < this._orbitPoints; positionIndex++) {
             const time = new Date(startDate + positionIndex * tick);
             const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
             position.time = time.getTime();
             positions.push(position);
-            // if(positionIndex < this._orbitPoints / 2) {
-            //     pastPositions.push(position);
-            // } else if(positionIndex === this._orbitPoints / 2) {
-            //     pastPositions.push(position);
-            //     futurePositions.push(position);
-            // } else {
-            //     futurePositions.push(position);
-            // }
         }
-        this._trail.positions = positions;
-        // this._pastTrail.positions = pastPositions;
-        // this._futureTrail.positions = futurePositions;
+        this._trail.positions = [...positions];
     }
 
     /**

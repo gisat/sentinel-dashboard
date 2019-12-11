@@ -45,7 +45,6 @@ const MapsTimeline = (props) => {
         }
 
         if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
-            console.log('onTimeChange');
             dispatch(stopFollowNow());
             dispatch(stopTimer());
             dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
