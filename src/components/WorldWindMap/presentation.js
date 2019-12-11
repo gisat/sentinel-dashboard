@@ -99,8 +99,8 @@ class Map extends Component {
                     this.wwd.redraw();
                 })
             } else if(time.toString() !== prevProps.time.toString() || currentTime.toString() !== prevProps.currentTime.toString()) {
-
-                const wwdLayers = getLayers(this.props.layers, time, this.wwd, this.props.onLayerChanged, currentTime);
+                const notDisabledLayers = this.props.layers.filter(l => !l.disabled);
+                const wwdLayers = getLayers(notDisabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime);
                 this.handleLayers(wwdLayers);
                 
             }
