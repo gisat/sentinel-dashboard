@@ -25,8 +25,9 @@ const {
 const username = 'copapps';
 const password = 'C9C-2EZ-gQ4-ezY';
 const csiRenderablesCache = new window.Map();
+const searchCache = new window.Map();
 const layersCache = new window.Map();
-const productsScihub = new SciHubProducts(csiRenderablesCache, fetchWithCredentials);
+const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer();
 
