@@ -33,12 +33,12 @@ export const getSelectTime = createCachedSelector(
 export const getBeginDataTime = createCachedSelector(
     getSelectTime,
     (selectTime) => {
-        const beginDataTime = momentjs(selectTime).subtract(1, 'hour').toDate().toString();
+        const beginDataTime = momentjs(selectTime).subtract(5, 'minutes').toDate().toString();
         return beginDataTime;
     }
 )((state) => {
     const selectTime = new Date(getSelectTime(state));
-    const cacheKey = momentjs(selectTime).subtract(1, 'hour').toDate().toString();
+    const cacheKey = momentjs(selectTime).subtract(5, 'minutes').toDate().toString();
     return cacheKey;
 
 })
