@@ -13,3 +13,7 @@ export const getNowUTC = () => {
     var now = new Date();
     return convertToUTC(now);
 }
+
+export const getNowUTCString = () => {
+    return new Date().toUTCString();
+}

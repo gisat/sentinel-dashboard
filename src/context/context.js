@@ -1,11 +1,11 @@
 import React, {createContext} from 'react'
 import reducer from './reducer';
-import {getNowUTC} from '../utils/date'
+import {getNowUTCString} from '../utils/date'
 import moment from 'moment';
 import period from '../utils/period';
 import {getSatDataByKey, getDefaultSatOrbitBySatKey} from './satData';
 
-const now = moment(getNowUTC());
+const now = moment(getNowUTCString());
 
 const periodLimit = period('2010/2025');
 const stringPeriodLimit = {
@@ -161,7 +161,7 @@ const initialState = {
     activeLayers: [],
     focus: null, // Fix camera on sattelite
     selectTime: null,
-    currentTime: getNowUTC(),
+    currentTime: getNowUTCString(),
     landscape: true,
     infoModal: {},
     followNow: true,

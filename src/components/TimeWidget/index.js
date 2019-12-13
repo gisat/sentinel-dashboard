@@ -4,7 +4,7 @@ import Presentation from './presentation';
 import select from '../../context/selectors/';
 import {withContext} from '../../context/withContext';
 import {LEVELS} from '../TimeLine';
-import {getNowUTC} from '../../utils/date'
+import {getNowUTCString} from '../../utils/date'
 import {
     setFollowNow,
     scrollToTime,
@@ -27,17 +27,17 @@ const TimeWidget = (props) => {
     }
 
     const onSetTime = (time) => {
-        dispatch(changeSelectTime(time.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
+        dispatch(changeSelectTime(time, dispatch, select.rootSelectors.getSelectTime(state), state));
     }
 
     const onStartFollowNow = () => {
         const {state} = props;
         const selectTime = select.rootSelectors.getSelectTime(state);
         const periodLimit = select.rootSelectors.getPeriodLimit(state);
-        const scrollTime = selectTime ? new Date(selectTime) : getNowUTC();
+        const scrollTime = selectTime ? moment(selectTime) : getNowUTCString();
         dispatch(stopTimer());
         dispatch(setFollowNow(true));
-        scrollToTime(state, dispatch, scrollTime, moment(getNowUTC()), periodLimit, () => {
+        scrollToTime(state, dispatch, scrollTime, moment(getNowUTCString()), periodLimit, () => {
             dispatch(setFollowNow(true));
         });
     }
@@ -56,7 +56,7 @@ const TimeWidget = (props) => {
 
     return (
         <Presentation 
-            time={new Date(select.rootSelectors.getSelectTime(state))}
+            time={select.rootSelectors.getSelectTime(state)}
             active={timelineState.activeTimeLevel}
             onSelectActive={onSetActiveTimeLevel}
             onSetTime={onSetTime}

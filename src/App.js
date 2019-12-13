@@ -17,6 +17,7 @@ import WorldWindMap from './components/WorldWindMap';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline from './components/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
+import {getNowUTCString} from './utils/date';
 
 class App extends React.PureComponent {
     static contextType = Context
@@ -34,8 +35,8 @@ class App extends React.PureComponent {
     componentDidMount() {
         const {state, dispatch} = this.context;
         startTrackNowTime(state, dispatch);
-        const initTime = new Date().toString();
-        changeSelectTime(initTime, dispatch,initTime)
+        const initTime = getNowUTCString();
+        changeSelectTime(initTime, dispatch, initTime)
         //set Tle data
         updateTleData(dispatch, initTime);
         

@@ -2,7 +2,7 @@ import types from './types';
 import moment from 'moment';
 import select from './selectors/';
 import {getInside} from '../utils/period';
-import {getNowUTC} from '../utils/date';
+import {getNowUTCString} from '../utils/date';
 import {getTle} from '../utils/tle';
 import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
 import satellitesUtils from '../utils/satellites';
@@ -175,8 +175,8 @@ export const scrollToTime = (state, dispatch, selectTime, newTime, period, callb
                 callback();
             }
         } else {
-            const newSelectedTime = moment(selectTime).add(peace * index).toDate().toString();
-            const selectedTime = moment(selectTime).add(peace * (index - 1)).toDate().toString();
+            const newSelectedTime = moment(selectTime).add(peace * index).toDate().toUTCString();
+            const selectedTime = moment(selectTime).add(peace * (index - 1)).toDate().toUTCString();
             // If the focus is there, move the navigator with the satellite.
 
             dispatch(changeSelectTime(newSelectedTime, dispatch, selectedTime, state));
@@ -284,7 +284,7 @@ export const startTrackNowTime = (state, dispatch) => {
 }
 
 const nowTick = () => {
-    const now = getNowUTC();
+    const now = getNowUTCString();
     return changeCurrentTime(now.toString());
 };
 

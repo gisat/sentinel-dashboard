@@ -17,10 +17,10 @@ class TimeWidget extends React.PureComponent{
 
     tick() {
         const {onSetTime, trackTimeActive, time} = this.props;
-        const selectTime = time ? moment(time) : null;
+        const selectTime = time ? moment(time).utc() : null;
 
         if(trackTimeActive && selectTime && this.state.timer) {
-            onSetTime(selectTime.add(1, 'second').toDate().toString());
+            onSetTime(selectTime.add(1, 'second').toDate().toUTCString());
         }
     }
 
@@ -50,6 +50,9 @@ class TimeWidget extends React.PureComponent{
         const currentTime = time ? moment(time) : null;
         const mouseTimeMom = mouseTime ? moment(mouseTime) : null;
         const timeMom = mouseTimeMom || currentTime;
+        if(timeMom) {
+            timeMom.utc();
+        }
         const classes = classnames('time-widget', {
             'mouse-time': mouseTimeMom
         })

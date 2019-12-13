@@ -15,15 +15,15 @@ import {
 
 
 import period from '../../utils/period'
-import {getNowUTC} from '../../utils/date'
+import {getNowUTCString} from '../../utils/date'
 
-const now = moment(getNowUTC());
+const now = moment(getNowUTCString());
 const start = now.clone().subtract(1, 'w');
 const end = now.clone().add(1, 'w');
 const initialTimelinePeriod = period(`${start.format('YYYY-MM-DD')}/${end.format('YYYY-MM-DD')}`);
 const strInitialTimelinePeriod = {
-	start: initialTimelinePeriod.start.toDate().toString(),
-	end: initialTimelinePeriod.end.toDate().toString(),
+	start: initialTimelinePeriod.start.toDate().toUTCString(),
+	end: initialTimelinePeriod.end.toDate().toUTCString(),
 }
 
 
@@ -33,8 +33,9 @@ const MapsTimeline = (props) => {
 	const vertical = select.rootSelectors.getLandscape(state);
 	const periodLimit = select.rootSelectors.getPeriodLimit(state);
 	const timelineState = select.components.timeline.getSubstate(state);
-	const timelineOverlays = select.components.timeline.getOverlays(state);
-    const time = new Date(select.rootSelectors.getSelectTime(state));
+    const timelineOverlays = select.components.timeline.getOverlays(state);
+    const selectTime = select.rootSelectors.getSelectTime(state)
+    const time = new Date(selectTime);
 
 	const onTimeChange = (timelineState) => {
         const {state} = props;
@@ -43,11 +44,10 @@ const MapsTimeline = (props) => {
         if(timelineState.moving !== curTimelineState.moving) {
             dispatch(updateComponent('timeline', {moving: timelineState.moving}))
         }
-
-        if(select.rootSelectors.getSelectTime(state) && timelineState.centerTime && timelineState.centerTime.toString() !== select.rootSelectors.getSelectTime(state)) {
+        if(selectTime && timelineState.centerTime && timelineState.centerTime.toUTCString() !== selectTime) {
             dispatch(stopFollowNow());
             dispatch(stopTimer());
-            dispatch(changeSelectTime(timelineState.centerTime.toString(), dispatch, select.rootSelectors.getSelectTime(state), state));
+            dispatch(changeSelectTime(timelineState.centerTime.toUTCString(), dispatch, selectTime, state));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== curTimelineState.activeTimeLevel) {
