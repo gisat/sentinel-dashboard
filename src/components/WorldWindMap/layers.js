@@ -300,9 +300,32 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
         return
     }
 
-    for(let productIndex = 0; productIndex < products.length; productIndex++) {
-        const key = products[productIndex].id();
-        const request = products[productIndex].renderable().then((result) => {
+    const productsIDs = products.map(p => p.id());
+
+    const renderablesToRemove = [];
+    const renderedRenderables = [];
+    layer.renderables.forEach((r => {
+        const id = r && r.userProperties && r.userProperties.key;
+        renderedRenderables.push(id);
+        if(!productsIDs.includes(id)) {
+            renderablesToRemove.push(r) ;
+        }
+    }))
+
+    //remove renderables
+    renderablesToRemove.forEach(r => layer.removeRenderable(r));
+
+    //identify new renderables
+    const newRenderables = products.filter((p) => {
+        const productID = p.id();
+        return !renderedRenderables.includes(productID);
+    })
+
+    loadedCount = layer.renderables.length;
+
+    for(let productIndex = 0; productIndex < newRenderables.length; productIndex++) {
+        const key = newRenderables[productIndex].id();
+        const request = newRenderables[productIndex].renderable().then((result) => {
             
             
             if(rejected) {
@@ -329,6 +352,11 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
                 //Add also not loaded footprints
                 loadedCount++;
                 const polygon = productBounds(boundaries);
+                polygon['userProperties'] = {
+                    key
+                }
+
+
                 layer.addRenderable(polygon);
 
                 errors.push(error);
@@ -361,7 +389,6 @@ export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
         productsRequests.delete(layerKey);
     }
 
-    wwdLayer.removeAllRenderables();
     const cancelled = new Promise((resolve, reject) => {
         productsRequests.set(layerKey, reject);
     });
