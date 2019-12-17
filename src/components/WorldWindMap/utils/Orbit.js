@@ -150,7 +150,7 @@ class Orbits extends Renderable {
                 //add possitions to startDate
                 const positionsToReplace = Math.ceil(Math.abs(now - previousTime) / tick);
                 for(let positionIndex = 0; positionIndex < positionsToReplace; positionIndex++) {
-                    const time = new Date(previousTime + positionIndex * tick);
+                    const time = new Date(previousTime - positionIndex * tick);
                     const position = EoUtils.getOrbitPositionWithPositionalData(this._satrec, time).position;
                     position.time = time.getTime();
                     this._trail.positions = [position, ...this._trail.positions];
