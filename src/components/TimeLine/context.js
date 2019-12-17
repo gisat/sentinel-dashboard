@@ -6,6 +6,7 @@ export const Context = createContext({
     getX: null,
     getTime: null,
     centerTime: null,
+    centerTimeUtc: null,
     getActiveLevel: null,
     dayWidth: null,
     maxDayWidth: null,

@@ -106,7 +106,7 @@ class Timeline extends React.PureComponent {
 		}
 	
 		//if parent component set time
-		if(prevProps.time.toString() !== time.toString() && this.state.centerTime.toString() !== time.toString()) {
+		if(prevProps.time && time && (prevProps.time.toString() !== time.toString()) && (this.state.centerTime.toString() !== time.toString())) {
 
 			const periodLimit = this.getPeriodLimitByTime(time);
 
@@ -243,7 +243,12 @@ class Timeline extends React.PureComponent {
 			if(options.centerTime && !updateContext.periodLimit) {
 				Object.assign(updateContext, {periodLimit: this.getPeriodLimitByTime(options.centerTime, this.getXAxisWidth(), period, updateContext.dayWidth)})
 			}
-			
+
+			if(updateContext.centerTime) {
+				const utcTime = new Date(updateContext.centerTime);
+				utcTime.setTime( utcTime.getTime() - utcTime.getTimezoneOffset()*60*1000 )
+				Object.assign(updateContext, {centerTimeUtc:utcTime.toUTCString()})
+			}
 			return updateContext
 		} else {
 			return {};

@@ -289,7 +289,7 @@ class TimelineEventsWrapper extends React.PureComponent {
 		
 		updateContext({
 			mouseX: clientX,
-			mouseTime: getTime(clientX)
+			mouseTime: getTime(clientX).toDate()
 		});
 		
 		if(this._drag) {

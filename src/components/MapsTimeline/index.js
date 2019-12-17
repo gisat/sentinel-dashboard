@@ -2,6 +2,7 @@ import React from 'react';
 import Presentation from './presentation';
 import select from '../../context/selectors/';
 import {withContext} from '../../context/withContext';
+import {convertToUTC} from '../../utils/date';
 import {LEVELS} from '../TimeLine';
 import moment from 'moment';
 import {
@@ -35,8 +36,7 @@ const MapsTimeline = (props) => {
 	const timelineState = select.components.timeline.getSubstate(state);
     const timelineOverlays = select.components.timeline.getOverlays(state);
     const selectTime = select.rootSelectors.getSelectTime(state)
-    const time = new Date(selectTime);
-
+    const time = selectTime ? convertToUTC(new Date(selectTime)) : null;
 	const onTimeChange = (timelineState) => {
         const {state} = props;
         const curTimelineState = select.components.timeline.getSubstate(state);
@@ -44,10 +44,11 @@ const MapsTimeline = (props) => {
         if(timelineState.moving !== curTimelineState.moving) {
             dispatch(updateComponent('timeline', {moving: timelineState.moving}))
         }
-        if(selectTime && timelineState.centerTime && timelineState.centerTime.toUTCString() !== selectTime) {
+        
+        if(selectTime && timelineState.centerTimeUtc && timelineState.centerTimeUtc !== selectTime) {
             dispatch(stopFollowNow());
             dispatch(stopTimer());
-            dispatch(changeSelectTime(timelineState.centerTime.toUTCString(), dispatch, selectTime, state));
+            dispatch(changeSelectTime(timelineState.centerTimeUtc, dispatch, selectTime, state));
         }
 
         if(timelineState.activeLevel && timelineState.activeLevel !== curTimelineState.activeTimeLevel) {
@@ -55,7 +56,7 @@ const MapsTimeline = (props) => {
         }
 
         if(timelineState.mouseTime !== curTimelineState.mouseTime) {
-            dispatch(updateComponent('timeline', {mouseTime: timelineState.mouseTime}))
+            dispatch(updateComponent('timeline', {mouseTime: timelineState.mouseTime ? timelineState.mouseTime.getTime() - timelineState.mouseTime.getTimezoneOffset()*60*1000 : null}))
         }
 
         if(timelineState.dayWidth && timelineState.dayWidth !== curTimelineState.dayWidth) {
@@ -70,7 +71,7 @@ const MapsTimeline = (props) => {
         dispatch(stopTimer());
 
         dispatch(setPreventReloadLayers(true));
-        scrollToTime(state, dispatch, new Date(select.rootSelectors.getSelectTime(state)), evt.time, periodLimit, () => {
+        scrollToTime(state, dispatch, new Date(select.rootSelectors.getSelectTime(state)), moment(evt.time.toDate().getTime() - evt.time.toDate().getTimezoneOffset()*60*1000), periodLimit, () => {
             dispatch(setPreventReloadLayers(false));
         });
 	}

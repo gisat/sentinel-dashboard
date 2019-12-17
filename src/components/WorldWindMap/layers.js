@@ -258,11 +258,6 @@ const getSciProducts = async (layerConfig) => {
     try {
         let beginTime = layerConfig.beginTime;
         let endTime = layerConfig.endTime;
-        if(layerConfig.satData.shortName === 'S-2A' ||
-            layerConfig.satData.shortName === 'S-2B') {
-            beginTime = new Date(layerConfig.beginTime.getTime() + (15 * 60 * 1000));
-            endTime = new Date(layerConfig.endTime.getTime() - (15 * 60 * 1000));
-        }
 
         const productsLocal = productsScihub.products({
             shortName: layerConfig.satData.shortName,
