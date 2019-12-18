@@ -135,13 +135,13 @@ const initialState = {
             },
         },
         satellites: [
-            {id: 's1a', name: 'S1-A', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1a'), layers:['SLC', 'GRD', 'OCN']},
-            {id: 's1b', name: 'S1-B', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1b'), layers:['SLC', 'GRD', 'OCN']},
-            {id: 's2a', name: 'S2-A', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2a'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
-            {id: 's2b', name: 'S2-B', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2b'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap']},
-            {id: 's3a', name: 'S3-A', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3a'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
-            {id: 's3b', name: 'S3-B', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3b'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP']},
-            {id: 's5p', name: 'S-5', model: 'S5', iconClass: 'sentinel-5', satData: getSatDataByKey('s5p'), layers:[]}
+            {id: 's1a', name: 'S1-A', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1a'), layers:['SLC', 'GRD', 'OCN'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's1b', name: 'S1-B', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1b'), layers:['SLC', 'GRD', 'OCN'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's2a', name: 'S2-A', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2a'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's2b', name: 'S2-B', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2b'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's3a', name: 'S3-A', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3a'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's3b', name: 'S3-B', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3b'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP'], acquisitionPlanTimeWindow: 1200000},
+            {id: 's5p', name: 'S-5', model: 'S5', iconClass: 'sentinel-5', satData: getSatDataByKey('s5p'), layers:[], acquisitionPlanTimeWindow: 1200000}
         ], // All the available satellites.
         orbits: [
             getDefaultSatOrbitBySatKey('s1a'),

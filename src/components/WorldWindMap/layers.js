@@ -132,7 +132,7 @@ const getAcquisitionPlanLayer = (layerConfig, wwd, time, onLayerChanged) => {
         }
         return cacheLayer;
     } else {
-        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName, time: time, onLayerChanged});
+        const layer = new AcquisitionPlanLayer({key: layerKey, satName: layerConfig.satName, time: time, onLayerChanged, range: layerConfig.range});
         layer.setPlans(plans);
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);

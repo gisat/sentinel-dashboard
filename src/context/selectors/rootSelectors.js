@@ -98,9 +98,17 @@ export const getActiveLayers = createCachedSelector(
         ).filter((o) =>
             satellitesUtils.filterByActiveSatellite(o, focusedSatellite)
         ).map(o => ({...o, type: 'orbit'}));    
+
     const getOrbitForLayer = (orbitKey) => {
         const orbit = orbitsSubstate.find(o => o.key === orbitKey);
         return (orbit && orbit.specs) || null;
+    }
+
+    const getSatelliteForLayer = (satKey) => {
+        const salellite = satellitesSubstate.find(s => s.id === satKey);
+        console.log(salellite);
+        
+        return salellite || null;
     }
     
     const satellitesLayers = satellitesSubstate.filter((s) => satellitesUtils.isSatelliteReleaseBeforeDate(s, selectTime)).map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
@@ -109,8 +117,7 @@ export const getActiveLayers = createCachedSelector(
     //todo filter by visible APS data
 
     if(selectTimePastOrCurrent) {
-
-        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key, tle: getOrbitForLayer(`orbit-${aps.key}`)}));
+        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key, tle: getOrbitForLayer(`orbit-${aps.key}`), range: getSatelliteForLayer(aps.key).acquisitionPlanTimeWindow}));
     };
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
