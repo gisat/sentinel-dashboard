@@ -65,11 +65,20 @@ export function getLandscape (state)  {return common.getByPath(state, ['landscap
 export function getFocusedSattelite (state)  {return common.getByPath(state, ['focus'])};
 
 //round time on minutes to prevent rerender on every second?
-const getEndDataTime = getSelectTime;
+
+const getBeginTime = (selectTime, productsTimeWindow) => {
+    return momentjs(selectTime).subtract(productsTimeWindow, 'millisecond').toDate();
+}
+
+
+const getSatelliteForLayer = (satellitesSubstate, satKey) => {
+    const salellite = satellitesSubstate.find(s => s.id === satKey);
+    return salellite || null;
+}
+
+
 export const getActiveLayers = createCachedSelector(
     getPureActiveLayers,
-    getBeginDataTime,
-    getEndDataTime,
     getSelectTimePastOrCurrent,
     getOrbitsSubstate,
     getSatellitesSubstate,
@@ -77,7 +86,7 @@ export const getActiveLayers = createCachedSelector(
     getVisibleAcquisitionsPlans,
     (state, selectTime) => selectTime,
     getFocusedSattelite,
-    (activeLayers, beginTime, endTime, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite) => {
+    (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite) => {
 
     const activeLayersWithDates = []
 
@@ -85,8 +94,8 @@ export const getActiveLayers = createCachedSelector(
         const satData = getSatDataByKey(l.satKey);
         const layer = {...l,
             type: 'sentinelData',
-            beginTime: new Date(beginTime),
-            endTime: new Date(endTime),
+            beginTime: getBeginTime(selectTime, getSatelliteForLayer(satellitesSubstate, l.satKey).productsTimeWindow),
+            endTime: selectTime,
             disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate({satData}, selectTime),
             satData,
         }
@@ -104,20 +113,13 @@ export const getActiveLayers = createCachedSelector(
         return (orbit && orbit.specs) || null;
     }
 
-    const getSatelliteForLayer = (satKey) => {
-        const salellite = satellitesSubstate.find(s => s.id === satKey);
-        console.log(salellite);
-        
-        return salellite || null;
-    }
-    
     const satellitesLayers = satellitesSubstate.filter((s) => satellitesUtils.isSatelliteReleaseBeforeDate(s, selectTime)).map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
     let acquisitionPlanLayers = [];
     
     //todo filter by visible APS data
 
     if(selectTimePastOrCurrent) {
-        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key, tle: getOrbitForLayer(`orbit-${aps.key}`), range: getSatelliteForLayer(aps.key).acquisitionPlanTimeWindow}));
+        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key, tle: getOrbitForLayer(`orbit-${aps.key}`), range: getSatelliteForLayer(satellitesSubstate, aps.key).acquisitionPlanTimeWindow}));
     };
     activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
@@ -127,8 +129,7 @@ export const getActiveLayers = createCachedSelector(
     const activeLayers = common.getByPath(state, ['activeLayers']);
     const orbitSubstate = getOrbitsSubstate(state);
     const satellitesSubstate = getSatellitesSubstate(state);
-    const beginTime = getBeginDataTime(state);
-    const endTime = getEndDataTime(state);
+    const endTime = selectTime;
     const selectTimePastOrCurrent = getSelectTimePastOrCurrent(state);
     const acquisitionPlans = getPlansForDate(state, selectTime);
     const visibleAcquisitionsPlans = getVisibleAcquisitionsPlans(state);
@@ -139,7 +140,7 @@ export const getActiveLayers = createCachedSelector(
 
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
     const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
-    const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${beginTime}${endTime}`).join(',');
+    const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${getBeginTime(selectTime, getSatelliteForLayer(satellitesSubstate, l.satKey).productsTimeWindow)}${endTime}`).join(',');
     const cacheKey = `${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayers}`;
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
