@@ -154,6 +154,7 @@ class Map extends Component {
         if(!this.wwdCreated) {
             this.wwd = new WorldWindow("wwd-results", null, EnabledController, FreeCamera);
             this.wwd.animator = new Animator(this.wwd);
+            this.wwd.deepPicking = true;
 
             window.wwd = this.wwd;
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
