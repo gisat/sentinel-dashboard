@@ -196,6 +196,13 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
     const timeYearDay = `${momentTime.year()}-${momentTime.dayOfYear()}`
     const newTimeIsSameDay = selectYearDay === timeYearDay;
 
+    //Check if new time is in another day. If so, reload orbits
+    // future TLE are not available at the moment
+    if(!newTimeIsSameDay) {
+        updateTleData(dispatch, time);
+    }
+
+
     const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
 
     if(focusedSattelite) {
@@ -343,11 +350,14 @@ export const setOrbits = (orbits) => {
  */
 export const updateTleData = (dispatch, selectTime) => {
     const selectTimeMoment = moment(selectTime);
-    getTle(selectTimeMoment.format('YYYY-MM-DD')).then((data) => {
-        if(data && data.length > 0) {
-            return dispatch(setOrbits(data));
-        }
-    });
+    const nowTimeMoment = moment();
+    if(selectTimeMoment.isBefore(nowTimeMoment)) {
+        getTle(selectTimeMoment.format('YYYY-MM-DD')).then((data) => {
+            if(data && data.length > 0) {
+                return dispatch(setOrbits(data));
+            }
+        });
+    }
 }
 
 
@@ -405,6 +415,16 @@ export const dataUpdateAcquisitionPlan = (layerKey, satName, url, update) => {
             key: satName,
             url,
             update,
+        }
+    }
+}
+
+export const dataAcquisitionPlanSetVisibleCount = (satName, count) => {
+    return {
+        type: types.DATA_ACQUISITIONPLANS_SET_VISIBLE_COUNT,
+        payload: {
+            key: satName,
+            count,
         }
     }
 }
