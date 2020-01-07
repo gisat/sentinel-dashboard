@@ -127,7 +127,7 @@ const getAcquisitionPlanLayer = (layerConfig, wwd, time, onLayerChanged) => {
             cacheLayer.setPlans(plans);
         }
 
-        if(time !== cacheLayer.time) {
+        if(time.getTime() !== cacheLayer.time.getTime()) {
             cacheLayer.setTime(time);
         }
         return cacheLayer;
