@@ -21,6 +21,7 @@ const SetalliteSelect = (props) => {
     }
 
     const onAcquisitionPlanClick = (satKey) => {
+        const {state} = props;
         dispatch(toggleAcquisitionPlan(state, satKey));
     }
 

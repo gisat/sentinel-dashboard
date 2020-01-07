@@ -271,6 +271,13 @@ const dataUpdateAcquisitionPlan = (state, action) => {
     return {...state, data: {...state.data, acquisitionPlans: [...replaceItemOnIndex(state.data.acquisitionPlans, acquisitionPlansKeyIndex, {...state.data.acquisitionPlans[acquisitionPlansKeyIndex],plans: updatedAcquisitionPlans})]}};
 };
 
+const setVisibleAcquisitionPlan = (state, action) => {
+    const key = action.payload.key;
+    const count = action.payload.count;
+    const acquisitionPlansKeyIndex = state.data.acquisitionPlans.findIndex((acquisitionPlans) => acquisitionPlans.key === key);
+    return {...state, data: {...state.data, acquisitionPlans: [...replaceItemOnIndex(state.data.acquisitionPlans, acquisitionPlansKeyIndex, {...state.data.acquisitionPlans[acquisitionPlansKeyIndex], visiblePlans: count})]}};
+};
+
 const mapAddVisibleAcquisitionPlan = (state, action) => {
     const acquisitionPlanKey = action.payload.key;
     return {...state, map: {...state.map, acquisitionPlans: [...state.map.acquisitionPlans, acquisitionPlanKey]}};
@@ -331,6 +338,8 @@ export default (state, action) => {
             return setAcquisitionPlans(state, action);
         case types.DATA_UPDATE_ACQUISITIONPLANS:
             return dataUpdateAcquisitionPlan(state, action);
+        case types.DATA_ACQUISITIONPLANS_SET_VISIBLE_COUNT:
+            return setVisibleAcquisitionPlan(state, action);
         case types.SET_WWD:
             return setWwd(state, action);
         case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:

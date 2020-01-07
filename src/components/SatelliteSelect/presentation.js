@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import SelectBase, { components } from 'react-select';
 import SatelliteGroupOption from './SatelliteGroupOption';
-import {getLayerOption} from './LayerOption';
+import {getOption} from './OptionFactory';
 import {getSatelliteGroupHeading} from './SatelliteGroupHeading';
 
 const ValueContainer = ({ children, ...props }) => (
@@ -39,17 +39,8 @@ class Select extends React.PureComponent {
         onFixCamera: PropTypes.func,
     }
 
-    constructor(props) {
-        super(props);
-        const {onLayerClick, onInfoClick} = this.props;
-
-        //Performance optimalisation.
-        //React.memo dont rerender component so often
-        this.optionComponent = getLayerOption(onLayerClick, onInfoClick);
-    }
-
     render() {
-        const {open, options, onCollapsClick, onSatteliteClick, onAcquisitionPlanClick, maxHeight} = this.props;
+        const {open, options, onCollapsClick, onSatteliteClick, maxHeight, onLayerClick, onAcquisitionPlanClick} = this.props;
 
         // style
         //TODO -> extract style to file
@@ -169,8 +160,8 @@ class Select extends React.PureComponent {
 
         const components = {
             ValueContainer: ValueContainer,
-            Option: this.optionComponent,
-            GroupHeading: getSatelliteGroupHeading(onSatteliteClick, onAcquisitionPlanClick),
+            Option: getOption({onLayerClick, onAcquisitionPlanClick}),
+            GroupHeading: getSatelliteGroupHeading(onSatteliteClick),
             Group: SatelliteGroupOption,
             SelectContainer,
         }

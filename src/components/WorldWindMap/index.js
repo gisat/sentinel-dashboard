@@ -8,6 +8,7 @@ import {
     setActiveInfoModal,
     setWwd,
     dataUpdateAcquisitionPlan,
+    dataAcquisitionPlanSetVisibleCount,
 } from '../../context/actions';
 
 const WorldWindMap = (props) => {
@@ -20,6 +21,10 @@ const WorldWindMap = (props) => {
                     dispatch(dataUpdateAcquisitionPlan(layerKey, change.sat, url, change.update));
                 });
             };
+
+            if(change.hasOwnProperty('count')) {
+                dispatch(dataAcquisitionPlanSetVisibleCount(change.sat, change.count));
+            }
         } else {
             dispatch(updateActiveLayer(layerKey, change))
         }     

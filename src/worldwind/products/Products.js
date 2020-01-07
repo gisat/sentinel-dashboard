@@ -259,7 +259,6 @@ export default class Products {
 
         const cached = this._cache.get(url);
         if(cached) {
-            console.log("cached", cached);
             
             return JSON.parse(cached);
         }

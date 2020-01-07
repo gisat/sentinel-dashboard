@@ -122,6 +122,14 @@ class AcquisitionPlanLayer extends RenderableLayer {
         this.removeAllRenderables();
         this.doRerender();
         const { interiors, outlines } = await this.getFootprints(this.range);
+
+        if(typeof this.onLayerChanged === 'function') {
+            this.onLayerChanged({
+                satKey: this.satName,
+                layerKey: this.key
+            }, {count: outlines.length, sat: this.satName});
+        }
+
         this.addRenderables(interiors);
         this.addRenderables(outlines);
         this.doRerender();
