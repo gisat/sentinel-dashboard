@@ -137,9 +137,8 @@ class MapsTimeline extends React.PureComponent {
 					<TimeLineHover getHoverContent={this.getHoverContent}>
 						<Timeline 
 							dayWidth={dayWidth}
-							period={period}
+							periodLimit={period}
 							mouseBufferWidth= {MOUSE_BUFFER_WIDTH}
-							pickDateByCenter= {true}
 							selectedDate= {null}
 							onChange= {(timelineState) => {this.onTimelineChange(timelineState)}}
 							activeLevel={activeLevel}
@@ -149,7 +148,7 @@ class MapsTimeline extends React.PureComponent {
 							containerHeight={containerHeight}
 							onClick= {this.onClick}
 							vertical={vertical}
-							periodLimit={initialPeriod}
+							period={initialPeriod}
 							periodLimitOnCenter={true}
 							selectMode={false}
 						>
