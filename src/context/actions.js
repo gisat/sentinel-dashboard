@@ -161,7 +161,7 @@ export const scrollToTime = (state, dispatch, selectTime, newTime, period, callb
     const steps = 12;
     let timeInPeriod = newTime;
     if(period) {
-        timeInPeriod = getInside(period, moment(newTime));
+        timeInPeriod = moment(getInside(period, moment(newTime)));
     }
     const diff = timeInPeriod.diff(moment(selectTime));
     const peace = diff / steps;
