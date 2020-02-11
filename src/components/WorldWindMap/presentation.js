@@ -136,14 +136,12 @@ class Map extends Component {
         }
 	}
 
-    longClickHandler(clickedRenderables = [], evt, x, y, time, coords) {
+    longClickHandler(clickedRenderables = [], evt, x, y, time, type) {
         const terrainPick = this.wwd.pickTerrain([evt.screenX, evt.screenY]);
-        if(terrainPick && terrainPick.objects && terrainPick.objects[0]){
+        if(type === 'timeoutClick' && terrainPick && terrainPick.objects && terrainPick.objects[0]){
             const terrainCoords = terrainPick.objects[0].position;
-            console.log(terrainCoords);
-            
+            console.log(terrainCoords);   
         }
-        // console.log(clickedRenderables, evt, x, y, time, coords);
     }
 
     clickHandler(clickedRenderables = [], evt) {
@@ -175,7 +173,7 @@ class Map extends Component {
 
             window.wwd = this.wwd;
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
-            this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 3000, 2000,);
+            this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 3000, 1500, 1500);
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
             const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime);
