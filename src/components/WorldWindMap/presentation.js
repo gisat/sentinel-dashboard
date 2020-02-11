@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from "prop-types";
 import WorldWindow from '../../worldwind/WorldWindow';
+import WorldWind from 'webworldwind-esa';
 import ClickPickController from './utils/ClickPickController';
 import {isEqual} from 'lodash';
 import {
@@ -13,6 +14,11 @@ import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
 import FreeCamera from '../../worldwind/FreeCamera';
 import Animator from '../../worldwind/Animator';
+
+const {
+    EarthElevationModel
+} = WorldWind;
+
 
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
@@ -130,6 +136,16 @@ class Map extends Component {
         }
 	}
 
+    longClickHandler(clickedRenderables = [], evt, x, y, time, coords) {
+        const terrainPick = this.wwd.pickTerrain([evt.screenX, evt.screenY]);
+        if(terrainPick && terrainPick.objects && terrainPick.objects[0]){
+            const terrainCoords = terrainPick.objects[0].position;
+            console.log(terrainCoords);
+            
+        }
+        // console.log(clickedRenderables, evt, x, y, time, coords);
+    }
+
     clickHandler(clickedRenderables = [], evt) {
         const renderables = clickedRenderables.objects.filter(r => {
 			return !r.isTerrain;
@@ -152,12 +168,14 @@ class Map extends Component {
     componentDidMount(){
         const {time, currentTime} = this.props;
         if(!this.wwdCreated) {
-            this.wwd = new WorldWindow("wwd-results", null, EnabledController, FreeCamera);
+            const elevationModel = new EarthElevationModel();
+            this.wwd = new WorldWindow("wwd-results", elevationModel, EnabledController, FreeCamera);
             this.wwd.animator = new Animator(this.wwd);
             this.wwd.deepPicking = true;
 
             window.wwd = this.wwd;
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
+            this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 3000, 2000,);
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
             const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime);

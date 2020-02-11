@@ -1,4 +1,6 @@
 const CLICK_DELAY = 200; //ms
+const CLICK_MIN_TIME = 50; //ms
+
 /**
  * @exports ClickPickController
  */
@@ -9,13 +11,19 @@ class ClickPickController {
 	 * @constructor
 	 * @classdesc The ClickPickController
 	 * @param {WorldWindow} wwd The WorldWindow instance.
-	 * @param {Function} cb A callback function to call with the current clicked renderables.
+	 * @param {Function} cb A callback function to call with the current clicked renderables after mouseUp/touchEnd.
+	 * @param {number} clickDelay Ignore click longer than clickDelay
+	 * @param {number} minClickTime Minimum click time to be registered
+	 * @param {Object} clickTimeout configuration for click timeout
+	 * @param {number} clickTimeout.timeout After this time will be triggered callback
+	 * @param {Function} clickTimeout.callback callback function
 	 */
-	constructor(wwd, cb) {
+	constructor(wwd, cb, clickDelay = CLICK_DELAY, minClickTime = CLICK_MIN_TIME) {
+		this.clickDelay = clickDelay;
+		this.minClickTime = minClickTime;
         this.mouseDown = false;
-        this.pendingClick = false;
         this.tpCache = [];
-        this.clickTimeout = null;
+        this.clickTimeoutKey = null;
 		this.eventListener = this.eventListener.bind(this, wwd, cb);
 
 		const events = ['mousedown', 'mouseup', 'mousemove', 'touchstart', 'touchend', 'touchmove'];
@@ -51,12 +59,39 @@ class ClickPickController {
 			const pickList = wwd.pick(wwd.canvasCoordinates(x, y));
 
 			if (cb) {
-				cb(pickList, event);
+				const timeDiff = this.getClickTime();
+				cb(pickList, event, x, y, timeDiff, wwd.canvasCoordinates(x, y));
 			}
 	}
 
-    onClick(wwd, cb, evt, x, y) {
-        this.getRenderablesByMouse(wwd, cb, evt, x, y);
+	getClickTime() {
+		if(this.clickTimeoutKey && this.clickTimeoutKey.time) {
+			const curTime = new Date().getTime();
+			const timeDiff = curTime - this.clickTimeoutKey.time;
+			return timeDiff;
+		} else {
+			return null;
+		}
+	}
+
+	/**
+	 * Check if minClickTime is set and if click is longer than it.
+	 */
+	couldClick() {
+		if(this.minClickTime && typeof this.minClickTime === 'number') {
+			const timeDiff = this.getClickTime();
+			if(timeDiff > this.minClickTime) {
+				return true;
+			} else {
+				return false;
+			}
+		} else {
+			return true;
+		}
+	}
+
+    onClick(wwd, cb, evt, x, y, ) {
+        this.getRenderablesByMouse(wwd, cb, evt, x, y, wwd.canvasCoordinates(x, y));
     }
 
 	clearTouchEventCache() {
@@ -76,25 +111,25 @@ class ClickPickController {
     }
 
     resetClickTimeout() {
-        if(this.clickTimeout) {
-            window.clearTimeout(this.clickTimeout);
-            this.clickTimeout = null;
-            this.pendingClick = false;
+        if(this.clickTimeoutKey && this.clickTimeoutKey.key) {
+            window.clearTimeout(this.clickTimeoutKey.key);
+            this.clickTimeoutKey = null;
         }
     }
 
     setClickTimeout(key) {
         if(key) {
-            this.clickTimeout = key;
+            this.clickTimeoutKey = {
+				key,
+				time: new Date().getTime()
+			};
         }
     }
 
     setPointerDownTimeout() {
-        this.pendingClick = true;
         const clickKey = window.setTimeout(() => {
-                this.pendingClick = false;
-                this.resetClickTimeout();
-        }, CLICK_DELAY);
+			this.resetClickTimeout();
+        }, this.clickDelay);
 
         this.setClickTimeout(clickKey);
     }
@@ -108,7 +143,7 @@ class ClickPickController {
 		// Cache the touch points for later processing of 2-touch pinch/zoom
 		this.cacheEvents(evt.touches);
 
-        //clear clickTimeout
+        //clear clickTimeoutKey
         this.resetClickTimeout();
 
         if(evt.touches.length === 1) {
@@ -127,11 +162,14 @@ class ClickPickController {
 			this.clearTouchEventCache();
         }
 
-        if(evt.changedTouches.length === 1 && this.pendingClick === true) {
-			this.resetClickTimeout();
+        if(evt.changedTouches.length === 1 && this.clickTimeoutKey) {
 			const x = evt.changedTouches[0].clientX;
 			const y = evt.changedTouches[0].clientY;
-            this.onClick(wwd, cb, evt, x, y);
+			//kontrola timeoutu
+			if(this.couldClick()) {
+				this.onClick(wwd, cb, evt, x, y);
+			}
+			this.resetClickTimeout();
         }
 
     }
@@ -149,12 +187,14 @@ class ClickPickController {
         this.setPointerDownTimeout();
 	}
 	onMouseUp(wwd, cb, evt) {
-        if(this.pendingClick === true) {
-			this.resetClickTimeout();
+        if(this.clickTimeoutKey) {
 			const x = evt.clientX;
 			const y = evt.clientY;
-
-            this.onClick(wwd, cb, evt, x, y);
+			//kontrola timeoutu
+			if(this.couldClick()) {
+				this.onClick(wwd, cb, evt, x, y);
+			}
+			this.resetClickTimeout();
         }
     }
 
