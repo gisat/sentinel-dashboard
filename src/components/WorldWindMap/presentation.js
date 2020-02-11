@@ -29,6 +29,7 @@ class Map extends Component {
     static propsTypes = {
         onLayerChanged: PropTypes.func,
         onProductsClick: PropTypes.func,
+        searchOnCoords: PropTypes.func,
         layers: PropTypes.array,
         preventReload: PropTypes.bool,
         time: PropTypes.object, //select time
@@ -38,6 +39,7 @@ class Map extends Component {
     static defaultProps = {    
         onLayerChanged: () => {},
         onProductsClick: () => {},
+        searchOnCoords: () => {},
         layers: [],
     }
     constructor(props){
@@ -137,10 +139,13 @@ class Map extends Component {
 	}
 
     longClickHandler(clickedRenderables = [], evt, x, y, time, type) {
+        const {searchOnCoords} = this.props;
         const terrainPick = this.wwd.pickTerrain([evt.screenX, evt.screenY]);
         if(type === 'timeoutClick' && terrainPick && terrainPick.objects && terrainPick.objects[0]){
             const terrainCoords = terrainPick.objects[0].position;
+            //searchOnCoords
             console.log(terrainCoords);   
+            searchOnCoords(terrainCoords);
         }
     }
 

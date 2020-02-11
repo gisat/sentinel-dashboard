@@ -291,7 +291,7 @@ const mapRemoveVisibleAcquisitionPlan = (state, action) => {
 
 export default (state, action) => {
     //change state logging
-    // console.log("beforeState", state, "action", action);
+    console.log("beforeState", state, "action", action);
     
     switch(action.type) {
         case types.FOCUS_SATELLITE:

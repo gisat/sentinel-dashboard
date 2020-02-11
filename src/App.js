@@ -13,6 +13,7 @@ import {
 } from './context/actions';
 import select from './context/selectors/';
 import ProductsModal from './components/ProductsModal/';
+import SearchModal from './components/SearchModal/';
 import WorldWindMap from './components/WorldWindMap';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline from './components/MapsTimeline';
@@ -88,6 +89,7 @@ class App extends React.PureComponent {
                     handleWidth
                     handleHeight />                
                 <ProductsModal />
+                <SearchModal />
                 <SatelliteSelect  
                     maxHeight = {maxSelectHeight}
                     />

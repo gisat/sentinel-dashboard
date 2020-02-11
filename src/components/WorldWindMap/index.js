@@ -36,7 +36,22 @@ const WorldWindMap = (props) => {
         const modalState = select.rootSelectors.getInfoModal(state, modalKey)
         const open = modalState && modalState.open ? false : true;
         const modalContent = {
+            type: 'PRODUCTS',
             products,
+            open,
+        };
+        dispatch(updateInfoModal(modalKey, modalContent));
+        dispatch(setActiveInfoModal(modalKey));
+    }
+
+    const searchOnCoords = (coordinates) => {
+        const {state} = props;
+        const modalKey = `${coordinates.longitude}-${coordinates.latitude}`;
+        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
+        const open = modalState && modalState.open ? false : true;
+        const modalContent = {
+            type: 'SEARCH',
+            coordinates,
             open,
         };
         dispatch(updateInfoModal(modalKey, modalContent));
@@ -63,6 +78,7 @@ const WorldWindMap = (props) => {
             focusedSatellite = {focusedSatellite}
             onLayerChanged={onLayerChanged}
             onProductsClick={onProductsClick}
+            searchOnCoords={searchOnCoords}
             onWwdCreated={onWwdCreated}
             preventReload={preventReloadLayers}
             />

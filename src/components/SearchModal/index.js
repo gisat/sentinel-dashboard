@@ -19,8 +19,8 @@ const ProductsModal = (props) => {
     //info modal state
     const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
     const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
-    const visible = !!activeInfoModalKey && activeInfoModal.type === 'PRODUCTS';
-    let products = visible ? activeInfoModal.products.map((key) => getProductByKey(key).metadata()) : null;
+    const visible = !!activeInfoModalKey && activeInfoModal.type === 'SEARCH';
+    const coordinates = visible ? activeInfoModal.coordinates : null;
     const onInfoModalClose = () => {
         dispatch(updateInfoModal(activeInfoModalKey, {open: false}));
         dispatch(setActiveInfoModal(null));
@@ -30,8 +30,8 @@ const ProductsModal = (props) => {
         visible ? <Presentation 
             visible={visible}
             onClose={onInfoModalClose}
-            showProducts={activeInfoModal.products}
-            products={products}
+            // showProducts={activeInfoModal.products}
+            coordinates={coordinates}
             modalKey={activeInfoModalKey}
             /> : null
     )
