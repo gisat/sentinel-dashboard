@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from "prop-types";
 import Modal from '../Modal';
 import {withContext} from '../../context/withContext';
+import SearchForm from './components/searchForm';
 
 const ProductsModal = (props) => {
     const {visible, onClose, coordinates, modalKey} = props;
@@ -11,7 +12,7 @@ const ProductsModal = (props) => {
     // })
 
     const header = (<h1 className={'modal-header'}>Sentinel search</h1>);
-    const content = <div>{coordinates.longitude}{coordinates.latitude}</div>
+    const content = <div><SearchForm /></div>
     return (
         visible ? <Modal 
                 modalKey = {modalKey}

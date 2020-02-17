@@ -2,6 +2,7 @@ import moment from 'moment';
 import types from './types';
 import select from './selectors/';
 import {removeItemByIndex,replaceItemOnIndex, addItemToIndex} from '../utils/arrayManipulation';
+import {removeItemByKey} from '../utils/objectManipulation';
 import WorldWindX from 'webworldwind-x';
 import {merge, cloneDeep} from 'lodash';
 
@@ -204,6 +205,10 @@ const setComponent = (state, action) => {
 	return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
 }
 
+const clearComponent = (state, action) => {
+	return {...state, components: {...removeItemByKey(state.components, action.component)}};
+}
+
 const updateModal = (state, modalPath, modal) => {
     // return {...state, components: {...state.components, [action.component]: setHelper(state.components[action.component], path, action.value)}};
     return {...setHelper(state, modalPath, modal)};
@@ -326,6 +331,8 @@ export default (state, action) => {
             return updateComponent(state, action);
         case types.COMPONENTS.SET:
             return setComponent(state, action);
+        case types.COMPONENTS.CLEAR:
+            return clearComponent(state, action);
         case types.UPDATE_ACTIVE_LAYER:
             return updateActiveLayer(state, action);
         case types.UPDATE_INFO_MODAL:

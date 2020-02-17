@@ -190,6 +190,16 @@ const initialState = {
                 },
             ]
         },
+        search: {
+            satellites: ['s1a', 's1b', 's2a', 's2b', 's3a', 's3b', '5p'],
+            geometry: null,
+            type: null, //types by active satellite? SLC/GRD/OCN
+            results: [{
+                id: '',
+                name: '',
+                boundaries: '',
+            }]    
+        }
     }
 };
 

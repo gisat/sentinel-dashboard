@@ -283,6 +283,12 @@ export const setComponent = (component, path, value) => {
 		value
 	}
 }
+export const clearComponent = (component) => {
+	return {
+		type: types.COMPONENTS.CLEAR,
+		component,
+	}
+}
 
 export const startTrackNowTime = (state, dispatch) => {
     window.clearInterval(nowTimer);
@@ -441,4 +447,9 @@ export const toggleAcquisitionPlan = (state, acquisitionPlanKey) => {
             key: acquisitionPlanKey
         }
     }
+}
+
+
+export const searchProducts = (satelliteId, layerId) => {
+    
 }

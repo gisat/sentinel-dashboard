@@ -7,8 +7,8 @@ import ReactDOM from 'react-dom';
 import {ContextProvider} from './context/context';
 import {forceSetPassiveEvents} from './utils/events';
 
-import './reset.css';
-import './index.css';
+import './styles/reset.css';
+import './styles/index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 

@@ -9,6 +9,8 @@ import {
     setWwd,
     dataUpdateAcquisitionPlan,
     dataAcquisitionPlanSetVisibleCount,
+    setComponent,
+    clearComponent,
 } from '../../context/actions';
 
 const WorldWindMap = (props) => {
@@ -54,6 +56,25 @@ const WorldWindMap = (props) => {
             coordinates,
             open,
         };
+
+        //clear previous state
+        dispatch(clearComponent('search'));
+
+        const geometry = {
+            latitude:coordinates.latitude,
+            longitude:coordinates.longitude,
+            altitude:coordinates.altitude
+        }
+
+        dispatch(setComponent('search', 'geometry', {
+            latitude:coordinates.latitude,
+            longitude:coordinates.longitude,
+            altitude:coordinates.altitude
+        }));
+        
+        // search catalogue
+        // dispatch(searchCatalogue(modalKey, modalContent));
+
         dispatch(updateInfoModal(modalKey, modalContent));
         dispatch(setActiveInfoModal(modalKey));
     }

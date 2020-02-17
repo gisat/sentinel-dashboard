@@ -10,7 +10,7 @@ import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
-import TexturedSurfacePolygon from "../../worldwind/textured/TexturedSurfacePolygon";
+import {hubPassword, hubUser} from "../../config";
 const {
     StarFieldLayer,
     EoUtils,
@@ -22,8 +22,6 @@ const {
     Location,
 } = WorldWind;
 
-const username = 'copapps';
-const password = 'C9C-2EZ-gQ4-ezY';
 const csiRenderablesCache = new window.Map();
 const searchCache = new window.Map();
 const layersCache = new window.Map();
@@ -72,7 +70,7 @@ function fetchWithCredentials (url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    options.headers.Authorization = `Basic ${window.btoa(`${username}:${password}`)}`;
+    options.headers.Authorization = `Basic ${window.btoa(`${hubUser}:${hubPassword}`)}`;
 
     const fetch = window.fetch(url, options);
     return fetch;
