@@ -269,7 +269,7 @@ export const setTrackTime = trackTime => {
 
 export const updateComponent = (component, data) => {
 	return {
-		type: types.COMPONENTS.UPDATE,
+		type: types.COMPONENT.UPDATE,
 		component: component,
 		update: data
 	}
@@ -277,7 +277,7 @@ export const updateComponent = (component, data) => {
 
 export const setComponent = (component, path, value) => {
 	return {
-		type: types.COMPONENTS.SET,
+		type: types.COMPONENT.SET,
 		component,
 		path,
 		value
@@ -285,7 +285,7 @@ export const setComponent = (component, path, value) => {
 }
 export const clearComponent = (component) => {
 	return {
-		type: types.COMPONENTS.CLEAR,
+		type: types.COMPONENT.CLEAR,
 		component,
 	}
 }

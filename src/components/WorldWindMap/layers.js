@@ -10,7 +10,7 @@ import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
-import {hubPassword, hubUser} from "../../config";
+import {hubPassword, hubUsername} from "../../config";
 const {
     StarFieldLayer,
     EoUtils,
@@ -70,7 +70,7 @@ function fetchWithCredentials (url, options = {}) {
     if (!options.headers) {
         options.headers = {};
     }
-    options.headers.Authorization = `Basic ${window.btoa(`${hubUser}:${hubPassword}`)}`;
+    options.headers.Authorization = `Basic ${window.btoa(`${hubUsername}:${hubPassword}`)}`;
 
     const fetch = window.fetch(url, options);
     return fetch;

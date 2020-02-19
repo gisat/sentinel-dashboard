@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import SelectBase, { components } from 'react-select';
 import Button from '../../../Button';
-import searchForm from '.';
 
 const SearchForm = ({coordinates, satellites, search}) => {
     const [selectedSatellite, setSelectedSatellite] = useState(null);
@@ -24,7 +23,7 @@ const SearchForm = ({coordinates, satellites, search}) => {
     return (
         <div>
             <span>
-                ${coordinates.longitude}, ${coordinates.latitude}
+                {coordinates.longitude}, {coordinates.latitude}
             </span>
             <SelectBase 
                 options={satellitesOptions}

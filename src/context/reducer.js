@@ -327,11 +327,11 @@ export default (state, action) => {
             return setLandscape(state, action);
         case types.SET_OVERLAYS:
             return setOverlays(state, action);
-        case types.COMPONENTS.UPDATE:
+        case types.COMPONENT.UPDATE:
             return updateComponent(state, action);
-        case types.COMPONENTS.SET:
+        case types.COMPONENT.SET:
             return setComponent(state, action);
-        case types.COMPONENTS.CLEAR:
+        case types.COMPONENT.CLEAR:
             return clearComponent(state, action);
         case types.UPDATE_ACTIVE_LAYER:
             return updateActiveLayer(state, action);
