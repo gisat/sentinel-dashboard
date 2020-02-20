@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import Button from '../../../atoms/Button';
+import Icon from '../../../atoms/Icon';
 import Select from '../../../atoms/Select/Select';
 import {parseEntry} from '../../../../worldwind/products/Products';
 import ProductInformation from '../../../ProductsModal/productInformation';
+
+import './style.scss';
+
 const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextResultIndex, changeActiveResultIndex, result}) => {
     const [selectedSatellite, setSelectedSatellite] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
@@ -24,54 +28,60 @@ const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextR
     const parsedResult = parseEntry(result);
 
     return (
-        <div>
-            <span>
-                {coordinates.longitude}, {coordinates.latitude}
-            </span>
-            <Select
-                options={satellitesOptions}
-                onChange={(sat) => {setSelectedSatellite(sat); setSelectedProduct(null)}}
-                value={selectedSatellite}
-                optionLabel='label'
-                optionValue='value'
-                />
+        <div className={'ptr-search-form'}>
+            <div className={'ptr-search-form-selects'}>
+                {/* <Button className={'ptr-coordinates'}> */}
+                <Button ghost onClick={() => {}}>
+                    <Icon icon='location' />{`${Math.round(coordinates.longitude * 100) / 100} , ${Math.round(coordinates.latitude * 100) / 100}`}
+                </Button>
+                <Select
+                    options={satellitesOptions}
+                    onChange={(sat) => {setSelectedSatellite(sat); setSelectedProduct(null)}}
+                    value={selectedSatellite}
+                    placeholder={'Satellite'}
+                    optionLabel='label'
+                    optionValue='value'
+                    />
 
-            <Select
-                options={productsOptions}
-                onChange={(sat) => setSelectedProduct(sat)}
-                value={selectedProduct}
-                optionLabel='label'
-                optionValue='value'
-                />
+                <Select
+                    options={productsOptions}
+                    onChange={(sat) => setSelectedProduct(sat)}
+                    value={selectedProduct}
+                    disabled={!selectedSatellite}
+                    placeholder={'Product'}
+                    optionLabel='label'
+                    optionValue='value'
+                    />
+            </div>
 
-            <Button 
-                ghost
-                onClick={onSearchClick}
-                disabled={!selectedProduct && !selectedSatellite}
-                >
-                Search
-            </Button>
-            {   
-                Number.isInteger(previousResultIndex) ?
+            <div className={'ptr-search-form-navigation'}>
                 <Button 
                     ghost
-                    onClick={() => changeActiveResultIndex(previousResultIndex)}
+                    onClick={onSearchClick}
+                    disabled={!selectedProduct || !selectedSatellite}
                     >
-                    Previous
-                </Button> : null
-            }
-            {   
-                Number.isInteger(nextResultIndex) ?
-                <Button 
-                    ghost
-                    onClick={() => changeActiveResultIndex(nextResultIndex)}
-                    >
-                    Next
-                </Button> : null
-            }
-            {
-                result ? <ProductInformation key={parsedResult.id} product={parsedResult} /> : null
-            }
+                    Search
+                </Button>
+                {   
+                    Number.isInteger(previousResultIndex) ?
+                    <Button 
+                        ghost
+                        onClick={() => changeActiveResultIndex(previousResultIndex)}
+                        >
+                        Previous
+                    </Button> : null
+                }
+                {   
+                    Number.isInteger(nextResultIndex) ?
+                    <Button 
+                        ghost
+                        onClick={() => changeActiveResultIndex(nextResultIndex)}
+                        >
+                        Next
+                    </Button> : null
+                }
+            </div>
+
         </div>
     )
 }

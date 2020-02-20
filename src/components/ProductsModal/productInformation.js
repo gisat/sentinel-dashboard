@@ -23,9 +23,8 @@ const getDataList = (data) => {
     });
 };
 
-const ProductInformation = (props) => {
-    const {title, id, date, int, str, summary} = props.product;
-    // debugger
+const ProductInformation = ({product, heading}) => {
+    const {title, id, date, int, str, summary} = product;
 
     //dates
     // const beginpositionDate = date.find((d) => d._attributes.name === "beginposition");
@@ -67,7 +66,7 @@ const ProductInformation = (props) => {
     return (
         <div className={'product-info'}>
             <h1>
-                {`${str.platformname} - ${str.producttype}`}
+                {heading ? heading : `${str.platformname} - ${str.producttype}`}
             </h1>
             <section>
                 {titleItem}

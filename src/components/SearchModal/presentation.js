@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 import Modal from '../Modal';
 import {withContext} from '../../context/withContext';
 import SearchForm from './components/searchForm';
+import Result from './components/result';
+import './style.scss';
 
 const ProductsModal = (props) => {
     const {visible, onClose, coordinates, modalKey} = props;
@@ -11,14 +13,14 @@ const ProductsModal = (props) => {
     //     return (<ProductInformation key={product.id} product={product} />)
     // })
 
-    const header = (<h1 className={'modal-header'}>Sentinel search</h1>);
-    const content = <div><SearchForm /></div>
+    const header = <SearchForm />;
+    const content = (<div className={'modal-content'}><Result /></div>);
     return (
         visible ? <Modal 
                 modalKey = {modalKey}
                 isOpen = {visible}
-                content = {content}
                 header = {header}
+                content = {content}
                 onClose = {onClose}
                 /> : null
     )

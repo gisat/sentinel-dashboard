@@ -32,7 +32,7 @@ const SetalliteSelect = (props) => {
     const visible = !!activeInfoModalKey && activeInfoModal.type === 'SEARCH';
     const coordinates = visible ? activeInfoModal.coordinates : null;
     const satellites = select.data.satellites.getSubstate(state);
-    const results = select.components.search.getResults(state);
+    const results = select.components.search.getResults(state) || [];
     const activeResultIndex = select.components.search.getActiveResultIndex(state);
     const result = (Number.isInteger(activeResultIndex) && results[activeResultIndex]) || null;
     const nextResultIndex = getNextIndex(activeResultIndex, results.length);

@@ -12,6 +12,8 @@ import './styles/index.scss';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 
+document.getElementsByTagName('body')[0].classList.add('ptr-dark');
+
 //Fix for passive events
 forceSetPassiveEvents();
 

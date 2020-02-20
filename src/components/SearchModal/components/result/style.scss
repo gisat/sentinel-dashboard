@@ -1,0 +1,21 @@
+@import '../../../../styles/variables';
+
+.ptr-search-form-selects{
+    display: flex;
+
+    .ptr-coordinates{
+
+    };
+
+    .ptr-button{
+        background: rgba(0, 0, 0, 0);
+    }
+    .ptr-select__control{
+        background: rgba(0, 0, 0, 0);
+    }
+
+    .ptr-select-container{
+        margin-left: 1rem;
+        max-width: 10rem;
+    }
+}

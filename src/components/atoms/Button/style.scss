@@ -134,7 +134,7 @@
 
 // TODO remove after icon refactoring
 .ptr-button > .ptr-icon .polygon {
-  fill: transparent;
+  fill: currentColor;
   stroke: currentColor;
 }
 
@@ -489,6 +489,7 @@
 
 // TODO remove after all icons will be refactored
 .ptr-button.disabled .ptr-icon .polygon {
+  fill: var(--base35);
   stroke: var(--base35);
 }
 

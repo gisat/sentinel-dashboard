@@ -29,8 +29,14 @@ const getCacheID = (shortName, products, location, hour) => {
 
 export const parseEntry = (entry) => {
     if(entry && entry.id) {
-        const parsedEntry = {};
-        const id = entry.id._text || entry.id;
+        const parsedEntry = {
+            title:{...entry.title},
+            link:[...entry.link],
+            id:{...entry.id},
+            summary:{...entry.summary},
+            date:[...entry.date],
+        };
+
         parsedEntry.id = entry.id._text;
 
         const str = {};
