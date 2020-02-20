@@ -169,7 +169,7 @@ class Select extends React.PureComponent {
         return (
             <SelectBase
                 className={'ptr-satellite-selector'}
-                classNamePrefix={'ptr-select'}
+                classNamePrefix={'ptr-select-satellite'}
                 styles={customStyles}
                 hideSelectedOptions={true}
                 title={'Satellites'}

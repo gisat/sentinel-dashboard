@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import SelectBase, { components } from 'react-select';
 import Button from '../../../atoms/Button';
+import Select from '../../../atoms/Select/Select';
 import {parseEntry} from '../../../../worldwind/products/Products';
 import ProductInformation from '../../../ProductsModal/productInformation';
 const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextResultIndex, changeActiveResultIndex, result}) => {
     const [selectedSatellite, setSelectedSatellite] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
-    const satellitesOptions = satellites.map((sat) => ({
+    const satellitesOptions = [...satellites].map((sat) => ({
         value: sat.id,
         label: sat.name,
     }));
@@ -28,16 +28,20 @@ const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextR
             <span>
                 {coordinates.longitude}, {coordinates.latitude}
             </span>
-            <SelectBase 
+            <Select
                 options={satellitesOptions}
                 onChange={(sat) => {setSelectedSatellite(sat); setSelectedProduct(null)}}
                 value={selectedSatellite}
+                optionLabel='label'
+                optionValue='value'
                 />
 
-            <SelectBase 
+            <Select
                 options={productsOptions}
                 onChange={(sat) => setSelectedProduct(sat)}
                 value={selectedProduct}
+                optionLabel='label'
+                optionValue='value'
                 />
 
             <Button 
