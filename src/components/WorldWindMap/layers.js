@@ -34,6 +34,10 @@ export function getLayerKeyFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
 }
 
+export function getLayerKeySCIHubResult (layerConfig) {
+    return `${layerConfig.id._text}`;
+}
+
 export function getLayerIdFromConfig (layerConfig) {
     if(layerConfig.satKey && layerConfig.layerKey && layerConfig.beginTime && layerConfig.endTime) {
         return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
@@ -79,6 +83,19 @@ function fetchWithCredentials (url, options = {}) {
 const getSentinelLayer = (layerConfig) => {
     const layerKey = getLayerKeyFromConfig(layerConfig);
     const cacheLayer = layersCache.get(layerKey);
+    if(cacheLayer) {
+        return cacheLayer;
+    } else {
+        const layer = new RenderableLayer(layerKey);
+        layersCache.set(layerKey, layer);
+        return layer;
+    }
+}
+
+const getFootprintLayer = (layerConfig) => {
+    const layerKey = getLayerKeySCIHubResult(layerConfig);
+    const cacheLayer = layersCache.get(layerKey);
+    
     if(cacheLayer) {
         return cacheLayer;
     } else {
@@ -222,7 +239,8 @@ export const getLayers = createCachedSelector([
     (layersConfig, time, wwd) => wwd,
     (layersConfig, time, wwd, onLayerChanged) => onLayerChanged,
     (layersConfig, time, wwd, onLayerChanged, currentTime) => currentTime,
-], (layersConfig, time, wwd, onLayerChanged, currentTime) => {
+    (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => searchResult,
+], (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
     const layers = [defaultStarfieldLayer, defaultBackgroundLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
@@ -234,8 +252,9 @@ export const getLayers = createCachedSelector([
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));
     const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
-    return [...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
-})((layersConfig, time, wwd, onLayerChanged, currentTime) => {
+    const searchLayer = searchResult ? [getFootprintLayer(searchResult)] : [];
+    return [...searchLayer, ...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
+})((layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
     const stringTime = time ? time.toString() : '';
     const stringCurrentTime = currentTime ? currentTime.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
@@ -248,7 +267,8 @@ export const getLayers = createCachedSelector([
     const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',');
     const acquisitionPlanLayersKeys = acquisitionPlanLayers.map((aps) => `${aps.key}_${getPlansKeys(aps.plans)}`);
-    const cacheKey = `${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
+    const searchLayerKey = searchResult  ? getLayerKeySCIHubResult(searchResult) : '';
+    const cacheKey = `${searchLayerKey}-${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
     return cacheKey;
 });
 
@@ -269,7 +289,219 @@ const getSciProducts = async (layerConfig) => {
     }
 }
 
+export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
+    let rejected = false;
+    cancelled.catch(() => {
+        rejected = true;
+    })
+    //return promise
+    const msg = {
+        status: 'ok',
+        loadedCount: null,
+        totalCount: null,
+    }
+    const requests = [];
+    const status = 'loading';
+    let loadedCount = 0;
+    let errors = [];
+    let totalCount = 0;
+    redrawCallback();
+    // const changedLayer = {
+    //     satKey: layerConfig.satKey,
+    //     layerKey: layerConfig.layerKey
+    // }
+    // onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+
+    const products = productsScihub.processProducts({entry: layerConfig.results})
+
+    // const products = await getSciProducts(layerConfig);
+    totalCount = products.length;
+    if(rejected) {
+        return
+    }
+
+    const productsIDs = products.map(p => p.id());
+
+    const renderablesToRemove = [];
+    const renderedRenderables = [];
+    layer.renderables.forEach((r => {
+        const id = r && r.userProperties && r.userProperties.key;
+        renderedRenderables.push(id);
+        if(!productsIDs.includes(id)) {
+            renderablesToRemove.push(r) ;
+        }
+    }))
+
+    //remove renderables
+    renderablesToRemove.forEach(r => layer.removeRenderable(r));
+
+    //identify new renderables
+    const newRenderables = products.filter((p) => {
+        const productID = p.id();
+        return !renderedRenderables.includes(productID);
+    })
+
+    loadedCount = layer.renderables.length;
+
+    for(let productIndex = 0; productIndex < newRenderables.length; productIndex++) {
+        const key = newRenderables[productIndex].id();
+        const request = newRenderables[productIndex].renderable().then((result) => {
+            
+            
+            if(rejected) {
+                return
+            }
+            const boundaries = getBoundaries(result);
+
+            let uncompleateBoundaries = false;
+            if(boundaries && boundaries.length > 0 && boundaries[0].length < 4) {
+                uncompleateBoundaries = true;
+            }
+            const error = result.error instanceof Error;
+
+            if(!error && !uncompleateBoundaries) {
+                loadedCount++;
+                result['userProperties'] = {
+                    key
+                }
+                layer.addRenderable(result);
+                redrawCallback();
+                // onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+            } else {
+                //Add also not loaded footprints
+                loadedCount++;
+                const polygon = productBounds(boundaries);
+                polygon['userProperties'] = {
+                    key
+                }
+
+
+                layer.addRenderable(polygon);
+
+                errors.push(error);
+                redrawCallback();
+                // onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+
+            }
+        }, (err) => {
+            // debugger
+        });
+        requests.push(request);
+    }
+
+    await Promise.all(requests.map(p => p.catch(e => e)));
+    // onLayerChanged(changedLayer, {status: 'ok', loadedCount, totalCount});
+
+    return msg;
+}
+
 export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
+    let rejected = false;
+    cancelled.catch(() => {
+        rejected = true;
+    })
+    //return promise
+    const msg = {
+        status: 'ok',
+        loadedCount: null,
+        totalCount: null,
+    }
+    const requests = [];
+    const status = 'loading';
+    let loadedCount = 0;
+    let errors = [];
+    let totalCount = 0;
+    redrawCallback();
+    const changedLayer = {
+        satKey: layerConfig.satKey,
+        layerKey: layerConfig.layerKey
+    }
+    onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+
+    const products = await getSciProducts(layerConfig);
+    totalCount = products.length;
+    if(rejected) {
+        return
+    }
+
+    const productsIDs = products.map(p => p.id());
+
+    const renderablesToRemove = [];
+    const renderedRenderables = [];
+    layer.renderables.forEach((r => {
+        const id = r && r.userProperties && r.userProperties.key;
+        renderedRenderables.push(id);
+        if(!productsIDs.includes(id)) {
+            renderablesToRemove.push(r) ;
+        }
+    }))
+
+    //remove renderables
+    renderablesToRemove.forEach(r => layer.removeRenderable(r));
+
+    //identify new renderables
+    const newRenderables = products.filter((p) => {
+        const productID = p.id();
+        return !renderedRenderables.includes(productID);
+    })
+
+    loadedCount = layer.renderables.length;
+
+    for(let productIndex = 0; productIndex < newRenderables.length; productIndex++) {
+        const key = newRenderables[productIndex].id();
+        const request = newRenderables[productIndex].renderable().then((result) => {
+            
+            
+            if(rejected) {
+                return
+            }
+            const boundaries = getBoundaries(result);
+
+            let uncompleateBoundaries = false;
+            if(boundaries && boundaries.length > 0 && boundaries[0].length < 4) {
+                uncompleateBoundaries = true;
+            }
+            const error = result.error instanceof Error;
+
+            if(!error && !uncompleateBoundaries) {
+                loadedCount++;
+                result['userProperties'] = {
+                    key
+                }
+
+                layer.addRenderable(result);
+                redrawCallback();
+                onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+            } else {
+                //Add also not loaded footprints
+                loadedCount++;
+                const polygon = productBounds(boundaries);
+                polygon['userProperties'] = {
+                    key
+                }
+
+
+                layer.addRenderable(polygon);
+
+                errors.push(error);
+
+                redrawCallback();
+                // onLayerChanged(changedLayer, {status, loadedCount, totalCount});
+
+            }
+        }, (err) => {
+            // debugger
+        });
+        requests.push(request);
+    }
+
+    await Promise.all(requests.map(p => p.catch(e => e)));
+    onLayerChanged(changedLayer, {status: 'ok', loadedCount, totalCount});
+
+    return msg;
+}
+
+export const setFootprintRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
     let rejected = false;
     cancelled.catch(() => {
         rejected = true;
@@ -409,6 +641,40 @@ export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
     }
 }
 
+export const reloadFootprint = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
+
+    const layerKey = getLayerKeySCIHubResult(layerCfg.results[0]);
+    let rejected = false;
+    const activeRequestReject = productsRequests.get(layerKey);
+    if(activeRequestReject) {
+        //reject pending request
+        activeRequestReject();
+        rejected = true;
+        productsRequests.delete(layerKey);
+    }
+
+    const cancelled = new Promise((resolve, reject) => {
+        productsRequests.set(layerKey, reject);
+    });
+
+    const dispatchChange = (layerKey, change) => {
+        if(!rejected) {
+            onLayerChanged(layerKey, change);
+        }
+    }
+
+    try {
+        await setRenderablesFromConfig(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled);
+        productsRequests.delete(layerKey);
+    } catch (err) {
+        if (err.message === "Cancelled") {
+            console.log("Connection was closed");
+        } else {
+            console.log("Unexpected error:", err.stack);
+        }
+    }
+}
+
 export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
     layers.forEach((layerCfg) => {
         //reload only sentinel data
@@ -417,12 +683,19 @@ export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) =
             const wwdLayer = getLayerByName(layerKey, wwdLayers);   
             reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
         }
+
+        if(layerCfg.type === 'sentinelFootprint') {
+            const layerKey = getLayerKeySCIHubResult(layerCfg.results[0]);
+            const wwdLayer = getLayerByName(layerKey, wwdLayers);   
+            reloadFootprint(layerCfg, wwdLayer, wwd, onLayerChanged);
+        }
     });
 }
 
 export default {
     getLayers,
     getLayerKeyFromConfig,
+    getLayerKeySCIHubResult,
     getLayerByName,
     reloadLayersRenderable,
 }

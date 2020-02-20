@@ -1,5 +1,6 @@
 import * as satelliteSelect from './components/satellitesSelect';
 import * as timeline from './components/timeline';
+import * as search from './components/search';
 import * as satellites from './data/satellites';
 import * as layers from './data/layers';
 import * as map from './map';
@@ -14,6 +15,7 @@ export default {
     components: {
         satelliteSelect,
         timeline,
+        search,
     },
     map,
 }

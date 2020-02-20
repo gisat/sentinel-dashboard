@@ -3,6 +3,7 @@ import momentjs from 'moment';
 import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
 import {getSubstate as getSatellitesSubstate} from './data/satellites';
+import {getSearchLayer} from './components/search';
 import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
 import {getVisibleAcquisitionsPlans} from './map';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
@@ -86,7 +87,8 @@ export const getActiveLayers = createCachedSelector(
     getVisibleAcquisitionsPlans,
     (state, selectTime) => selectTime,
     getFocusedSattelite,
-    (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite) => {
+    getSearchLayer,
+    (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite, searchLayer) => {
 
     const activeLayersWithDates = []
 
@@ -101,6 +103,14 @@ export const getActiveLayers = createCachedSelector(
         }
         activeLayersWithDates.push(layer);
     });
+
+    //search layer
+    if(searchLayer) {
+        activeLayersWithDates.push({
+            type: 'sentinelFootprint',
+            results: [searchLayer],
+        });
+    }
 
     const orbitLayers = orbitsSubstate.filter((o) =>
         satellitesUtils.filterByReleasedSatellite(o, satellitesSubstate, selectTime)

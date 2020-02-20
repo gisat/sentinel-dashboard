@@ -19,8 +19,11 @@ function fetchWithCredentials (url, options = {}) {
 
 export const loadLatestProducts = async (shortName, products, location) => {
     const feed = await productsScihub.load({shortName, products, location});
-    const latestProducts = productsScihub.processProducts(feed);
-    return latestProducts;
+    if(feed.entry && feed.entry.length > 0) {
+        return feed.entry
+    } else {
+        return null
+    }
 };
 
 export const setSearchResults = (results) => {

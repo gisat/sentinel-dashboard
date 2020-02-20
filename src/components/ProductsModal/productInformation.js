@@ -31,19 +31,19 @@ const ProductInformation = (props) => {
     // const beginpositionDate = date.find((d) => d._attributes.name === "beginposition");
     // const endpositionDate = date.find((d) => d._attributes.name === "endposition");
     // const ingestiondateDate = date.find((d) => d._attributes.name === "ingestiondate");
-    const dateList = getDataList(date);
+    const dateList = date ? getDataList(date) : null;
 
     //int
-    const intList = getDataList(int);
+    const intList = int ? getDataList(int) : null;
 
     //str
-    const strList = Object.entries(str).map(([title, value], index) => getDataListItem(title, value, `${index}_${title}`));
+    const strList = str ? Object.entries(str).map(([title, value], index) => getDataListItem(title, value, `${index}_${title}`)) : null;
 
     //summary
-    const summaryItem = getDataListItem('summary', summary._text, 'summary');
+    const summaryItem = summary && summary._text ? getDataListItem('summary', summary._text, 'summary') : null;
 
     //title
-    const titleItem = getDataListItem('title', title._text, 'title');
+    const titleItem = title && title._text ? getDataListItem('title', title._text, 'title') : null;
 
 
     //styles

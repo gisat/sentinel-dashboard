@@ -27,6 +27,31 @@ const getCacheID = (shortName, products, location, hour) => {
     return `${shortName}-${products}-${location}-${hour}`;
 }
 
+export const parseEntry = (entry) => {
+    if(entry && entry.id) {
+        const parsedEntry = {};
+        const id = entry.id._text || entry.id;
+        parsedEntry.id = entry.id._text;
+
+        const str = {};
+        entry.str.forEach(element => {
+            const name = element._attributes.name;
+            str[name] = element._text;
+        });
+        parsedEntry.str = str;
+
+        parsedEntry.link = entry.link.map(element => {
+            return {
+                rel: element._attributes.rel,
+                href: element._attributes.href
+            };
+        });
+        return parsedEntry;
+    } else {
+        return null;
+    }
+}
+
 export default class Products {
     /**
      * Products represents collection of the products from different satellites. The Query is focused on the SciHub.
@@ -206,27 +231,12 @@ export default class Products {
     processProducts(feed) {
         if(feed.entry && feed.entry.length > 0) {
             return feed.entry.map(entry => {
-                if(entry && entry.id) {
-                    const id = entry.id._text || entry.id;
+                const parsedEntry = parseEntry(entry);
+                if(parsedEntry && parsedEntry.id) {
+                    const id = parsedEntry.id;
                     const cached = this._cache.get(id);
                     if(!cached) {
-                        entry.id = entry.id._text;
-
-                        const str = {};
-                        entry.str.forEach(element => {
-                            const name = element._attributes.name;
-                            str[name] = element._text;
-                        });
-                        entry.str = str;
-
-                        entry.link = entry.link.map(element => {
-                            return {
-                                rel: element._attributes.rel,
-                                href: element._attributes.href
-                            };
-                        });
-
-                        const product = new Product(this._fetch, entry);
+                        const product = new Product(this._fetch, parsedEntry);
                         this._cache.set(product.id(), product);
                         return product;
                     } else {

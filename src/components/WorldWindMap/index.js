@@ -90,6 +90,7 @@ const WorldWindMap = (props) => {
     const currentTime = new Date(select.rootSelectors.getCurrentTime(state));
     const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
     const layers = select.rootSelectors.getActiveLayers(state, selectTime);
+    const searchLayers = select.components.search.getSearchLayer(state);
 
     return (
         <Presentation 
@@ -102,6 +103,7 @@ const WorldWindMap = (props) => {
             searchOnCoords={searchOnCoords}
             onWwdCreated={onWwdCreated}
             preventReload={preventReloadLayers}
+            searchLayers={searchLayers}
             />
     )
 }
