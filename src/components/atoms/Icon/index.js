@@ -46,15 +46,15 @@ import Upload from './components/Upload';
 import RotateLeftCircularArrow from './components/RotateLeftCircularArrow';
 import RotateRightCircularArrow from './components/RotateRightCircularArrow';
 import LoaderOval from './components/Loader-oval';
-import Location from './components/Location.js';
-import Warning from './components/Warning.js';
-import Clock from './components/Clock.js';
+import Location from './components/Location';
+import Warning from './components/Warning';
+import Clock from './components/Clock';
 
-import Sentinel1 from './components/satellites/Sentinel1.js';
-import Sentinel2 from './components/satellites/Sentinel2.js';
-import Sentinel3 from './components/satellites/Sentinel3.js';
-import Sentinel4 from './components/satellites/Sentinel4.js';
-import Sentinel5 from './components/satellites/Sentinel5.js';
+import Sentinel1 from './components/satellites/Sentinel1';
+import Sentinel2 from './components/satellites/Sentinel2';
+import Sentinel3 from './components/satellites/Sentinel3';
+import Sentinel4 from './components/satellites/Sentinel4';
+import Sentinel5 from './components/satellites/Sentinel5';
 
 import './icon.css';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import SelectBase, { components } from 'react-select';
-import Button from '../../../Button';
+import Button from '../../../atoms/Button';
 import {parseEntry} from '../../../../worldwind/products/Products';
 import ProductInformation from '../../../ProductsModal/productInformation';
 const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextResultIndex, changeActiveResultIndex, result}) => {

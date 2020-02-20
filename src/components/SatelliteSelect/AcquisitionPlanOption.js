@@ -3,7 +3,7 @@ import { jsx, css } from '@emotion/core'
 import React from 'react';
 import PropTypes from 'prop-types';
 import { components } from 'react-select';
-import Icon from '../Icon';
+import Icon from '../atoms/Icon';
 import Loader from './Loader';
 import NotificationBadge from '../NotificationBadge';
 

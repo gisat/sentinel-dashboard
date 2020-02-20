@@ -2,7 +2,7 @@
 import { jsx, css } from '@emotion/core'
 import React from 'react';
 import ReactModal from 'react-modal';
-import Icon from '../Icon';
+import Icon from '../atoms/Icon';
 
 ReactModal.setAppElement('#root');
 

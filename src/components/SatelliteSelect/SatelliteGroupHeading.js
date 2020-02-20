@@ -6,7 +6,7 @@ import PropTypes from 'prop-types';
 import { components } from 'react-select';
 import Loader from './Loader';
 
-import Icon from '../Icon';
+import Icon from '../atoms/Icon';
 
 const SatelliteGroupHeading = props => {
     const {
