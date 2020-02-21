@@ -272,10 +272,8 @@ export default class Products {
         //tady seskládat 
         const query = new Query({shortName, products, location, beginTime, endTime, startIndex});
         const url = this._baseUrl + query.url();
-
         const cached = this._cache.get(url);
         if(cached) {
-            
             return JSON.parse(cached);
         }
 

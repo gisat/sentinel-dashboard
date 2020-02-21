@@ -5,7 +5,8 @@ import {withContext} from '../../../../context/withContext';
 import {
     loadLatestProducts,
     setSearchResults,
-    setActiveResultIndex
+    setActiveResultIndex,
+    setSearchTime,
 } from '../../../../context/actions/components/searchForm/actions';
 
 const getPreviousIndex = (curIndex, minIndex = 0) => {
@@ -34,15 +35,20 @@ const SetalliteSelect = (props) => {
     const satellites = select.data.satellites.getSubstate(state);
     const results = select.components.search.getResults(state) || [];
     const activeResultIndex = select.components.search.getActiveResultIndex(state);
+    const filterTime = select.components.search.getFilterTime(state);
     const result = (Number.isInteger(activeResultIndex) && results[activeResultIndex]) || null;
     const nextResultIndex = getNextIndex(activeResultIndex, results.length);
     const previousResultIndex = getPreviousIndex(activeResultIndex);
+    const selectedTime = filterTime || select.rootSelectors.getSelectTime(state);
     
-    const searchCoords = async(satelliteId, productId, location) => {
+    const searchCoords = async(satelliteId, productId, location, time, statrIndex) => {
         // setLoading(false);
         try {
             const shortName = `${satelliteId[0].toUpperCase()}-${satelliteId.substring(1,3).toUpperCase()}`;
-            const results = await loadLatestProducts(shortName, [productId], location);
+            const endTime = time;
+            const beginTime = new Date(new Date(endTime).setYear(endTime.getUTCFullYear() - 1));
+            dispatch(setSearchTime(time))
+            const results = await loadLatestProducts(shortName, [productId], location, beginTime, endTime, statrIndex);
             dispatch(setSearchResults(results))
             if(results && results.length > 0) {
                 dispatch(setActiveResultIndex(0))
@@ -58,6 +64,7 @@ const SetalliteSelect = (props) => {
 
     return (
         <Presentation 
+            time={selectedTime}
             coordinates={coordinates}
             satellites={satellites}
             search={searchCoords}

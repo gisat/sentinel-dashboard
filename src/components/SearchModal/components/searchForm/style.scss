@@ -16,6 +16,10 @@
 .ptr-search-form-selects{
     display: flex;
 
+    > div {
+        margin-left: 1rem;
+    }
+
     .ptr-coordinates{
 
     };

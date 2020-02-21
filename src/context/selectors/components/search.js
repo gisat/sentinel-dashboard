@@ -9,6 +9,7 @@ import {getCurrentTime} from '../rootSelectors';
 const getSubstate = (state) => common.getByPath(state, ['components', 'search']);
 const getActiveResultIndex = (state) => common.getByPath(state, ['components', 'search', 'activeResultIndex']);
 const getResults = (state) => common.getByPath(state, ['components', 'search', 'results']);
+const getFilterTime = (state) => common.getByPath(state, ['components', 'search', 'filterTime']);
 
 const getSearchLayer = (state) => {
     const activeResultIndex = getActiveResultIndex(state);
@@ -21,8 +22,9 @@ const getSearchLayer = (state) => {
 }
 
 export {
-    getResults,
     getActiveResultIndex,
+    getFilterTime,
+    getResults,
     getSubstate,
     getSearchLayer,
 }

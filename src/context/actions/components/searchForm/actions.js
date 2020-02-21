@@ -17,8 +17,8 @@ function fetchWithCredentials (url, options = {}) {
     return fetch;
 };
 
-export const loadLatestProducts = async (shortName, products, location) => {
-    const feed = await productsScihub.load({shortName, products, location});
+export const loadLatestProducts = async (shortName, products, location, beginTime, endTime, startIndex) => {
+    const feed = await productsScihub.load({shortName, products, location, beginTime, endTime, startIndex});
     if(feed.entry && feed.entry.length > 0) {
         return feed.entry
     } else {
@@ -32,6 +32,15 @@ export const setSearchResults = (results) => {
         component: 'search',
         path: 'results',
         value: results,
+    };
+};
+
+export const setSearchTime = (time) => {
+    return {
+        type: types.COMPONENT.SET,
+        component: 'search',
+        path: 'filterTime',
+        value: time,
     };
 };
 

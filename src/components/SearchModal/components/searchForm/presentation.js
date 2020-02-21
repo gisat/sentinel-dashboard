@@ -2,12 +2,11 @@ import React, { useState } from 'react';
 import Button from '../../../atoms/Button';
 import Icon from '../../../atoms/Icon';
 import Select from '../../../atoms/Select/Select';
-import {parseEntry} from '../../../../worldwind/products/Products';
-import ProductInformation from '../../../ProductsModal/productInformation';
+import moment from 'moment';
 
 import './style.scss';
 
-const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextResultIndex, changeActiveResultIndex, result}) => {
+const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextResultIndex, changeActiveResultIndex, result, time}) => {
     const [selectedSatellite, setSelectedSatellite] = useState(null);
     const [selectedProduct, setSelectedProduct] = useState(null);
 
@@ -22,15 +21,17 @@ const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextR
     })) : [];
 
     const onSearchClick = () => {
-        search(selectedSatellite.value, selectedProduct.value, coordinates);
+        search(selectedSatellite.value, selectedProduct.value, coordinates, new Date(time), 0);
     };
 
-    const parsedResult = parseEntry(result);
+    const displayMoveButtons = Number.isInteger(previousResultIndex) ||  Number.isInteger(nextResultIndex);
 
     return (
         <div className={'ptr-search-form'}>
             <div className={'ptr-search-form-selects'}>
-                {/* <Button className={'ptr-coordinates'}> */}
+                <Button ghost onClick={() => {}}>
+                    <Icon icon='clock' />{moment(time).format('YYYY-MM-DD')}
+                </Button>
                 <Button ghost onClick={() => {}}>
                     <Icon icon='location' />{`${Math.round(coordinates.longitude * 100) / 100} , ${Math.round(coordinates.latitude * 100) / 100}`}
                 </Button>
@@ -63,19 +64,21 @@ const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextR
                     Search
                 </Button>
                 {   
-                    Number.isInteger(previousResultIndex) ?
+                    displayMoveButtons ?
                     <Button 
                         ghost
                         onClick={() => changeActiveResultIndex(previousResultIndex)}
+                        disabled = {!Number.isInteger(previousResultIndex)}
                         >
                         Previous
                     </Button> : null
                 }
                 {   
-                    Number.isInteger(nextResultIndex) ?
+                    displayMoveButtons ?
                     <Button 
                         ghost
                         onClick={() => changeActiveResultIndex(nextResultIndex)}
+                        disabled = {!Number.isInteger(nextResultIndex)}
                         >
                         Next
                     </Button> : null
