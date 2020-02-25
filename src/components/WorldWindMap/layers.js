@@ -20,14 +20,15 @@ const {
     RenderableLayer,
     SurfacePolygon,
     Location,
+    AtmosphereLayer,
 } = WorldWind;
-
 const csiRenderablesCache = new window.Map();
 const searchCache = new window.Map();
 const layersCache = new window.Map();
 const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer();
+const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_2012.png');
 
 const productsRequests = new window.Map();
 export function getLayerKeyFromConfig (layerConfig) {
@@ -241,7 +242,9 @@ export const getLayers = createCachedSelector([
     (layersConfig, time, wwd, onLayerChanged, currentTime) => currentTime,
     (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => searchResult,
 ], (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
-    const layers = [defaultStarfieldLayer, defaultBackgroundLayer];
+    defaultStarfieldLayer.time = time;
+    defaultAtmosphereLayer.time = time;
+    const layers = [defaultStarfieldLayer, defaultBackgroundLayer, defaultAtmosphereLayer];
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     
