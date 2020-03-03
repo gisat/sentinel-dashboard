@@ -4,7 +4,9 @@ import WorldWind from 'webworldwind-esa';
 const {
     ArgumentError,
     Logger,
-    SurfaceShapeTileBuilder
+    SurfaceShapeTileBuilder,
+    SurfaceShape,
+    PickedObject
 } = WorldWind;
 
 const fboCacheKey = 'SurfaceShapeFBO';
@@ -56,6 +58,94 @@ SurfaceShapeTileBuilder.prototype.addTile = function (dc, tile) {
     }
 
     this.surfaceShapeTiles.push(tile);
+};
+
+SurfaceShapeTileBuilder.prototype.doDeepPickingRender = function (dc) {
+    var idxTile, lenTiles, idxShape, lenShapes, idxPick, lenPicks, po, shape, tile;
+
+    // Determine the shapes that were drawn during buildTiles. These shapes may not actually be
+    // at the pick point, but they are candidates for deep picking.
+    var deepPickShapes = [];
+    for (idxPick = 0, lenPicks = dc.objectsAtPickPoint.objects.length; idxPick < lenPicks; idxPick += 1) {
+        po = dc.objectsAtPickPoint.objects[idxPick];
+        if (po.userObject instanceof SurfaceShape) {
+            shape = po.userObject;
+
+            // If the shape was not already in the collection of deep picked shapes, ...
+            if (deepPickShapes.indexOf(shape) < 0) {
+                deepPickShapes.push(shape);
+
+                // Delete the shape that was drawn during buildTiles from the pick list.
+                dc.objectsAtPickPoint.objects.splice(idxPick, 1);
+
+                // Update the index and length to reflect the deletion.
+                idxPick -= 1;
+                lenPicks -= 1;
+            }
+        }
+    }
+
+    if (deepPickShapes.length <= 0) {
+        return;
+    }
+
+    // For all shapes,
+    //  1) force that shape to be the only shape in a tile,
+    //  2) re-render the tile, and
+    //  3) use the surfaceTileRenderer to render the tile on the terrain,
+    //  4) read the color to see if it is attributable to the current shape.
+    var resolvablePickObjects = [];
+    for (idxShape = 0, lenShapes = deepPickShapes.length; idxShape < lenShapes; idxShape += 1) {
+        shape = deepPickShapes[idxShape];
+
+        const fbo = SurfaceShapeTileBuilder.getFbo(dc);
+        if (!SurfaceShapeTileBuilder.__fboBound__) {
+            fbo.bind(dc.currentGlContext, this.tileWidth, this.tileHeight);
+            SurfaceShapeTileBuilder.__fboBound__ = true;
+        }
+
+        for (idxTile = 0, lenTiles = this.surfaceShapeTiles.length; idxTile < lenTiles; idxTile += 1) {
+            tile = this.surfaceShapeTiles[idxTile];
+            tile.setShapes([shape]);
+
+            tile.updateTexture(dc);
+        }
+
+        if (SurfaceShapeTileBuilder.__fboBound__) {
+            const fbo = SurfaceShapeTileBuilder.getFbo(dc);
+            fbo.unbind(dc.currentGlContext, dc.currentFramebuffer);
+            SurfaceShapeTileBuilder.__fboBound__ = false;
+        }
+
+        dc.surfaceTileRenderer.renderTiles(dc, this.surfaceShapeTiles, 1);
+
+        var pickColor = dc.readPickColor(dc.pickPoint);
+        if (!!pickColor && shape.pickColor.equals(pickColor)) {
+            po = new PickedObject(shape.pickColor.clone(),
+                shape.pickDelegate ? shape.pickDelegate : shape, null, shape.layer, false);
+            resolvablePickObjects.push(po);
+        }
+    }
+
+    // Flush surface shapes that have accumulated in the updateTexture pass just completed on all shapes.
+    for (idxPick = 0, lenPicks = dc.objectsAtPickPoint.objects.length; idxPick < lenPicks; idxPick += 1) {
+        po = dc.objectsAtPickPoint.objects[idxPick];
+        if (po.userObject instanceof SurfaceShape) {
+            // Delete the shape that was picked in the most recent pass.
+            dc.objectsAtPickPoint.objects.splice(idxPick, 1);
+
+            // Update the index and length to reflect the deletion.
+            idxPick -= 1;
+            lenPicks -= 1;
+        }
+    }
+
+    // Add the resolvable pick objects for surface shapes that were actually visible at the pick point
+    // to the pick list.
+    for (idxPick = 0, lenPicks = resolvablePickObjects.length; idxPick < lenPicks; idxPick += 1) {
+        po = resolvablePickObjects[idxPick];
+        dc.objectsAtPickPoint.objects.push(po);
+    }
 };
 
 SurfaceShapeTileBuilder.getFbo = function (dc) {
