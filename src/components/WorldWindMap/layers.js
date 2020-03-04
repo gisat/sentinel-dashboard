@@ -4,24 +4,29 @@ import createCachedSelector from 're-reselect';
 import './style.css';
 import SatelliteModelLayer from './SatelliteModelLayer';
 import OrbitLayer from './OrbitLayer';
+import SentinelCloudlessLayer from './SentinelCloudlessLayer';
+import SentinelTopologyLayer from './SentinelTopologyLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
+import wmsLayerUtils from './utils/wmsLayer';
 import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
 import {hubPassword, hubUsername} from "../../config";
+
 const {
     StarFieldLayer,
     EoUtils,
-    SentinelCloudlessLayer,
 } = WordWindX;
+
 const {
     RenderableLayer,
     SurfacePolygon,
-    Location,
     AtmosphereLayer,
 } = WorldWind;
+
+const {getLayerFromCapabilitiesUrl} = wmsLayerUtils;
 const csiRenderablesCache = new window.Map();
 const searchCache = new window.Map();
 const layersCache = new window.Map();
@@ -29,8 +34,9 @@ const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetc
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer();
 const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_2012.png');
-
 const productsRequests = new window.Map();
+const defaultTopologyLayer = new SentinelTopologyLayer();
+
 export function getLayerKeyFromConfig (layerConfig) {
     return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
 }
@@ -244,7 +250,13 @@ export const getLayers = createCachedSelector([
 ], (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
     defaultStarfieldLayer.time = time;
     defaultAtmosphereLayer.time = time;
-    const layers = [defaultStarfieldLayer, defaultBackgroundLayer, defaultAtmosphereLayer];
+    const layers = [
+        defaultStarfieldLayer,
+        defaultBackgroundLayer,
+        defaultAtmosphereLayer,
+        defaultTopologyLayer
+    ];
+
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
     const sentinelLayers = sentinelDataLayersConfigs.map(getSentinelLayer);
     

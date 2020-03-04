@@ -1,10 +1,12 @@
 import WorldWind from 'webworldwind-esa';
 
-const Location = WorldWind.Location,
-    Sector = WorldWind.Sector,
-    WmsLayer = WorldWind.WmsLayer;
+const {
+    Location,
+    Sector,
+    WmsLayer
+} = WorldWind;
 
-class SentinelCloudlessLayer extends WmsLayer {
+class SentinelTopologyLayer extends WmsLayer {
     constructor(){
         let url = 'https://tiles.maps.eox.at/wms';
         if(window.location.host === 'dashboard.eoapps.eu') {
@@ -13,8 +15,8 @@ class SentinelCloudlessLayer extends WmsLayer {
 
         super({
             service: url,
-            layerNames: "s2cloudless-2018",
-            title: "Sentinel Cloudless Layer",
+            layerNames: "overlay",
+            title: "Overlay layer by EOX - 4326",
             sector: new Sector(-90, 90, -180, 180),
             levelZeroDelta: new Location(45, 45),
             numLevels: 19,
@@ -26,4 +28,4 @@ class SentinelCloudlessLayer extends WmsLayer {
     }
 }
 
-export default SentinelCloudlessLayer;
+export default SentinelTopologyLayer;

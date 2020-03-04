@@ -125,10 +125,10 @@ TiledImageLayer.prototype.fetchImage = function (url, cb) {
     image.crossOrigin = 'anonymous';
 
     if (window.webkit) {
-        url = '/proxy?url=' + encodeURIComponent(url);
+        // url = '/proxy?url=' + encodeURIComponent(url);
     }
     else if (!window.webkit && !window.AndroidApp) {
-        url = '/proxy?url=' + encodeURIComponent(url);
+        // url = '/proxy?url=' + encodeURIComponent(url);
     }
 
     image.src = url;
