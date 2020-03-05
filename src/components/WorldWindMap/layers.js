@@ -15,6 +15,9 @@ import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
 import {hubPassword, hubUsername} from "../../config";
 
+window.WorldWind.configuration.baseUrl = `${window.location.origin}${window.location.pathname}`;
+console.log("WorldWind.configuration.baseUrl set to: ", window.WorldWind.configuration.baseUrl);
+
 const {
     StarFieldLayer,
     EoUtils,
