@@ -20,6 +20,7 @@ const ProductsModal = (props) => {
                 content = {content}
                 header = {header}
                 onClose = {onClose}
+                displayOverlay = {true}
                 /> : null
     )
 }
