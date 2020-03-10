@@ -22,6 +22,7 @@ const ProductsModal = (props) => {
                 header = {header}
                 content = {content}
                 onClose = {onClose}
+                sided = {{position: 'left'}}
                 /> : null
     )
 }

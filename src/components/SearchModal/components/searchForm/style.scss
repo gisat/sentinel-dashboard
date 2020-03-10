@@ -3,6 +3,7 @@
 .ptr-search-form {
     font-size: $a1;
     display: flex;
+    flex-wrap: wrap;
     margin-bottom: 1rem;
 }
 
@@ -10,14 +11,17 @@
     display: flex;
     > div {
         margin-left: 1rem;
+        margin-top: 6px;
     }
 }
 
 .ptr-search-form-selects{
     display: flex;
+    flex-wrap: wrap;
 
     > div {
         margin-left: 1rem;
+        margin-top: 6px;
     }
 
     .ptr-coordinates{
@@ -26,6 +30,15 @@
 
     .ptr-button{
         background: rgba(0, 0, 0, 0);
+
+        &.ptr-btn-no-wrap{
+            display: flex;
+            flex-wrap: nowrap;
+
+            > * {
+                white-space: nowrap;
+            }
+        }
     }
     .ptr-select__control{
         background: rgba(0, 0, 0, 0);

@@ -29,10 +29,10 @@ const SearchForm = ({coordinates, satellites, search, previousResultIndex, nextR
     return (
         <div className={'ptr-search-form'}>
             <div className={'ptr-search-form-selects'}>
-                <Button ghost onClick={() => {}}>
+                <Button ghost className={'ptr-btn-no-wrap'} onClick={() => {}}>
                     <Icon icon='clock' />{moment(time).format('YYYY-MM-DD')}
                 </Button>
-                <Button ghost onClick={() => {}}>
+                <Button ghost className={'ptr-btn-no-wrap'} onClick={() => {}}>
                     <Icon icon='location' />{`${Math.round(coordinates.longitude * 100) / 100} , ${Math.round(coordinates.latitude * 100) / 100}`}
                 </Button>
                 <Select

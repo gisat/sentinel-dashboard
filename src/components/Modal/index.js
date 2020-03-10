@@ -46,18 +46,60 @@ const contentStyle = {
     zIndex: 100,
 };
 
-// {position} fullscreen, sided
+const getSidedStyle = (sided) => {
+    const positions = ['top', 'right', 'bottom', 'left'];
+    if(sided && sided.position && positions.includes(sided.position)) {
+        const width = sided.width || '66%';
+        // eslint-disable-next-line default-case
+        switch (sided.position) {
+            case 'top':
+                return {
+                    top: '0px',
+                    right: '0px',
+                    bottom: width,
+                    left: '0px',
+                };
+            case 'right':
+                return {
+                    top: '0px',
+                    right: '0px',
+                    bottom: '0px',
+                    left: width,
+                }
+            case 'bottom':
+                return {
+                    top: width,
+                    right: '0px',
+                    bottom: '0px',
+                    left: '0px',
+                }
+            case 'left':
+                return {
+                    top: '0px',
+                    right: width,
+                    bottom: '0px',
+                    left: '0px',
+                }
+        }
+    } else {
+        return {};
+    }
+}
+
+// {sided?} {possition: top, right, bottom, left, width: %}
 // {displayOverlay} bool
 
 export default (props) => {
-    const {modalKey, isOpen, content, onClose, header, position, displayOverlay} = props;
+    const {modalKey, isOpen, content, onClose, header, sided, displayOverlay} = props;
+
+    const sidedStyle = getSidedStyle(sided);
 
     return (
         <ReactModal 
             isOpen={isOpen}
             contentLabel="Inline Styles Modal Example"
             style={{
-                content: contentStyle,
+                content: {...contentStyle, ...sidedStyle},
                 overlay: displayOverlay === true ? visibleOverlayStyle : hiddenOverlayStyle
             }}
         >
