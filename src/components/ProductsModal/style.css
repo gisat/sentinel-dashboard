@@ -4,7 +4,10 @@
 
 .product-info {
     margin: 2rem;
-    overflow-x: auto;
+    margin: 2rem;
+    display: flex;
+    flex-flow: column;
+    overflow: visible;
 }
 .product-info:not(:first-child) {
     border-top: rgb(138, 142, 153) 1px solid;
