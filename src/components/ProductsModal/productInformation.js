@@ -1,25 +1,20 @@
 import styled from '@emotion/styled';
 import React from 'react';
 import PropTypes from "prop-types";
+
+import FormGroup from "../form/FormGroup";
+import Form from "../form/Form";
+
 import "./style.css";
 
 // const itemStyle = {
 //     display: 'flex',
 // };
 
-const titleStyle = {
-    display: 'flex',
-    minWidth: '15rem',
-    justifyContent: 'flex-start',
-}
-
-const getDataListItem = (title, value, key) => {
-    return (<div className={'item'} key={key}><span style={titleStyle}>{title}:</span><span>{value}</span></div>);
-};
 
 const getDataList = (data) => {
     return data.map((i, index) => {
-        return getDataListItem(i._attributes.name, i._text, `${index}_${i._attributes.name}`);
+        return <FormGroup title={i._attributes.name} value={i._text} id={`${index}_${i._attributes.name}`} readOnly={true}/>
     });
 };
 
@@ -27,62 +22,42 @@ const ProductInformation = ({product, heading}) => {
     const {title, id, date, int, str, summary} = product;
 
     //dates
-    // const beginpositionDate = date.find((d) => d._attributes.name === "beginposition");
-    // const endpositionDate = date.find((d) => d._attributes.name === "endposition");
-    // const ingestiondateDate = date.find((d) => d._attributes.name === "ingestiondate");
     const dateList = date ? getDataList(date) : null;
 
     //int
     const intList = int ? getDataList(int) : null;
 
     //str
-    const strList = str ? Object.entries(str).map(([title, value], index) => getDataListItem(title, value, `${index}_${title}`)) : null;
+    const strList = str ? Object.entries(str).map(([title, value], index) => <FormGroup title={title} value={value} id={`${index}_${title}`} readOnly={true}/>) : null;
 
     //summary
-    const summaryItem = summary && summary._text ? getDataListItem('summary', summary._text, 'summary') : null;
+    const summaryItem = summary && summary._text ? <FormGroup title={'Summary'} value={summary._text} id={`summary`} readOnly={true}/> : null;
 
     //title
-    const titleItem = title && title._text ? getDataListItem('title', title._text, 'title') : null;
-
-
-    //styles
-    // const productStyle = {
-    //     margin: '2rem',
-    // };
-    
-    // const headingStyle = {
-    //     fontSize: '1.25rem',
-    //     marginLeft: '2rem',
-    //     marginBottom: '1rem',
-    // }
-    
-    // const sectionStyle = css({
-    //     'div': {
-    //         display: 'flex'
-    //     }
-    // })
-    // `
+    const titleItem = title && title._text ? <FormGroup title={'Title'} value={title._text} id={`title`} readOnly={true}/> : null;
 
     return (
         <div className={'product-info'}>
             <h1>
                 {heading ? heading : `${str.platformname} - ${str.producttype}`}
             </h1>
-            <section>
-                {titleItem}
-            </section>
-            <section>
-                {dateList}
-            </section>
-            <section>
-                {intList}
-            </section>
-            <section>
-                {strList}
-            </section>
-            <section>
-                {summaryItem}
-            </section>
+            <Form className={'ptr-product-info'}>
+                <section>
+                    {titleItem}
+                </section>
+                <section>
+                    {dateList}
+                </section>
+                <section>
+                    {intList}
+                </section>
+                <section>
+                    {strList}
+                </section>
+                <section>
+                    {summaryItem}
+                </section>
+            </Form>
             {/* line */}
         </div>
     )

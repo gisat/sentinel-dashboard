@@ -6,6 +6,10 @@
     margin: 2rem;
     overflow-x: auto;
 }
+.product-info:not(:first-child) {
+    border-top: rgb(138, 142, 153) 1px solid;
+    padding-top: 2rem;
+}
 
 .product-info h1 {
     font-size: 1.25rem;
@@ -31,3 +35,14 @@
         padding: 0.5rem;
     }    
 } 
+
+.ptr-modal-scroolable-content-wrapper{
+    position: absolute;
+    display: flex;
+    flex-flow: column;
+    overflow: auto;
+    left: 0px;
+    right: 0px;
+    top: 0px;
+    bottom: 0px;
+}

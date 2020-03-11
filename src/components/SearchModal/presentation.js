@@ -14,7 +14,7 @@ const ProductsModal = (props) => {
     // })
 
     const header = <SearchForm />;
-    const content = (<div className={'modal-content'}><Result /></div>);
+    const content = (<div className={'ptr-modal-scroolable-content-wrapper'}><Result /></div>);
     return (
         visible ? <Modal 
                 modalKey = {modalKey}

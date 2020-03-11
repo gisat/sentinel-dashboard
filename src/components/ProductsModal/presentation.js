@@ -7,11 +7,12 @@ import {withContext} from '../../context/withContext';
 const ProductsModal = (props) => {
     const {visible, onClose, showProducts, products, modalKey} = props;
 
-    const content = products.map((product) => {
+    const productInformations = products.map((product) => {
         return (<ProductInformation key={product.id} product={product} />)
     })
+    const content = <div className={'ptr-modal-scroolable-content-wrapper'}>{productInformations}</div>;
 
-    const header = (<h1 className={'modal-header'}>Sentinel products [{products.length}]</h1>);
+    const header = (<div><h1 className={'modal-header'}>Sentinel products [{products.length}]</h1></div>);
 
     return (
         visible ? <Modal 

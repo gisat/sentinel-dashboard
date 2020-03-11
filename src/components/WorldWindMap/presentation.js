@@ -204,7 +204,7 @@ class Map extends Component {
 
             window.wwd = this.wwd;
             this.pickController = new ClickPickController(this.wwd, this.clickHandler.bind(this));
-            this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 3000, 1500, 1500);
+            this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 1500, 1000, 1000);
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
             const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime, searchLayers);

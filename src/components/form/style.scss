@@ -1,0 +1,24 @@
+.ptr-form-group{
+    margin-bottom: 1rem;
+
+    .ptr-col-form-label{
+        padding-top: calc(.375rem + 1px);
+        padding-bottom: calc(.375rem + 1px);
+        margin-bottom: 0;
+        font-size: inherit;
+        line-height: 1.5;
+    }
+
+    .ptr-form-control-plaintext{
+        display: block;
+        width: 100%;
+        padding: .375rem 0;
+        margin-bottom: 0;
+        font-size: 1rem;
+        line-height: 1.5;
+        color: rgb(255, 255, 255);
+        background-color: rgba(0, 0, 0, 0);
+        border: solid rgba(0, 0, 0, 0);
+        border-width: 1px 0;
+    }
+}

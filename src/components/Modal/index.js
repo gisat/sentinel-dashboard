@@ -6,7 +6,15 @@ import Icon from '../atoms/Icon';
 
 ReactModal.setAppElement('#root');
 
+const innerContentStyle = css({
+    width: '100%',
+    height: '100%',
+    position: 'relative',
+});
+
 const closeStyle = css({
+    display: 'flex',
+    flexFlow: 'column',
     position: 'absolute',
     cursor: 'pointer',
     top: '16px',
@@ -25,9 +33,10 @@ const closeIconStyle = css({
 
 const headerStyle = css({
     borderBottom: '1px solid rgb(233, 233, 233)',
-    minHeight: '1.9rem',
-    backgroundColor: 'rgba(8, 11, 18, 0.9)',
+    // minHeight: '1.9rem',
+    // backgroundColor: 'rgba(8, 11, 18, 0.9)',
     fontSize: '2rem',
+    // paddingBottom: '1rem',
 })
 
 const visibleOverlayStyle = {
@@ -44,6 +53,9 @@ const contentStyle = {
     backgroundColor: 'rgba(8, 11, 18, 0.9)',
     border: '1px solid rgba(204, 204, 204, 0.51)',
     zIndex: 100,
+    display: 'flex',
+    flexFlow: 'column',
+    overflow: 'hidden',
 };
 
 const getSidedStyle = (sided) => {
@@ -103,8 +115,12 @@ export default (props) => {
                 overlay: displayOverlay === true ? visibleOverlayStyle : hiddenOverlayStyle
             }}
         >
-            <div css={headerStyle}>{header}</div>
-            {content}
+            <div css={headerStyle}>
+                {header}
+            </div>
+            <div css={innerContentStyle}>
+                {content}
+            </div>
             <span onClick={() => {onClose(modalKey)}} css={closeStyle}>
                 <Icon icon={'times'} css={closeIconStyle}/>
             </span>
