@@ -7,6 +7,11 @@ import {
     updateInfoModal,
     setActiveInfoModal,
 } from '../../context/actions';
+
+import {
+    resetSearchComponent,
+} from '../../context/actions/components/searchForm/actions';
+
 import select from '../../context/selectors/';
 
 
@@ -24,6 +29,8 @@ const ProductsModal = (props) => {
     const onInfoModalClose = () => {
         dispatch(updateInfoModal(activeInfoModalKey, {open: false}));
         dispatch(setActiveInfoModal(null));
+        resetSearchComponent(dispatch);
+
     }
 
     return (

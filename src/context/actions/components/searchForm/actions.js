@@ -1,6 +1,7 @@
 import SciHubProducts from '../../../../worldwind/products/Products';
 import {hubPassword, hubUsername} from "../../../../config";
 import types from '../../../types';
+import {setComponent} from '../../../actions';
 
 const searchCache = new window.Map();
 const csiRenderablesCache = new window.Map();
@@ -51,4 +52,20 @@ export const setActiveResultIndex = (index) => {
         path: 'activeResultIndex',
         value: index,
     };
+};
+
+export const setGeometry = (geometry) => {
+    return {
+        type: types.COMPONENT.SET,
+        component: 'search',
+        path: 'geometry',
+        value: geometry,
+    };
+};
+
+export const resetSearchComponent = (dispatch) => {
+    dispatch(setSearchResults([]));
+    dispatch(setSearchTime(null));
+    dispatch(setActiveResultIndex(null));
+    dispatch(setGeometry(null));
 };

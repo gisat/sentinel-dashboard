@@ -9,9 +9,10 @@ import {
     setWwd,
     dataUpdateAcquisitionPlan,
     dataAcquisitionPlanSetVisibleCount,
-    setComponent,
     clearComponent,
 } from '../../context/actions';
+
+import {setGeometry} from '../../context/actions/components/searchForm/actions';
 
 const WorldWindMap = (props) => {
     const {dispatch, state} = props;
@@ -66,7 +67,7 @@ const WorldWindMap = (props) => {
             altitude:coordinates.altitude
         }
 
-        dispatch(setComponent('search', 'geometry', {
+        dispatch(setGeometry({
             latitude:coordinates.latitude,
             longitude:coordinates.longitude,
             altitude:coordinates.altitude
@@ -77,6 +78,8 @@ const WorldWindMap = (props) => {
 
         dispatch(updateInfoModal(modalKey, modalContent));
         dispatch(setActiveInfoModal(modalKey));
+        
+        
     }
 
     const onWwdCreated = (wwd) => {
