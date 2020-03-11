@@ -7,7 +7,7 @@ import Result from './components/result';
 import './style.scss';
 
 const ProductsModal = (props) => {
-    const {visible, onClose, coordinates, modalKey} = props;
+    const {visible, onClose, coordinates, modalKey, vertical} = props;
 
     // const content = products.map((product) => {
     //     return (<ProductInformation key={product.id} product={product} />)
@@ -22,7 +22,8 @@ const ProductsModal = (props) => {
                 header = {header}
                 content = {content}
                 onClose = {onClose}
-                sided = {{position: 'left'}}
+                sided = {{position: vertical ? 'left' : 'bottom'}}
+                vertical = {vertical}
                 /> : null
     )
 }

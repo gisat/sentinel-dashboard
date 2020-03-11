@@ -75,11 +75,7 @@ const WorldWindMap = (props) => {
             altitude:coordinates.altitude
         }
 
-        dispatch(setGeometry({
-            latitude:coordinates.latitude,
-            longitude:coordinates.longitude,
-            altitude:coordinates.altitude
-        }));
+        dispatch(setGeometry(geometry));
         
         // search catalogue
         // dispatch(searchCatalogue(modalKey, modalContent));

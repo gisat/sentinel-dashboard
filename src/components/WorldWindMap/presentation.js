@@ -170,7 +170,6 @@ class Map extends Component {
         if(type === 'timeoutClick' && terrainPick && terrainPick.objects && terrainPick.objects[0]){
             const terrainCoords = terrainPick.objects[0].position;
             //searchOnCoords
-            console.log(terrainCoords);   
             searchOnCoords(terrainCoords);
         }
     }

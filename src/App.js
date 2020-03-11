@@ -89,10 +89,10 @@ class App extends React.PureComponent {
                     handleWidth
                     handleHeight />                
                 <ProductsModal />
-                <SearchModal />
+                <SearchModal/>
                 <SatelliteSelect  
                     maxHeight = {maxSelectHeight}
-                    />
+                />
                 <div className={className('timelineWrapper', {
                     vertical: vertical,
                     horizontal: !vertical,

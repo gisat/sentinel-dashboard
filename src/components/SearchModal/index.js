@@ -17,15 +17,13 @@ import select from '../../context/selectors/';
 
 // ReactModal.setAppElement('#root');
 
-const ProductsModal = (props) => {
-    // const {modalKey, isOpen, content, onClose, header} = props;
-    const {dispatch, state} = props;
-    
+const SearchModal = ({dispatch, state}) => {
     //info modal state
     const activeInfoModalKey = select.rootSelectors.getActiveInfoModalKey(state);
     const activeInfoModal = select.rootSelectors.getInfoModal(state, activeInfoModalKey);
     const visible = !!activeInfoModalKey && activeInfoModal.type === 'SEARCH';
     const coordinates = visible ? activeInfoModal.coordinates : null;
+    const vertical = select.rootSelectors.getLandscape(state);
     const onInfoModalClose = () => {
         dispatch(updateInfoModal(activeInfoModalKey, {open: false}));
         dispatch(setActiveInfoModal(null));
@@ -36,12 +34,12 @@ const ProductsModal = (props) => {
     return (
         visible ? <Presentation 
             visible={visible}
+            vertical={vertical}
             onClose={onInfoModalClose}
-            // showProducts={activeInfoModal.products}
             coordinates={coordinates}
             modalKey={activeInfoModalKey}
             /> : null
     )
 }
 
-export default withContext(ProductsModal);
+export default withContext(SearchModal);
