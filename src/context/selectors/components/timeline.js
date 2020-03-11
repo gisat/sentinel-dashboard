@@ -10,6 +10,7 @@ export const removeItemByIndex = (array, index) => [...array.slice(0, index), ..
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'timeline']);
 
+const getVisible = createSelector(getSubstate, substate => substate.visible);
 
 const getOverlays = (state) => {
     const nowOverlayKey = 'now';
@@ -28,4 +29,5 @@ const getOverlays = (state) => {
 export {
     getSubstate,
     getOverlays,
+    getVisible,
 }

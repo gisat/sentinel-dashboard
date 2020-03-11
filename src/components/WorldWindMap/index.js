@@ -10,6 +10,7 @@ import {
     dataUpdateAcquisitionPlan,
     dataAcquisitionPlanSetVisibleCount,
     clearComponent,
+    updateComponent,
 } from '../../context/actions';
 
 import {setGeometry} from '../../context/actions/components/searchForm/actions';
@@ -83,6 +84,9 @@ const WorldWindMap = (props) => {
         dispatch(updateInfoModal(modalKey, modalContent));
         dispatch(setActiveInfoModal(modalKey));
         
+        dispatch(updateComponent('timeline', {visible: false}));
+        dispatch(updateComponent('timeWidget', {visible: false}));
+        dispatch(updateComponent('satelliteSelect', {visible: false}));
         
     }
 

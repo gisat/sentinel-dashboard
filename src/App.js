@@ -80,6 +80,9 @@ class App extends React.PureComponent {
     render() {
         const {state} = this.context;
         const vertical = select.rootSelectors.getLandscape(state);
+        const satelliteSelectVisible = select.components.satelliteSelect.getVisible(state);
+        const mapsTimelineVisible = select.components.timeline.getVisible(state);
+        const timeWidgetVisible = select.components.timeWidget.getVisible(state);
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
 
         return (
@@ -90,20 +93,20 @@ class App extends React.PureComponent {
                     handleHeight />                
                 <ProductsModal />
                 <SearchModal/>
-                <SatelliteSelect  
+                {satelliteSelectVisible ? <SatelliteSelect  
                     maxHeight = {maxSelectHeight}
-                />
+                /> : null}
                 <div className={className('timelineWrapper', {
                     vertical: vertical,
                     horizontal: !vertical,
                 })}>
-                    <MapsTimeline />
+                    {mapsTimelineVisible ? <MapsTimeline /> : null}
                 </div>
                 <div className={className('time-widget-wrapper', {
                     vertical: vertical,
                     horizontal: !vertical,
                 })}>
-                    <TimeWidget />
+                    {timeWidgetVisible ? <TimeWidget /> : null}
                 </div>
                 <WorldWindMap />
             </div>

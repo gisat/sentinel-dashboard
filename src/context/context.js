@@ -171,8 +171,13 @@ const initialState = {
     components:{
         satelliteSelect: {
             open: true,
+            visible: true,
+        },
+        timeWidget: {
+            visible: true,
         },
         timeline: {
+            visible: true,
             moving: false,
             mouseTime: null,
             dayWidth: null,

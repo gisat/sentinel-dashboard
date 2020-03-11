@@ -9,6 +9,8 @@ import satellitesUtils from '../../../utils/satellites';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
 
+const getVisible = createSelector(getSubstate, substate => substate.visible);
+
 const getSatelitesSelectOptions = createSelector(
     getSatellitesSubstate,
     getLayersSubstate,
@@ -87,4 +89,5 @@ const getSatelitesSelectOptions = createSelector(
 export {
     getSatelitesSelectOptions,
     getSubstate,
+    getVisible,
 }

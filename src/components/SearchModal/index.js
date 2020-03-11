@@ -6,6 +6,7 @@ import {getProductByKey} from '../../components/WorldWindMap/layers';
 import {
     updateInfoModal,
     setActiveInfoModal,
+    updateComponent,
 } from '../../context/actions';
 
 import {
@@ -29,6 +30,9 @@ const SearchModal = ({dispatch, state}) => {
         dispatch(setActiveInfoModal(null));
         resetSearchComponent(dispatch);
 
+        dispatch(updateComponent('timeline', {visible: true}));
+        dispatch(updateComponent('satelliteSelect', {visible: true}));
+        dispatch(updateComponent('timeWidget', {visible: true}));
     }
 
     return (
