@@ -35,6 +35,14 @@ const WorldWindMap = (props) => {
 
     const onProductsClick = (products) => {
         const {state} = props;
+
+        //if search form modal open, then terminate all clicks
+        const activeModalKey = select.rootSelectors.getActiveInfoModalKey(state);
+        const infoModal = select.rootSelectors.getInfoModal(state, activeModalKey);
+        if(infoModal && infoModal.type === 'SEARCH') {
+            return;
+        }
+
         const modalKey = products.join(',');
         const modalState = select.rootSelectors.getInfoModal(state, modalKey)
         const open = modalState && modalState.open ? false : true;
