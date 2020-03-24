@@ -41,3 +41,14 @@ export const productAttributes = () => {
 export const getBoundaries = (product) => {
     return product && product.boundaries;
 }
+
+export const getProductDownloadUrl = (product) => {
+    let url;
+    for (const prop of product.link) {
+        if (prop.rel !== 'icon') {
+            url = prop.href;
+            break;
+        }
+    };
+    return url;
+}
