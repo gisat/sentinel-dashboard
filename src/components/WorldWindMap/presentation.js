@@ -3,7 +3,9 @@ import PropTypes from "prop-types";
 import WorldWindow from '../../worldwind/WorldWindow';
 import WorldWind from 'webworldwind-esa';
 import ClickPickController from './utils/ClickPickController';
-import {isEqual} from 'lodash';
+import decorateWorldWindowController from './controllers/WorldWindowControllerDecorator';
+import navigator from './navigator/helpers';
+import {isEqual, isEmpty} from 'lodash';
 import {
     getLayers,
     getLayerKeyFromConfig,
@@ -21,6 +23,16 @@ const {
     EarthElevationModel
 } = WorldWind;
 
+export const defaultMapView = {
+	center: {
+		lat: 50.099577,
+		lon: 14.425960
+	},
+	boxRange: 10000000,
+	tilt: 0,
+	roll: 0,
+	heading: 0
+};
 
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
@@ -32,6 +44,8 @@ class Map extends Component {
         onLayerChanged: PropTypes.func,
         onProductsClick: PropTypes.func,
         searchOnCoords: PropTypes.func,
+        onViewChange: PropTypes.func,
+        view: PropTypes.object,
         layers: PropTypes.array,
         searchLayers: PropTypes.array,
         preventReload: PropTypes.bool,
@@ -43,8 +57,10 @@ class Map extends Component {
         onLayerChanged: () => {},
         onProductsClick: () => {},
         searchOnCoords: () => {},
+        onViewChange: () => {},
         layers: [],
         searchLayers: null,
+        view: {},
     }
     constructor(props){
         super(props);
@@ -62,6 +78,11 @@ class Map extends Component {
 
         if(focusedSatellite !== prevProps.focusedSatellite) {
             console.log("focused satellite changed", focusedSatellite)
+        }
+
+        // TODO compare references only?
+        if (this.props.view && prevProps.view !== this.props.view) {            
+            this.updateNavigator();
         }
         
         const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
@@ -190,6 +211,21 @@ class Map extends Component {
         }
     }
 
+    onNavigatorChange(event) {
+		if (event) {
+            const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
+            console.log(viewParams);
+            
+			const changedViewParams = navigator.getChangedViewParams({...defaultMapView, ...this.props.view}, viewParams);
+
+			if(this.props.onViewChange) {
+				if (!isEmpty(changedViewParams)) {
+                    this.props.onViewChange(changedViewParams);
+				}
+			}
+		}
+	}
+
     /**
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
      */
@@ -198,6 +234,10 @@ class Map extends Component {
         if(!this.wwdCreated) {
             const elevationModel = new EarthElevationModel();
             this.wwd = new WorldWindow("wwd-results", elevationModel, EnabledController, FreeCamera);
+            
+            decorateWorldWindowController(this.wwd.worldWindowController);
+            this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(this);
+
             this.wwd.animator = new Animator(this.wwd);
             this.wwd.deepPicking = true;
 
@@ -209,8 +249,15 @@ class Map extends Component {
             const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime, searchLayers);
             this.handleLayers(wwdLayers);
             this.props.onWwdCreated(this.wwd);
+            this.updateNavigator(defaultMapView);
         }
     }
+
+	updateNavigator(defaultView) {
+		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
+		let nextView = {...currentView, ...this.props.view};
+		navigator.update(this.wwd, nextView);
+	}
 
     render(){
         return (

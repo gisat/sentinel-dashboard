@@ -31,5 +31,8 @@ export default {
             'SET_PRODUCTS': 'COMPONENTS.SEARCH.SET_PRODUCTS',
         }
     },
+    'MAP': {
+        'SET_VIEW': 'MAP.SET_VIEW',
+    },
     'SET_WWD': 'SET_WWD'
 }

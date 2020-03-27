@@ -13,7 +13,12 @@ import {
     updateComponent,
 } from '../../context/actions';
 
+import {
+    setView,
+} from '../../context/actions/map';
+
 import {setGeometry} from '../../context/actions/components/searchForm/actions';
+import selectors from '../../context/selectors/';
 
 const WorldWindMap = (props) => {
     const {dispatch, state} = props;
@@ -102,6 +107,11 @@ const WorldWindMap = (props) => {
     const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
     const layers = select.rootSelectors.getActiveLayers(state, selectTime);
     const searchLayers = select.components.search.getSearchLayer(state);
+    const view = select.map.getView(state);
+
+    const onViewChange = (view) => {
+        dispatch(setView(view));
+    }
 
     return (
         <Presentation 
@@ -115,6 +125,8 @@ const WorldWindMap = (props) => {
             onWwdCreated={onWwdCreated}
             preventReload={preventReloadLayers}
             searchLayers={searchLayers}
+            onViewChange={onViewChange}
+            view={view}
             />
     )
 }

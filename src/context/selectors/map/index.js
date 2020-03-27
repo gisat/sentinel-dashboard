@@ -7,8 +7,11 @@ const isVisibleAcquisitionPlanByKey = (state, key) => {
     return acquisitionsPlans && acquisitionsPlans.includes(key);
 };
 
+const getView = (state) => getSubstate(state)['view'];
+
 export {
     getSubstate,
+    getView,
     getVisibleAcquisitionsPlans,
     isVisibleAcquisitionPlanByKey,
 }

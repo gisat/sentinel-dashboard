@@ -155,7 +155,8 @@ const initialState = {
         acquisitionPlans: [],
     },
     map: {
-        acquisitionPlans: []
+        acquisitionPlans: [],
+        view: {},
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],

@@ -294,6 +294,10 @@ const mapRemoveVisibleAcquisitionPlan = (state, action) => {
     return {...state, map: {...state.map, acquisitionPlans: removeItemByIndex(state.map.acquisitionPlans, acquisitionPlanKeyIndex)}};
 };
 
+const setMapView = (state, action) => {
+    return {...state, map: {...state.map, view: action.payload.view }};
+};
+
 export default (state, action) => {
     //change state logging
     console.log("beforeState", state, "action", action);
@@ -353,6 +357,9 @@ export default (state, action) => {
             return mapAddVisibleAcquisitionPlan(state, action);
         case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:
             return mapRemoveVisibleAcquisitionPlan(state, action);
+        case types.MAP.SET_VIEW:
+            return setMapView(state, action);
+        
         default:
             return state;
     }
