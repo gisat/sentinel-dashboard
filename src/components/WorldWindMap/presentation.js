@@ -214,7 +214,6 @@ class Map extends Component {
     onNavigatorChange(event) {
 		if (event) {
             const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
-            console.log(viewParams);
             
 			const changedViewParams = navigator.getChangedViewParams({...defaultMapView, ...this.props.view}, viewParams);
 

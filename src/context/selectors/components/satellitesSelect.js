@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getVisibleAcquisitionsPlans} from '../map';
@@ -12,15 +13,17 @@ const getSubstate = (state) => common.getByPath(state, ['components', 'satellite
 const getVisible = createSelector(getSubstate, substate => substate.visible);
 
 const getSatelitesSelectOptions = createSelector(
-    getSatellitesSubstate,
-    getLayersSubstate,
-    getActiveLayers,
-    getFocusedSattelite,
-    getSelectTimePastOrCurrent,
-    getVisibleAcquisitionsPlans,
-    getPlansForDate,
-    getLoadingAcquisitionsPlans,
-    getSelectTime,
+    [
+        getSatellitesSubstate,
+        getLayersSubstate,
+        getActiveLayers,
+        getFocusedSattelite,
+        getSelectTimePastOrCurrent,
+        getVisibleAcquisitionsPlans,
+        getPlansForDate,
+        getLoadingAcquisitionsPlans,
+        getSelectTime,
+    ],
     (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData, loadingAcquisitionsPlans, selectTime) => {
         
         const getLayerOption = (layerKey, satConfig) => {

@@ -77,4 +77,5 @@ Overlay.defaultProps = {
 	vertical: false,
 }
 
-export default Overlay;
+// export default Overlay;
+export default React.memo(Overlay);

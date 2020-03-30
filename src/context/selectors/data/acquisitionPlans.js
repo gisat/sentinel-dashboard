@@ -1,5 +1,7 @@
 import common from '../_common';
 import moment from 'moment';
+import { createSelector } from 'reselect'
+
 
 const getSubstate = (state) => common.getByPath(state, ['data', 'acquisitionPlans']);
 
@@ -27,9 +29,12 @@ const apsForTime = (aps, dateString) => {
 /**
  * @param {Date} date - Date string like "20190405"
  */
-const getPlansForDate = (state, date) => {
+const getPlansForDate = createSelector([
+    getSubstate,
+    (state, date) => date
+], (substate, date) => {
     const dateString = getDateString(date);
-    const substate = getSubstate(state);
+    
     if(substate && substate.length) {
         return substate.map(satAps => {
             return {
@@ -40,10 +45,13 @@ const getPlansForDate = (state, date) => {
     } else {
         return [];
     }
-}
+})
 
-const getLoadingAcquisitionsPlans = (state) => {
-    const substate = getSubstate(state);
+const getLoadingAcquisitionsPlans = createSelector(
+    [
+        getSubstate
+    ],
+    (substate) => {
     if(substate && substate.length) {
         return substate.reduce((acc, satAps) => {
             const loadingPlans = satAps.plans.reduce((acc, plan) => {
@@ -64,7 +72,7 @@ const getLoadingAcquisitionsPlans = (state) => {
         return [];
     }
 
-}
+})
 
 export {
     getSubstate,

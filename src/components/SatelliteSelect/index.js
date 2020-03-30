@@ -13,7 +13,7 @@ const SetalliteSelect = (props) => {
     const {dispatch, state, maxHeight} = props;
 
     const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
-    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const selectTime = select.rootSelectors.getSelectTime(state);
     const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state, selectTime);
 
     const onLayerClick = (evt) => {

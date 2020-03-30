@@ -166,4 +166,9 @@ class MapsTimeline extends React.PureComponent {
 
 }
 
-export default MapsTimeline;
+const areEqual = (prevProps, props) => {
+    const {activeLevel, vertical, period, initialPeriod, time, overlays, LEVELS, dayWidth} = props;
+	const {activeLevel: prevActiveLevel, vertical: prevVertical, period: prevPeriod, initialPeriod: prevInitialPeriod, time: prevTime, overlays: prevOverlays, LEVELS: prevLEVELS, dayWidth: prevDayWidth} = prevProps;
+    return prevActiveLevel===activeLevel && prevVertical===vertical && prevPeriod===period && prevInitialPeriod===initialPeriod && (prevTime &&prevTime.toString())===(time && time.toString()) && overlays === prevOverlays && LEVELS === prevLEVELS && dayWidth === prevDayWidth;
+}
+export default React.memo(MapsTimeline, areEqual);

@@ -23,7 +23,7 @@ export const getInfoModal = (state, infoModalKey) => common.getByPath(state, ['i
 export const getSelectTime = createCachedSelector(
     (state) => common.getByPath(state, ['selectTime']),
     (selectTime) => {
-        return selectTime
+        return new Date(selectTime)
     }
 )((state) => {
     const key = common.getByPath(state, ['selectTime'])
@@ -38,7 +38,7 @@ export const getBeginDataTime = createCachedSelector(
         return beginDataTime;
     }
 )((state) => {
-    const selectTime = new Date(getSelectTime(state));
+    const selectTime = getSelectTime(state);
     const cacheKey = momentjs(selectTime).subtract(5, 'minutes').toDate().toString();
     return cacheKey;
 

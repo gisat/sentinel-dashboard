@@ -1,4 +1,5 @@
 import { createSelector } from 'reselect'
+import createCachedSelector from 're-reselect';
 import moment from 'moment';
 
 
@@ -12,7 +13,21 @@ const getSubstate = (state) => common.getByPath(state, ['components', 'timeline'
 
 const getVisible = createSelector(getSubstate, substate => substate.visible);
 
-const getOverlays = (state) => {
+const getActiveTimeLevel = createCachedSelector(getSubstate, substate => substate.activeTimeLevel)((state) => getSubstate(state).activeTimeLevel);
+
+const getOverlays = createCachedSelector([getSubstate, getCurrentTime], (substate, currentTime) => {
+    const nowOverlayKey = 'now';
+
+    const overlays = substate.overlays;
+    const now = moment(currentTime);
+
+    const overlayIndex = overlays.findIndex(o => o.key === nowOverlayKey);
+    const nowOverlay = overlays[overlayIndex];
+    const nowOverlayPlusSecond = {...nowOverlay, start: now.clone(), end: now.clone()};
+    const withoutOverlay = removeItemByIndex(overlays, overlayIndex);
+	const updatedOverlays = addItemToIndex(withoutOverlay, overlayIndex, nowOverlayPlusSecond);
+    return updatedOverlays;
+})((state) => {
     const nowOverlayKey = 'now';
 
     const overlays = common.getByPath(state, ['components', 'timeline', 'overlays']);
@@ -23,11 +38,12 @@ const getOverlays = (state) => {
     const nowOverlayPlusSecond = {...nowOverlay, start: now.clone(), end: now.clone()};
     const withoutOverlay = removeItemByIndex(overlays, overlayIndex);
 	const updatedOverlays = addItemToIndex(withoutOverlay, overlayIndex, nowOverlayPlusSecond);
-    return updatedOverlays;
-};
+    return updatedOverlays.map(o => `${o.key}-${o.start.toString()}-${o.end.toString()}-${o.backdroundColor}-${o.label}`).join(',');
+});
 
 export {
     getSubstate,
+    getActiveTimeLevel,
     getOverlays,
     getVisible,
 }

@@ -13,7 +13,7 @@ const {
 const deactivateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const selectTime = select.rootSelectors.getSelectTime(state);
     const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
@@ -30,7 +30,7 @@ const deactivateLayer = (state, action) => {
 const activateLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const selectTime = select.rootSelectors.getSelectTime(state);
     const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
@@ -47,7 +47,7 @@ const activateLayer = (state, action) => {
 const toggleLayer = (state, action) => {
     const satKey = action.payload.satKey;
     const layerKey = action.payload.layerKey;
-    const selectTime = new Date(select.rootSelectors.getSelectTime(state));
+    const selectTime = select.rootSelectors.getSelectTime(state);
     const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const activeIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
     
@@ -300,7 +300,7 @@ const setMapView = (state, action) => {
 
 export default (state, action) => {
     //change state logging
-    console.log("beforeState", state, "action", action);
+    // console.log("beforeState", state, "action", action);
     
     switch(action.type) {
         case types.FOCUS_SATELLITE:

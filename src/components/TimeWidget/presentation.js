@@ -121,4 +121,9 @@ class TimeWidget extends React.PureComponent{
     }
 }
 
-export default TimeWidget;
+const areEqual = (prevProps, props) => {
+    const {time, active, nowActive, trackTimeActive, mouseTime} = props;
+    const {time: prevTime, active: prevActive, nowActive: prevNowActive, trackTimeActive: prevTrackTimeActive, mouseTime: prevMouseTime} = prevProps;
+    return prevTime===time && prevActive===active && prevNowActive===nowActive && prevTrackTimeActive===trackTimeActive && prevMouseTime===mouseTime
+}
+export default React.memo(TimeWidget, areEqual);

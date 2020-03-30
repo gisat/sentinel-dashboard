@@ -186,4 +186,8 @@ class Select extends React.PureComponent {
 
 }
 
-export default Select;
+// export default Select;
+function areEqual(prevProps, nextProps) {
+    return prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight;
+  }
+  export default React.memo(Select, areEqual);

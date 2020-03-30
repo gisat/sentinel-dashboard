@@ -36,7 +36,7 @@ const MapsTimeline = (props) => {
 	const timelineState = select.components.timeline.getSubstate(state);
     const timelineOverlays = select.components.timeline.getOverlays(state);
     const selectTime = select.rootSelectors.getSelectTime(state)
-    const time = selectTime ? convertToUTC(new Date(selectTime)) : null;
+    const time = selectTime ? convertToUTC(selectTime) : null;
 	const onTimeChange = (timelineState) => {
         const {state} = props;
         const curTimelineState = select.components.timeline.getSubstate(state);
@@ -45,7 +45,7 @@ const MapsTimeline = (props) => {
             dispatch(updateComponent('timeline', {moving: timelineState.moving}))
         }
         
-        if(selectTime && timelineState.centerTimeUtc && timelineState.centerTimeUtc !== selectTime) {
+        if(selectTime && timelineState.centerTimeUtc && timelineState.centerTimeUtc !== selectTime.toGMTString()) {
             dispatch(stopFollowNow());
             dispatch(stopTimer());
             dispatch(changeSelectTime(timelineState.centerTimeUtc, dispatch, selectTime, state));
