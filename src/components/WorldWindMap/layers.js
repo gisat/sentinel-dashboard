@@ -40,18 +40,27 @@ const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_
 const productsRequests = new window.Map();
 const defaultTopologyLayer = new SentinelTopologyLayer();
 
-export function getLayerKeyFromConfig (layerConfig) {
-    return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
-}
-
 export function getLayerKeySCIHubResult (layerConfig) {
     return `${layerConfig.id._text}`;
+}
+
+export function getLayerKeyFromConfig (layerConfig) {
+    //identify search layer
+    if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id._text) {
+        return getLayerKeySCIHubResult(layerConfig.results[0]);
+    } else if(layerConfig.satKey && layerConfig.layerKey) {
+        return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
+    } else {
+        return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
+    }
 }
 
 export function getLayerIdFromConfig (layerConfig) {
     if(layerConfig.satKey && layerConfig.layerKey && layerConfig.beginTime && layerConfig.endTime) {
         return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
-    } else {
+    } else if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id._text) {
+        return getLayerKeySCIHubResult(layerConfig.results[0]);
+    }else {
         return layerConfig.key;
     }
 }
@@ -271,6 +280,7 @@ export const getLayers = createCachedSelector([
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));
     const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
     const searchLayer = searchResult ? [getFootprintLayer(searchResult)] : [];
+
     return [...searchLayer, ...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
 })((layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
     const stringTime = time ? time.toString() : '';

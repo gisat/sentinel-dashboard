@@ -103,7 +103,7 @@ class Map extends Component {
             ]);
 
             const Layers = new Set([
-                this.props.layers.map((l) => getLayerIdFromConfig(l)).sort(),
+                ...this.props.layers.map((l) => getLayerIdFromConfig(l)).sort(),
             ])
 
             
