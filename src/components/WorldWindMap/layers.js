@@ -51,7 +51,7 @@ export function getLayerKeyFromConfig (layerConfig) {
     } else if(layerConfig.satKey && layerConfig.layerKey) {
         return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
     } else {
-        return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
+        return `${layerConfig.type}-${layerConfig.key}`;
     }
 }
 
