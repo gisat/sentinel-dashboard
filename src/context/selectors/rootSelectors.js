@@ -77,6 +77,10 @@ const getSatelliteForLayer = (satellitesSubstate, satKey) => {
     return salellite || null;
 }
 
+const getOrbitForLayer = (orbitsSubstate, orbitKey) => {
+    const orbit = orbitsSubstate.find(o => o.key === orbitKey);
+    return (orbit && orbit.specs) || null;
+}
 
 export const getActiveLayers = createCachedSelector(
     getPureActiveLayers,
@@ -89,9 +93,7 @@ export const getActiveLayers = createCachedSelector(
     getFocusedSattelite,
     getSearchLayer,
     (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite, searchLayer) => {
-
-    const activeLayersWithDates = []
-
+    const activeSentinelLayers = [];
     activeLayers.forEach(l => {
         const satData = getSatDataByKey(l.satKey);
         const layer = {...l,
@@ -101,12 +103,13 @@ export const getActiveLayers = createCachedSelector(
             disabled: selectTimePastOrCurrent || !satellitesUtils.isSatelliteReleaseBeforeDate({satData}, selectTime),
             satData,
         }
-        activeLayersWithDates.push(layer);
+        activeSentinelLayers.push(layer);
     });
 
     //search layer
+    const searchLayers = [];
     if(searchLayer) {
-        activeLayersWithDates.push({
+        searchLayers.push({
             type: 'sentinelFootprint',
             results: [searchLayer],
         });
@@ -118,22 +121,38 @@ export const getActiveLayers = createCachedSelector(
             satellitesUtils.filterByActiveSatellite(o, focusedSatellite)
         ).map(o => ({...o, type: 'orbit'}));    
 
-    const getOrbitForLayer = (orbitKey) => {
-        const orbit = orbitsSubstate.find(o => o.key === orbitKey);
-        return (orbit && orbit.specs) || null;
-    }
+    const satellitesLayers = satellitesSubstate.filter((s) => satellitesUtils.isSatelliteReleaseBeforeDate(s, selectTime)).map(s => (
+        {
+            type: 'satellite',
+            key:s.id,
+            name: s.name,
+            model: s.model,
+            satData: s.satData,
+            time: selectTime,
+            tle: getOrbitForLayer(orbitsSubstate, `orbit-${s.id}`)
+        }
+    ));
 
-    const satellitesLayers = satellitesSubstate.filter((s) => satellitesUtils.isSatelliteReleaseBeforeDate(s, selectTime)).map(s => ({key:s.id, name: s.name, model: s.model, type: 'satellite', satData: s.satData, time: selectTime, tle: getOrbitForLayer(`orbit-${s.id}`)}));
     let acquisitionPlanLayers = [];
     
     //todo filter by visible APS data
 
     if(selectTimePastOrCurrent) {
-        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => ({key:`acquisitionPlans_${aps.key}`, name: aps.key, type: 'acquisitionPlan', plans: aps.plans, selectTime, satName:aps.key, tle: getOrbitForLayer(`orbit-${aps.key}`), range: getSatelliteForLayer(satellitesSubstate, aps.key).acquisitionPlanTimeWindow}));
+        acquisitionPlanLayers = acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)).map(aps => (
+            {
+                type: 'acquisitionPlan',
+                key:`acquisitionPlans_${aps.key}`,
+                name: aps.key,
+                plans: aps.plans,
+                selectTime,
+                satName:aps.key,
+                tle: getOrbitForLayer(orbitsSubstate, `orbit-${aps.key}`),
+                range: getSatelliteForLayer(satellitesSubstate, aps.key).acquisitionPlanTimeWindow
+            }
+        ));
     };
-    activeLayersWithDates.push(...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers);
     
-    return activeLayersWithDates;
+    return [...activeSentinelLayers, ...searchLayers, ...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers];
 })((state, selectTime) => {
     const stringSelectTime = selectTime ? selectTime.toString() : '';
     const activeLayers = common.getByPath(state, ['activeLayers']);

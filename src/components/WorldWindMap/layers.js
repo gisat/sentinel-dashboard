@@ -85,6 +85,10 @@ const filterSentinelDataLayersConfigs = (layersConfig) => {
     return layersConfig.filter(l => l.type === 'sentinelData');
 }
 
+const filterSearchLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'sentinelFootprint');
+}
+
 export function getLayerByName (name, layers) {
     return layers.find(l => l.displayName === name);
 }
@@ -112,7 +116,7 @@ const getSentinelLayer = (layerConfig) => {
 }
 
 const getFootprintLayer = (layerConfig) => {
-    const layerKey = getLayerKeySCIHubResult(layerConfig);
+    const layerKey = getLayerKeySCIHubResult(layerConfig.results[0]);
     const cacheLayer = layersCache.get(layerKey);
     
     if(cacheLayer) {
@@ -258,8 +262,7 @@ export const getLayers = createCachedSelector([
     (layersConfig, time, wwd) => wwd,
     (layersConfig, time, wwd, onLayerChanged) => onLayerChanged,
     (layersConfig, time, wwd, onLayerChanged, currentTime) => currentTime,
-    (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => searchResult,
-], (layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
+], (layersConfig, time, wwd, onLayerChanged, currentTime) => {
     defaultStarfieldLayer.time = time;
     defaultAtmosphereLayer.time = time;
     const layers = [
@@ -274,15 +277,20 @@ export const getLayers = createCachedSelector([
     
     const orbitLayersConfigs = filterOrbitLayersConfigs(layersConfig);
     const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time, wwd, currentTime));
+
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
     const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
+    
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));
+    
     const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
-    const searchLayer = searchResult ? [getFootprintLayer(searchResult)] : [];
+    
+    const searchLayerConfigs = filterSearchLayersConfigs(layersConfig);
+    const searchLayer = searchLayerConfigs.map((searchResult) => getFootprintLayer(searchResult));
 
     return [...searchLayer, ...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
-})((layersConfig, time, wwd, onLayerChanged, currentTime, searchResult) => {
+})((layersConfig, time, wwd, onLayerChanged, currentTime) => {
     const stringTime = time ? time.toString() : '';
     const stringCurrentTime = currentTime ? currentTime.toString() : '';
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
@@ -292,10 +300,15 @@ export const getLayers = createCachedSelector([
     const acquisitionPlanLayers = filterAcquisitionPlanLayersConfigs(layersConfig);
 
     const orbitKeys = orbitLayersConfigs.map(l => l.key).join(',');
+    
     const satellitesKeys = satellitesLayersConfigs.map(l => l.key).join(',');
+    
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',');
     const acquisitionPlanLayersKeys = acquisitionPlanLayers.map((aps) => `${aps.key}_${getPlansKeys(aps.plans)}`);
-    const searchLayerKey = searchResult  ? getLayerKeySCIHubResult(searchResult) : '';
+    
+    const searchLayerConfigs = filterSearchLayersConfigs(layersConfig);
+    const searchLayerKey = searchLayerConfigs.map((layerConfig) => getLayerKeySCIHubResult(layerConfig.results[0]));
+
     const cacheKey = `${searchLayerKey}-${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}`;
     return cacheKey;
 });
