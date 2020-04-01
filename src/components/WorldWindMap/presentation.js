@@ -65,12 +65,7 @@ class Map extends Component {
         this.wwd = null;
         this.wwdCreated = false;
     }
-    shouldComponentUpdate(nextProps) {
-        const layersChanged = nextProps.layers !== this.props.layers;
-        const preventMovingChanged = nextProps.preventReload !== this.props.preventReload;
 
-        return layersChanged || preventMovingChanged;
-    }
     componentDidUpdate (prevProps) {
         const {time, focusedSatellite, currentTime} = this.props;
 
@@ -79,7 +74,7 @@ class Map extends Component {
         }
 
         // TODO compare references only?
-        if (this.props.view && prevProps.view !== this.props.view) {            
+        if (this.props.view && prevProps.view !== this.props.view) {
             this.updateNavigator();
         }
         
@@ -240,7 +235,15 @@ class Map extends Component {
 
 	updateNavigator(defaultView) {
 		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
-		let nextView = {...currentView, ...this.props.view};
+        let nextView = {...currentView, ...this.props.view};
+
+        //call onUpdateNavigator on each wwd layer
+        const layers = this.wwd.layers;
+        for (const layer of layers) {
+            if(layer.onUpdateNavigator && typeof layer.onUpdateNavigator === 'function') {
+                layer.onUpdateNavigator(nextView);
+            }
+        }
 		navigator.update(this.wwd, nextView);
 	}
 

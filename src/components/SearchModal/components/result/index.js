@@ -7,7 +7,7 @@ const Result = (props) => {
     const {dispatch, state} = props;
     const results = select.components.search.getResults(state);
     const activeResultIndex = select.components.search.getActiveResultIndex(state);
-    const result = (Number.isInteger(activeResultIndex) && results[activeResultIndex]) || null;
+    const result = (Number.isInteger(activeResultIndex) && results && results.length > 0 && results[activeResultIndex]) || null;
 
     return (
         <Presentation 

@@ -43,14 +43,18 @@ class OrbitLayer extends RenderableLayer {
     /**
      * @param {Array.<lte>} satRec  Lte.
      */
-    setSatRec(satRec) {
+    setSatRec(satRec, preventUpdate) {
         if(satRec) {
             this.satRec = satRec;
             const satrec = EoUtils.computeSatrec(...satRec);
-            this._beforeCurrentOrbit.satrec(satrec);
-            this._beforeCurrentOrbit.update();
-            this._afterCurrentOrbit.satrec(satrec);
-            this._afterCurrentOrbit.update();
+            this._beforeCurrentOrbit.satrec(satrec, true);
+            if(preventUpdate !== true) {
+                this._beforeCurrentOrbit.update(true);
+            }
+            this._afterCurrentOrbit.satrec(satrec, true);
+            if(preventUpdate !== true) {
+                this._afterCurrentOrbit.update(true);
+            }
             this.doRerender();
         }
     }
@@ -58,7 +62,7 @@ class OrbitLayer extends RenderableLayer {
     /**
      * @param {Date} time Time of the orbit.
      */
-    setTime(currentTime, selectTime) {
+    setTime(currentTime, selectTime, preventUpdate) {
         if(currentTime && selectTime) {
             this.currentTime = currentTime;
             this.selectTime = selectTime;
@@ -71,22 +75,27 @@ class OrbitLayer extends RenderableLayer {
 
             if(currentTime.getTime() < this.startTime.getTime()) {
                 //all in future
-                this._afterCurrentOrbit.time(this.startTime, this.endTime);
+                this._afterCurrentOrbit.time(this.startTime, this.endTime, preventUpdate);
                 this.addRenderable(this._afterCurrentOrbit);
             } else if(this.startTime.getTime() < currentTime.getTime() && currentTime.getTime() < this.endTime.getTime()) {
                 //select time visible
-                this._beforeCurrentOrbit.time(this.startTime, currentTime);
-                this._afterCurrentOrbit.time(currentTime, this.endTime);
+                this._beforeCurrentOrbit.time(this.startTime, currentTime, preventUpdate);
+                this._afterCurrentOrbit.time(currentTime, this.endTime, preventUpdate);
                 this.addRenderable(this._beforeCurrentOrbit);
                 this.addRenderable(this._afterCurrentOrbit);
             } else if(currentTime.getTime() > this.endTime.getTime()) {
                 //all in past
-                this._beforeCurrentOrbit.time(this.startTime, this.endTime);
+                this._beforeCurrentOrbit.time(this.startTime, this.endTime, preventUpdate);
                 this.addRenderable(this._beforeCurrentOrbit);
             }
 
             this.doRerender();
         }
+    }
+
+    forceUpdate() {
+        this._afterCurrentOrbit.update(true);
+        this._beforeCurrentOrbit.update(true);
     }
     
 	setRerender(rerenderer) {

@@ -4,6 +4,7 @@ import SelectBase, { components } from 'react-select';
 import SatelliteGroupOption from './SatelliteGroupOption';
 import {getOption} from './OptionFactory';
 import {getSatelliteGroupHeading} from './SatelliteGroupHeading';
+import _ from 'lodash';
 
 const ValueContainer = ({ children, ...props }) => (
     <components.ValueContainer {...props}><span>Products</span></components.ValueContainer>
@@ -188,6 +189,11 @@ class Select extends React.PureComponent {
 
 // export default Select;
 function areEqual(prevProps, nextProps) {
-    return prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight;
+    const shalowEqual = prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight;
+    if(shalowEqual) {
+        return shalowEqual;
+    } else {
+        return _.isEqual(prevProps.options, nextProps.options) && _.isEqual(prevProps.open, nextProps.open) && _.isEqual(prevProps.maxHeight, nextProps.maxHeight);
+    }
   }
   export default React.memo(Select, areEqual);

@@ -113,7 +113,7 @@ const getSatelliteGroupHeading = (onClick, onAcquisitionPlanClick) => {
         return <SatelliteGroupHeading {...props} onAcquisitionPlanClick={onAcquisitionPlanClick} onClick={onClick} />
     } 
 }
-export default SatelliteGroupHeading;
+export default React.memo(SatelliteGroupHeading);
 export {
     getSatelliteGroupHeading,
 }

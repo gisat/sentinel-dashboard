@@ -58,14 +58,16 @@ class Orbits extends Renderable {
      * Update information about when and where the satellite was. It fully rebuilds the positions for the trails.
      * @param satelliteRecord SPG format representing the satellite.
      */
-    satrec(satelliteRecord) {
+    satrec(satelliteRecord, preventPopulate) {
         if(!satelliteRecord) {
             throw Error('No satellite record was provided');
         }
         this._satrec = satelliteRecord;
         // This must signalize somehow that it needs to be recalculated.
 
-        this.populate();
+        if(preventPopulate !== true) {
+            this.populate();
+        }
     }
 
     /**
@@ -73,7 +75,7 @@ class Orbits extends Renderable {
      * @param startTime {Date} Start date for the orbit.
      * @param endTime {Date} End date for the orbit.
      */
-    time(startTime, endTime) {
+    time(startTime, endTime, preventUpdate) {
         if(!startTime) {
             throw Error('No startTime was provided');
         }
@@ -85,7 +87,9 @@ class Orbits extends Renderable {
         this._currentStartTime = startTime;
         this._currentEndTime = endTime;
 
-        this.update();
+        if(preventUpdate !== true) {
+            this.update();
+        }
     }
 
     /**
