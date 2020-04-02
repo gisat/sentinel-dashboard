@@ -7,6 +7,7 @@ import OrbitLayer from './OrbitLayer';
 import SentinelCloudlessLayer from './SentinelCloudlessLayer';
 import SentinelTopologyLayer from './SentinelTopologyLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
+import FootPrintLayer from './FootPrintLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 import wmsLayerUtils from './utils/wmsLayer';
@@ -27,6 +28,9 @@ const {
     RenderableLayer,
     SurfacePolygon,
     AtmosphereLayer,
+    WmsLayer,
+    Location,
+    Sector,
 } = WorldWind;
 
 const {getLayerFromCapabilitiesUrl} = wmsLayerUtils;
@@ -122,7 +126,7 @@ const getFootprintLayer = (layerConfig) => {
     if(cacheLayer) {
         return cacheLayer;
     } else {
-        const layer = new RenderableLayer(layerKey);
+        const layer = new FootPrintLayer(layerKey);
         layersCache.set(layerKey, layer);
         return layer;
     }
@@ -135,14 +139,20 @@ const getOrbitLayer = (layerConfig, time = new Date(), wwd, currentTime) => {
     //set specs
 
     if(cacheLayer) {
+        let changed = false;
         if(time.toString() !== cacheLayer.selectTime.toString() || currentTime.toString() !== cacheLayer.currentTime.toString()) {
-            cacheLayer.setTime(new Date(currentTime), new Date(time));
+            changed = true;
+            cacheLayer.setTime(new Date(currentTime), new Date(time), true);
         }
 
         if(layerConfig.specs[0] !== (cacheLayer.satRec && cacheLayer.satRec[0]) || layerConfig.specs[1] !== (cacheLayer.satRec && cacheLayer.satRec[1])) {
-            cacheLayer.setSatRec(layerConfig.specs);
+            changed = true;
+            cacheLayer.setSatRec(layerConfig.specs, true);
         }
 
+        if(changed) {
+            cacheLayer.forceUpdate();
+        }
         return cacheLayer;
     } else {
         const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time, currentTime});
@@ -289,7 +299,7 @@ export const getLayers = createCachedSelector([
     const searchLayerConfigs = filterSearchLayersConfigs(layersConfig);
     const searchLayer = searchLayerConfigs.map((searchResult) => getFootprintLayer(searchResult));
 
-    return [...searchLayer, ...layers, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
+    return [...layers, ...searchLayer, ...sentinelLayers, ...orbitLayers, ...satelliteLayers, ...acquisitionPlanLayers, ...swathLayers];
 })((layersConfig, time, wwd, onLayerChanged, currentTime) => {
     const stringTime = time ? time.toString() : '';
     const stringCurrentTime = currentTime ? currentTime.toString() : '';
@@ -722,7 +732,9 @@ export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) =
         if(layerCfg.type === 'sentinelData') {
             const layerKey = getLayerKeyFromConfig(layerCfg);
             const wwdLayer = getLayerByName(layerKey, wwdLayers);   
-            reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
+            //split animation frame
+            window.setTimeout(() => reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged), 0);
+            // reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
         }
 
         if(layerCfg.type === 'sentinelFootprint') {
