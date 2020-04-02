@@ -5,7 +5,7 @@ import {getSubstate as getOrbitsSubstate} from './data/orbits';
 import {getSubstate as getSatellitesSubstate} from './data/satellites';
 import {getSearchLayer} from './components/search';
 import {getSubstate as getAcquisitionPlansSubstate, getPlansForDate} from './data/acquisitionPlans';
-import {getVisibleAcquisitionsPlans} from './map';
+import {getVisibleAcquisitionsPlans, getVisibleStatistics} from './map';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
 import satellitesUtils from '../../utils/satellites';
 import {getSatDataByKey} from '../satData';
@@ -89,10 +89,11 @@ export const getActiveLayers = createCachedSelector(
     getSatellitesSubstate,
     getPlansForDate,
     getVisibleAcquisitionsPlans,
+    getVisibleStatistics,
     (state, selectTime) => selectTime,
     getFocusedSattelite,
     getSearchLayer,
-    (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, selectTime, focusedSatellite, searchLayer) => {
+    (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, visibleStatistics, selectTime, focusedSatellite, searchLayer) => {
     const activeSentinelLayers = [];
     activeLayers.forEach(l => {
         const satData = getSatDataByKey(l.satKey);
@@ -149,10 +150,19 @@ export const getActiveLayers = createCachedSelector(
                 tle: getOrbitForLayer(orbitsSubstate, `orbit-${aps.key}`),
                 range: getSatelliteForLayer(satellitesSubstate, aps.key).acquisitionPlanTimeWindow
             }
-        ));
+        ));    
     };
-    
-    return [...activeSentinelLayers, ...searchLayers, ...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers];
+
+    let statisticsLayers = [];
+    statisticsLayers = visibleStatistics.map(s => (
+        {
+            type: 'statistics',
+            key:`statistics_${s}`,
+            name: s,
+            selectTime,
+            satName: s,
+        }))
+    return [...activeSentinelLayers, ...searchLayers, ...orbitLayers, ...satellitesLayers, ...acquisitionPlanLayers, ...statisticsLayers];
 })((state, selectTime) => {
     const stringSelectTime = selectTime ? selectTime.toString() : '';
     const activeLayers = common.getByPath(state, ['activeLayers']);
@@ -162,15 +172,19 @@ export const getActiveLayers = createCachedSelector(
     const selectTimePastOrCurrent = getSelectTimePastOrCurrent(state);
     const acquisitionPlans = getPlansForDate(state, selectTime);
     const visibleAcquisitionsPlans = getVisibleAcquisitionsPlans(state);
+    const visibleStatistics = getVisibleStatistics(state);
     let acquisitionPlanLayers = '';
     if(selectTimePastOrCurrent){
         acquisitionPlanLayers = getPlansKeys(acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)));
     };
+    
+    let statisticsLayers = '';
+    statisticsLayers = visibleStatistics.join(',');
 
     const orbitKeys = orbitSubstate.map(l => l.key).join(',');
     const satellitesKeys = satellitesSubstate.map(s => s.id).join(',');
     const activeLayersKeys = activeLayers.map(l => `${l.layerKey}${l.satKey}${getBeginTime(selectTime, getSatelliteForLayer(satellitesSubstate, l.satKey).productsTimeWindow)}${endTime}`).join(',');
-    const cacheKey = `${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayers}`;
+    const cacheKey = `pastOrcurrent${selectTimePastOrCurrent}-${stringSelectTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayers}-${statisticsLayers}`;    
     return cacheKey === '' ? 'nodata' : cacheKey;
 });
 
