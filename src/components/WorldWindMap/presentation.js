@@ -168,7 +168,7 @@ class Map extends Component {
 
     longClickHandler(clickedRenderables = [], evt, x, y, time, type) {
         const {searchOnCoords} = this.props;
-        const terrainPick = this.wwd.pickTerrain([evt.screenX, evt.screenY]);
+        const terrainPick = this.wwd.pickTerrain([x, y]);
         if(type === 'timeoutClick' && terrainPick && terrainPick.objects && terrainPick.objects[0]){
             const terrainCoords = terrainPick.objects[0].position;
             //searchOnCoords
