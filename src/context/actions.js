@@ -449,6 +449,20 @@ export const toggleAcquisitionPlan = (state, acquisitionPlanKey) => {
     }
 }
 
+/**
+ * 
+ */
+export const toggleStatistics = (state, satKey) => {
+    const statisticsVisible = select.map.isVisibleStatisticsByKey(state, satKey);
+    const action = statisticsVisible ? types.MAP.REMOVE_STATISTICS_LAYER : types.MAP.ADD_STATISTICS_LAYER;
+    return {
+        type: action,
+        payload: {
+            key: satKey
+        }
+    }
+}
+
 
 export const searchProducts = (satelliteId, layerId) => {
     

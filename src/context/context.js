@@ -156,6 +156,7 @@ const initialState = {
     },
     map: {
         acquisitionPlans: [],
+        statistics: [],
         view: {},
     },
     periodLimit: stringPeriodLimit,

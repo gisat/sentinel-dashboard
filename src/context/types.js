@@ -33,6 +33,8 @@ export default {
     },
     'MAP': {
         'SET_VIEW': 'MAP.SET_VIEW',
+        'REMOVE_STATISTICS_LAYER': 'REMOVE_STATISTICS_LAYER',
+        'ADD_STATISTICS_LAYER': 'ADD_STATISTICS_LAYER',
     },
     'SET_WWD': 'SET_WWD'
 }

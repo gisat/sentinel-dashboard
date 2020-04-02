@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import createCachedSelector from 're-reselect';
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
-import {getVisibleAcquisitionsPlans} from '../map';
+import {getVisibleAcquisitionsPlans, getVisibleStatistics} from '../map';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
 import {getPlansForDate, getLoadingAcquisitionsPlans} from '../data/acquisitionPlans';
 import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent, getSelectTime} from '../rootSelectors';
@@ -20,11 +20,12 @@ const getSatelitesSelectOptions = createSelector(
         getFocusedSattelite,
         getSelectTimePastOrCurrent,
         getVisibleAcquisitionsPlans,
+        getVisibleStatistics,
         getPlansForDate,
         getLoadingAcquisitionsPlans,
         getSelectTime,
     ],
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, acquisitionPlansData, loadingAcquisitionsPlans, selectTime) => {
+    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, visibleStatistics, acquisitionPlansData, loadingAcquisitionsPlans, selectTime) => {
         
         const getLayerOption = (layerKey, satConfig) => {
             const satKey = satConfig.id;
@@ -49,7 +50,9 @@ const getSatelitesSelectOptions = createSelector(
         const getSateliteOption = (satConfig) => {
             // const availableAPS = selectTimePastOrCurrent && acquisitionPlansData.some((p) => p.key === satConfig.id && p.plans.length > 0);
             const hasAPS = acquisitionPlansData.find((p) => p.key === satConfig.id);
+            const hasStatistics = true;
             const activeAPS = visibleAcquisitionsPlans.includes(satConfig.id);
+            const activeStatistics = visibleStatistics.includes(satConfig.id);
             const satOption = {
                 groupData: {
                     value: satConfig.id,
@@ -72,6 +75,20 @@ const getSatelitesSelectOptions = createSelector(
                     disabled: false,
                     active: activeAPS,
                     loadedCount: selectTimePastOrCurrent && hasAPS.plans && hasAPS.plans.length > 0 ? hasAPS.visiblePlans || 0 : 0,
+                    totalCount: 0,
+                })
+            }
+
+            //add acquisition plan option if sattelite contains data for it
+            if(hasStatistics) {
+                satOption.options.push({
+                    type: 'statistics',
+                    id: `statistics_${satConfig.id}`,
+                    satKey: satConfig.id,
+                    label: 'Statistics',
+                    disabled: false,
+                    active: activeStatistics,
+                    loadedCount: 0,
                     totalCount: 0,
                 })
             }

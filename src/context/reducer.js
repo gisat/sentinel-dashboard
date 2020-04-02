@@ -294,6 +294,17 @@ const mapRemoveVisibleAcquisitionPlan = (state, action) => {
     return {...state, map: {...state.map, acquisitionPlans: removeItemByIndex(state.map.acquisitionPlans, acquisitionPlanKeyIndex)}};
 };
 
+const mapAddVisibleStatisticsLayer = (state, action) => {
+    const satKey = action.payload.key;
+    return {...state, map: {...state.map, statistics: [...state.map.statistics, satKey]}};
+};
+
+const mapRemoveVisibleStatisticsLayer = (state, action) => {
+    const satKey = action.payload.key;
+    const satKeyIndex = state.map.statistics.indexOf(satKey);
+    return {...state, map: {...state.map, statistics: removeItemByIndex(state.map.statistics, satKeyIndex)}};
+};
+
 const setMapView = (state, action) => {
     return {...state, map: {...state.map, view: action.payload.view }};
 };
@@ -357,6 +368,10 @@ export default (state, action) => {
             return mapAddVisibleAcquisitionPlan(state, action);
         case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:
             return mapRemoveVisibleAcquisitionPlan(state, action);
+        case types.MAP.ADD_STATISTICS_LAYER:
+            return mapAddVisibleStatisticsLayer(state, action);
+        case types.MAP.REMOVE_STATISTICS_LAYER:
+            return mapRemoveVisibleStatisticsLayer(state, action);
         case types.MAP.SET_VIEW:
             return setMapView(state, action);
         

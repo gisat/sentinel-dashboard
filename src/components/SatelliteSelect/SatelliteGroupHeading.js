@@ -19,6 +19,7 @@ const SatelliteGroupHeading = props => {
         restProps,
         onClick,
         onAcquisitionPlanClick,
+        onStatisticsClick,
       } = props;
 
     const active = groupData.active;
@@ -91,13 +92,6 @@ const SatelliteGroupHeading = props => {
                             {props.children}
                         </span>
                         <Icon icon={'location'} style={posIconStyle}/>
-                        {availableAPS ? <div style={apsWrapStyle} onClick={(e) => {
-                            console.log("on click");
-                            
-                            e.stopPropagation();e.preventDefault();onAcquisitionPlanClick(groupData.value)}
-                            }>
-                            <Icon icon={'clock'} style={apsIconStyle}/>
-                        </div> : null}
                     </div>
                     {groupData.loading ? <div style={{minWidth: '100%'}}>
                         <div style={{position: 'absolute',height: '1px',minWidth: '100%', marginLeft: '-12px'}}>
@@ -108,9 +102,9 @@ const SatelliteGroupHeading = props => {
     );
 };
 
-const getSatelliteGroupHeading = (onClick, onAcquisitionPlanClick) => {
+const getSatelliteGroupHeading = (onClick) => {
     return (props) => {
-        return <SatelliteGroupHeading {...props} onAcquisitionPlanClick={onAcquisitionPlanClick} onClick={onClick} />
+        return <SatelliteGroupHeading {...props} onClick={onClick} />
     } 
 }
 export default React.memo(SatelliteGroupHeading);
