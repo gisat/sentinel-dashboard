@@ -50,7 +50,7 @@ const getSatelitesSelectOptions = createSelector(
         const getSateliteOption = (satConfig) => {
             // const availableAPS = selectTimePastOrCurrent && acquisitionPlansData.some((p) => p.key === satConfig.id && p.plans.length > 0);
             const hasAPS = acquisitionPlansData.find((p) => p.key === satConfig.id);
-            const hasStatistics = true;
+            const hasStatistics = satConfig.hasOwnProperty('statisticsKey');
             const activeAPS = visibleAcquisitionsPlans.includes(satConfig.id);
             const activeStatistics = visibleStatistics.includes(satConfig.id);
             const satOption = {

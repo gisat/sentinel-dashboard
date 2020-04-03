@@ -34,6 +34,9 @@ const WorldWindMap = (props) => {
             if(change.hasOwnProperty('count')) {
                 dispatch(dataAcquisitionPlanSetVisibleCount(change.sat, change.count));
             }
+        } else if(layerKey && layerKey.layerKey && layerKey.layerKey.indexOf('statistics_') === 0) {
+            //TODO -set statistics are loading
+            // dispatch(updateActiveLayer(layerKey, change))
         } else {
             dispatch(updateActiveLayer(layerKey, change))
         }     

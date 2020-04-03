@@ -15,13 +15,14 @@ const {
 } = WorldWind;
 
 // 
-// TODO - options, dispatch loading, cache layer by weeks, fix radius
+// TODO - dispatch loading, fix radius
 // 
 
 /**
  * Class extending WorldWind.RenderableLayer. Layer can render only one model of satellite. It`s possible to set position data of model.
  * @param options {Object}
  * @param options.key {String}
+ * @param options.sensornames {Array} ['sentinel-1a', 'sentinel-2a']
  * @param options.satName {String}
  * @param options.time {Date} Time of the satellite.
  * @param options.range {number} Renge in milliseconds. Default is 90 minutes.
@@ -36,8 +37,10 @@ class StatisticsLayer extends RenderableLayer {
         this._rerenderMap = null;
         this.key = options.key;
         this.satName = options.satName;
+        this.sensornames = options.sensornames;
         this.onLayerChanged = options.onLayerChanged || null;
         this.time = options.time || new Date();
+        this.strMonthTime = this.getMonthTimeString(this.time);
 
         this.loading = new Set();
 
@@ -66,8 +69,24 @@ class StatisticsLayer extends RenderableLayer {
     setTime(time) {
         if(time) {
             this.time = time;
-            this.update();
+            this.updateStrMonthTime();
         }
+    }
+
+    updateStrMonthTime() {
+        if(this.time) {
+            const newStrMonthTime = this.getMonthTimeString(this.time);
+            if(newStrMonthTime !== this.strMonthTime) {
+                this.strMonthTime = newStrMonthTime;
+                this.update();
+            }
+        }
+    }
+
+    getMonthTimeString(date) {
+        const momTime = moment(date);
+        const strMonthTime = `${momTime.format('YYYY')}-${momTime.format('MM')}`;
+        return strMonthTime;
     }
 
     getPallete(paletteKey) {
@@ -119,10 +138,10 @@ class StatisticsLayer extends RenderableLayer {
 
         const options = {
             palettes: pallete,
-            sensornames: ['c-sar'],
+            sensornames: this.sensornames,
             type: 'sensors',
             opacity: 75,
-            dates: ['2017-08']
+            dates: [this.strMonthTime]
         }
 
         return this.redraw(options).then(function (distribution) {
@@ -216,8 +235,22 @@ class StatisticsLayer extends RenderableLayer {
             });
         });
 
+        if(typeof this.onLayerChanged === 'function') {
+            this.onLayerChanged({
+                satKey: this.satName,
+                layerKey: this.key
+            }, {update: {loading: true}});
+        }
+
         return Promise.all(allPromises).then((products) => {
             let legend = this.aggregateAndFilter(options, [].concat(...products));
+
+            if(typeof this.onLayerChanged === 'function') {
+                this.onLayerChanged({
+                    satKey: this.satName,
+                    layerKey: this.key
+                }, {update: {loading: false}});
+            }
 
             return legend;
         });

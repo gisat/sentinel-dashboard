@@ -207,7 +207,7 @@ const getStatisticsLayer = (layerConfig, wwd, time, onLayerChanged) => {
         }
         return cacheLayer;
     } else {
-        const layer = new StatisticsLayer({key: layerKey, satName: layerConfig.satName, time: time, onLayerChanged});
+        const layer = new StatisticsLayer({key: layerKey, satName: layerConfig.satName, time: time, onLayerChanged, sensornames: layerConfig.sensornames});
         layer.setTime(time);
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);

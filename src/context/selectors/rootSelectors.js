@@ -158,6 +158,7 @@ export const getActiveLayers = createCachedSelector(
         {
             type: 'statistics',
             key:`statistics_${s}`,
+            sensornames: [getSatelliteForLayer(satellitesSubstate, s).statisticsKey],
             name: s,
             selectTime,
             satName: s,
