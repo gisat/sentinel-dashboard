@@ -7,7 +7,7 @@ import OrbitLayer from './OrbitLayer';
 import SentinelCloudlessLayer from './SentinelCloudlessLayer';
 import SentinelTopologyLayer from './SentinelTopologyLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
-import StatisticsLayer from './StatisticsLayer';
+import StatisticsLayer from './Statistics/StatisticsLayer';
 import FootPrintLayer from './FootPrintLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
