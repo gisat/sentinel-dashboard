@@ -5,6 +5,7 @@ import {removeItemByIndex,replaceItemOnIndex, addItemToIndex} from '../utils/arr
 import {removeItemByKey} from '../utils/objectManipulation';
 import WorldWindX from 'webworldwind-x';
 import {merge, cloneDeep} from 'lodash';
+import { breakStatement } from '@babel/types';
 
 const {
     EoUtils
@@ -238,7 +239,18 @@ const updateActiveLayer = (state, action) => {
     const activeLayers = select.rootSelectors.getPureActiveLayers(state, selectTime);
     const layerIndex = activeLayers.findIndex(l => l.satKey === satKey && l.layerKey === layerKey);
 
+    let changed = false;
+    
     if(layerIndex > -1) {
+        for (const [key, value] of Object.entries(change)) {
+            if(activeLayers[layerIndex][key] !== value) {
+                changed = true;
+                break;
+            }
+        }
+    }
+    
+    if(layerIndex > -1 && changed) {
         const layerInfo = state.activeLayers[layerIndex];
         delete layerInfo.message;
         delete layerInfo.status;

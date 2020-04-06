@@ -502,9 +502,18 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
         satKey: layerConfig.satKey,
         layerKey: layerConfig.layerKey
     }
-    onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+
+    // Performance hack how identify if getSciProducts really load data
+    // prevent unneceresy mutating state
+    let startLoading = true;
+    window.setTimeout(() => {
+        if(startLoading) {
+            onLayerChanged(changedLayer, {status, loadedCount, totalCount})
+        }
+    }, 50)
 
     const products = await getSciProducts(layerConfig);
+    startLoading = false;
     totalCount = products.length;
     if(rejected) {
         return
