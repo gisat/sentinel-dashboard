@@ -8,6 +8,7 @@ import SentinelCloudlessLayer from './SentinelCloudlessLayer';
 import SentinelTopologyLayer from './SentinelTopologyLayer';
 import AcquisitionPlanLayer from './AcquisitionPlanLayer';
 import StatisticsLayer from './Statistics/StatisticsLayer';
+import MultiRangeLayer from './MultiRangeLayer';
 import FootPrintLayer from './FootPrintLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
@@ -42,6 +43,13 @@ const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetc
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer('./images/stars.json');
 const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_2012.png');
+const multiRangeAtmosphereLayer = new MultiRangeLayer('multiRangeAtmosphereLayer', {
+    key: 'multiRangeAtmosphereLayer',
+    layers: [{
+        layer:defaultAtmosphereLayer,
+        rangeInterval: [1000000,100000000000]
+    }]
+});
 const productsRequests = new window.Map();
 const defaultTopologyLayer = new SentinelTopologyLayer();
 
@@ -305,7 +313,7 @@ export const getLayers = createCachedSelector([
     const layers = [
         defaultStarfieldLayer,
         defaultBackgroundLayer,
-        defaultAtmosphereLayer,
+        multiRangeAtmosphereLayer,
         defaultTopologyLayer
     ];
 
