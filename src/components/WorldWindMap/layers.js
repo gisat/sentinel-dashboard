@@ -160,7 +160,7 @@ const getOrbitLayer = (layerConfig, time = new Date(), wwd, currentTime) => {
         }
         return cacheLayer;
     } else {
-        const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time, currentTime});
+        const layer = new OrbitLayer({key: layerKey, satRec: layerConfig.specs, time, currentTime, opacity: 0.7});
         layer.setRerender(() => wwd.redraw());
         layersCache.set(layerKey, layer);
         return layer;

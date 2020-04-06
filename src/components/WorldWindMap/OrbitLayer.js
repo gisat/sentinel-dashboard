@@ -16,6 +16,7 @@ const {
  * @param options.key {String}
  * @param options.time {Date} Selected time
  * @param options.currentTime {Date} 
+ * @param options.opacity {Number} 
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
@@ -26,7 +27,8 @@ class OrbitLayer extends RenderableLayer {
         this.satRec = null;
         this.key = options.key;
         this.timeWindow = 90 * 60 * 1000; //90 minutes
-        this._beforeCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(213 / 255, 214  / 255, 210 / 255, 1));
+        this.opacity = Number.isFinite(options.opacity) && options.opacity > -1 && options.opacity < 101 ? options.opacity : 100;
+        this._beforeCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(213 / 255, 214  / 255, 210 / 255, this.opacity));
         this._afterCurrentOrbit = new Orbit(EoUtils.computeSatrec(...options.satRec), new Date(), new Date(), new Color(1, 1, 0, 1));
         this.addRenderable(this._beforeCurrentOrbit);
         this.addRenderable(this._afterCurrentOrbit);
@@ -37,6 +39,7 @@ class OrbitLayer extends RenderableLayer {
         this.satRec = null;
         this.setSatRec(options.satRec);
         this.setTime(options.currentTime, options.time);
+        
     };
 
     
