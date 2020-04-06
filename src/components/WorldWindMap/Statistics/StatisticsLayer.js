@@ -239,7 +239,7 @@ class StatisticsLayer extends RenderableLayer {
             this.onLayerChanged({
                 satKey: this.satName,
                 layerKey: this.key
-            }, {update: {loading: true}});
+            }, {loading: true});
         }
 
         return Promise.all(allPromises).then((products) => {
@@ -249,8 +249,10 @@ class StatisticsLayer extends RenderableLayer {
                 this.onLayerChanged({
                     satKey: this.satName,
                     layerKey: this.key
-                }, {update: {loading: false}});
+                }, {loading: false});
             }
+
+            this.doRerender();
 
             return legend;
         });
@@ -280,8 +282,6 @@ class StatisticsLayer extends RenderableLayer {
      * @returns {HeatMapLayer} Layer representing choropleth with the passed in Products.
      */
     getChoropleth(products, options) {
-        console.log(HeatMapLayer)
-        debugger
         let heatMap = new HeatMapLayer('Product Statistics', products.map(function (product) {
             return new MeasuredLocation(
                 product.latitude,

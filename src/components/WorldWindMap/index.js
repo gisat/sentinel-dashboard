@@ -13,6 +13,10 @@ import {
     updateComponent,
 } from '../../context/actions';
 
+import{
+    updateStatistics
+} from '../../context/actions/map';
+
 import {
     setView,
 } from '../../context/actions/map';
@@ -37,6 +41,7 @@ const WorldWindMap = (props) => {
         } else if(layerKey && layerKey.layerKey && layerKey.layerKey.indexOf('statistics_') === 0) {
             //TODO -set statistics are loading
             // dispatch(updateActiveLayer(layerKey, change))
+            dispatch(updateStatistics(layerKey.satKey, change));
         } else {
             dispatch(updateActiveLayer(layerKey, change))
         }     

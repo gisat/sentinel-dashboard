@@ -8,3 +8,13 @@ export const setView = (mapView) => {
         }
     }
 }
+
+export const updateStatistics = (satKey, change) => {
+    return {
+        type: types.MAP.UPDATE_STATISTICS,
+        payload: {
+            key: satKey,
+            update: change,
+        }
+    }
+}

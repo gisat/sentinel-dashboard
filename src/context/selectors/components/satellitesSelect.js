@@ -2,7 +2,7 @@ import { createSelector } from 'reselect'
 import createCachedSelector from 're-reselect';
 import common from '../_common';
 import {getSubstate as getSatellitesSubstate} from '../data/satellites';
-import {getVisibleAcquisitionsPlans, getVisibleStatistics} from '../map';
+import {getVisibleAcquisitionsPlans, getVisibleStatistics, getLoadingStatistics} from '../map';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
 import {getPlansForDate, getLoadingAcquisitionsPlans} from '../data/acquisitionPlans';
 import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent, getSelectTime} from '../rootSelectors';
@@ -23,9 +23,10 @@ const getSatelitesSelectOptions = createSelector(
         getVisibleStatistics,
         getPlansForDate,
         getLoadingAcquisitionsPlans,
+        getLoadingStatistics,
         getSelectTime,
     ],
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, visibleStatistics, acquisitionPlansData, loadingAcquisitionsPlans, selectTime) => {
+    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, visibleStatistics, acquisitionPlansData, loadingAcquisitionsPlans, loadingStatistics, selectTime) => {
         
         const getLayerOption = (layerKey, satConfig) => {
             const satKey = satConfig.id;
@@ -59,7 +60,7 @@ const getSatelitesSelectOptions = createSelector(
                     icon: satConfig.iconClass,
                     disabled: !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
                     active: focusedSattelite === satConfig.id,
-                    loading: loadingAcquisitionsPlans.some(l => l.key === satConfig.id), //todo
+                    loading: loadingAcquisitionsPlans.some(l => l.key === satConfig.id) || loadingStatistics.some(s => s.key === satConfig.id), //todo
                 },
                 label: satConfig.name,
                 options: []

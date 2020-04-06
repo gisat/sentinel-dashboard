@@ -295,14 +295,25 @@ const mapRemoveVisibleAcquisitionPlan = (state, action) => {
 };
 
 const mapAddVisibleStatisticsLayer = (state, action) => {
-    const satKey = action.payload.key;
-    return {...state, map: {...state.map, statistics: [...state.map.statistics, satKey]}};
+    const key = action.payload.key;
+    return {...state, map: {...state.map, statistics: [...state.map.statistics, {key}]}};
 };
 
 const mapRemoveVisibleStatisticsLayer = (state, action) => {
-    const satKey = action.payload.key;
-    const satKeyIndex = state.map.statistics.indexOf(satKey);
-    return {...state, map: {...state.map, statistics: removeItemByIndex(state.map.statistics, satKeyIndex)}};
+    const key = action.payload.key;
+    const keyIndex = state.map.statistics.findIndex((statistic) => statistic.key === key);
+    return {...state, map: {...state.map, statistics: removeItemByIndex(state.map.statistics, keyIndex)}};
+};
+
+const mapUpdateStatisticsLayer = (state, action) => {
+    const key = action.payload.key;
+    const update = action.payload.update;
+    const keyIndex = state.map.statistics.findIndex((statistic) => statistic.key === key);
+
+    const updatedStatistic = merge(state.map.statistics[keyIndex], update);
+    const updatedStatistics = replaceItemOnIndex(state.map.statistics, keyIndex, updatedStatistic);
+
+    return {...state, map: {...state.map, statistics: updatedStatistics}};
 };
 
 const setMapView = (state, action) => {
@@ -372,6 +383,8 @@ export default (state, action) => {
             return mapAddVisibleStatisticsLayer(state, action);
         case types.MAP.REMOVE_STATISTICS_LAYER:
             return mapRemoveVisibleStatisticsLayer(state, action);
+        case types.MAP.UPDATE_STATISTICS:
+            return mapUpdateStatisticsLayer(state, action);
         case types.MAP.SET_VIEW:
             return setMapView(state, action);
         

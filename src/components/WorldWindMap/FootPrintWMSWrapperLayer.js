@@ -107,7 +107,6 @@ class FootPrintWMSWrapperLayer extends RenderableLayer {
 		this.layers = [];
 		for (const renderable of this.renderables) {
 			const layer = this.getLayerFromRenderable(renderable);
-			debugger
 			this.layers.push(layer)
 		}
 	}
