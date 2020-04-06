@@ -2,7 +2,7 @@ import Distribution from './Distribution';
 import Extruded from './Extruded';
 import Products from './Products';
 import WorldWind from 'webworldwind-esa';
-
+import HeatMapLayer from '../../../worldwind/layer/heatmap/HeatMapLayer'
 import chroma from 'chroma-js';
 import moment from 'moment';
 
@@ -11,12 +11,8 @@ const {
     RenderableLayer,
     Color,
     MeasuredLocation,
-    HeatMapLayer,
 } = WorldWind;
 
-// 
-// TODO - dispatch loading, fix radius
-// 
 
 /**
  * Class extending WorldWind.RenderableLayer. Layer can render only one model of satellite. It`s possible to set position data of model.
@@ -299,19 +295,19 @@ class StatisticsLayer extends RenderableLayer {
         heatMap.distribution = distribution;
         heatMap.scale = distribution._hexs;
         heatMap.opacity = options.opacity && options.opacity / 100 || 0.75;
-        // heatMap.radius = function (sector) {
-        //     if (sector.maxLongitude - sector.minLongitude >= 45) {
-        //         return 25;
-        //     } else if (sector.maxLongitude - sector.minLongitude >= 22.5) {
-        //         return 37.5;
-        //     } else if (sector.maxLongitude - sector.minLongitude >= 11.125) {
-        //         return 50;
-        //     } else if (sector.maxLongitude - sector.minLongitude >= 5.5) {
-        //         return 62.5;
-        //     }
+        heatMap.radius = function (sector) {
+            if (sector.maxLongitude - sector.minLongitude >= 45) {
+                return 25;
+            } else if (sector.maxLongitude - sector.minLongitude >= 22.5) {
+                return 37.5;
+            } else if (sector.maxLongitude - sector.minLongitude >= 11.125) {
+                return 50;
+            } else if (sector.maxLongitude - sector.minLongitude >= 5.5) {
+                return 62.5;
+            }
 
-        //     return 75;
-        // };
+            return 75;
+        };
 
         return heatMap;
     }
