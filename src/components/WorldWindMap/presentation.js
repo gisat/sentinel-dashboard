@@ -34,6 +34,9 @@ export const defaultMapView = {
 	heading: 0
 };
 
+const MINRANGE = 3000;
+const MAXRANGE = 100000000;
+
 /**
  * This component displays Web World Wind in the application. In order to decide what will the map look like and what
  * should be displayed on top of that it is possible to work with the wwd inside of the copmonentDidMount, where the
@@ -197,6 +200,14 @@ class Map extends Component {
             const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
             
 			const changedViewParams = navigator.getChangedViewParams({...defaultMapView, ...this.props.view}, viewParams);
+
+            if(changedViewParams.boxRange < MINRANGE){
+                changedViewParams.boxRange = MINRANGE;
+            }
+
+            if(changedViewParams.boxRange > MAXRANGE){
+                changedViewParams.boxRange = MAXRANGE;
+            }
 
 			if(this.props.onViewChange) {
 				if (!isEmpty(changedViewParams)) {
