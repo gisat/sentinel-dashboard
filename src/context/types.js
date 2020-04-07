@@ -1,5 +1,6 @@
 
 export default {
+    'CHANGE_LANDSCAPE': 'CHANGE_LANDSCAPE',
     'FOCUS_SATELLITE': 'FOCUS_SATELLITE',
     'TOGGLE_LAYER': 'TOGGLE_LAYER',
     'PREVENT_RELOAD_LAYERS': 'PREVENT_RELOAD_LAYERS',
@@ -25,6 +26,7 @@ export default {
     'COMPONENT': {
         'SET': 'COMPONENT.SET',
         'UPDATE': 'COMPONENT.UPDATE',
+        'CLEAR': 'COMPONENT.CLEAR',
     },
     'COMPONENTS' :{
         'SEARCH': {
