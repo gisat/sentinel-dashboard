@@ -9,6 +9,9 @@ import NotificationBadge from '../NotificationBadge';
 
 const AcquisitionPlanOption = (props) => {
     props.innerProps.onClick = props.onClick;
+    props.innerProps.onMouseOver = () => {};
+    props.innerProps.onMouseMove = () => {};
+
 
     //TODO extract into file
     // const maxHeight = '32px'

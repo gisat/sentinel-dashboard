@@ -180,7 +180,7 @@ class Select extends React.PureComponent {
                 options={options}
                 menuIsOpen={open}
                 closeMenuOnSelect={false}
-                blurInputOnSelect={false}
+                blurInputOnSelect={true}
                 onMenuClose={onCollapsClick}
                 onMenuOpen={onCollapsClick}
             />
