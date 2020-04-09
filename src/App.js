@@ -88,7 +88,7 @@ class App extends React.PureComponent {
 
         return (
             <Div100vh>
-                <div className={'app'} ref={this.targetRef}>
+                <div className={'app'}>
                     <ReactResizeDetector
                         onResize = {this.onResize}
                         handleWidth

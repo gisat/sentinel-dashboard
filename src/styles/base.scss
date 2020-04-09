@@ -1,5 +1,16 @@
 @import "_variables";
 
+html{
+    overflow: hidden;
+}
+
+body {
+    overflow: hidden;
+    position: relative;
+    margin: 0;
+    padding: 0;
+}
+
 html {
 	font-family: 'Roboto', sans-serif;
 	line-height: 1.5;

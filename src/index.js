@@ -14,6 +14,21 @@ import * as serviceWorker from './serviceWorker';
 
 document.getElementsByTagName('body')[0].classList.add('ptr-dark');
 
+//prevent scrolling page
+//first solution
+// document.body.addEventListener('touchmove', function(e){ e.preventDefault(); }, { passive: false });
+
+//second solution
+// window.addEventListener("scroll", preventMotion, false);
+// window.addEventListener("touchmove", preventMotion, false);
+
+// function preventMotion(event)
+// {
+//     window.scrollTo(0, 0);
+//     event.preventDefault();
+//     event.stopPropagation();
+// }
+
 //Fix for passive events
 forceSetPassiveEvents();
 
