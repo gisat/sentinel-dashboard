@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactResizeDetector from 'react-resize-detector';
 import className from 'classnames';
+import Div100vh from 'react-div-100vh'
 
 import {Context} from './context/context';
 import {
@@ -47,7 +48,7 @@ class App extends React.PureComponent {
         //Re-set follow now, because setting time in timeline set followNow to false.
         setTimeout(() => {
             dispatch(setFollowNow(true));
-        }, 500)
+        }, 500);
     }
 
     onResize(width, height) {
@@ -86,30 +87,32 @@ class App extends React.PureComponent {
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
 
         return (
-            <div className={'app'}>
-                <ReactResizeDetector
-                    onResize = {this.onResize}
-                    handleWidth
-                    handleHeight />                
-                <ProductsModal />
-                <SearchModal/>
-                {satelliteSelectVisible ? <SatelliteSelect  
-                    maxHeight = {maxSelectHeight}
-                /> : null}
-                <div className={className('timelineWrapper', {
-                    vertical: vertical,
-                    horizontal: !vertical,
-                })}>
-                    {mapsTimelineVisible ? <MapsTimeline /> : null}
+            <Div100vh>
+                <div className={'app'} ref={this.targetRef}>
+                    <ReactResizeDetector
+                        onResize = {this.onResize}
+                        handleWidth
+                        handleHeight />                
+                    <ProductsModal />
+                    <SearchModal/>
+                    {satelliteSelectVisible ? <SatelliteSelect  
+                        maxHeight = {maxSelectHeight}
+                    /> : null}
+                    <div className={className('timelineWrapper', {
+                        vertical: vertical,
+                        horizontal: !vertical,
+                    })}>
+                        {mapsTimelineVisible ? <MapsTimeline /> : null}
+                    </div>
+                    <div className={className('time-widget-wrapper', {
+                        vertical: vertical,
+                        horizontal: !vertical,
+                    })}>
+                        {timeWidgetVisible ? <TimeWidget /> : null}
+                    </div>
+                    <WorldWindMap />
                 </div>
-                <div className={className('time-widget-wrapper', {
-                    vertical: vertical,
-                    horizontal: !vertical,
-                })}>
-                    {timeWidgetVisible ? <TimeWidget /> : null}
-                </div>
-                <WorldWindMap />
-            </div>
+            </Div100vh>
         );
     }
 }

@@ -9,6 +9,7 @@
     "moment": "^2.24.0",
     "node-sass": "^4.13.1",
     "react": "^16.9.0",
+    "react-div-100vh": "^0.3.8",
     "react-dom": "^16.8.6",
     "react-modal": "^3.9.1",
     "react-resize-detector": "^4.2.0",
