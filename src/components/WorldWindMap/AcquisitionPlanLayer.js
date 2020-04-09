@@ -85,8 +85,8 @@ class AcquisitionPlanLayer extends RenderableLayer {
 
         //filter plans by acquisitionPlans.cache
         
-        const startDate = new Date(this.time - range);
-        const endDate = new Date(this.time + range);
+        const startDate = new Date(this.time.getTime() - range)
+        const endDate = new Date(this.time.getTime() + range)
         // await Promise.all(this.plans.map(plan => acquisitionPlans.parse({...plan, filterDate: startDate.toISOString()}).catch((err) => {console.error(err)})));
         const filteredPlans = filterPlansByUrl(this.plans, acquisitionPlans.cache[this.satName]);
 

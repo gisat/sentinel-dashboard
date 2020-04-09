@@ -88,9 +88,13 @@ class SwathLayer extends RenderableLayer {
      * @param type {string}
      */
     setType(type) {
+        const update = this.type !== type;
         if(type) {
             this.type = type;
-            this.update();
+
+            if(update) {
+                this.update();
+            }
         }
     }
 
@@ -109,12 +113,16 @@ class SwathLayer extends RenderableLayer {
      * @param time {Date} Time of the satellite.
      */
     setVisible(visible) {
+        const update = this.visible !== visible;
         if(visible === true) {
             this.visible = true;
         } else {
             this.visible = false;
         }
-        this.update();
+
+        if(update) {
+            this.update();
+        }
     }
 
     /**
@@ -156,7 +164,14 @@ class SwathLayer extends RenderableLayer {
 	}
     
 	setColor(color) {
-        this.color = color;
+        const update = this.color !== color;
+        if(color) {
+            this.color = color;
+
+            if(update) {
+                this.update();
+            }
+        }
 	}
 
 	doRerender() {
