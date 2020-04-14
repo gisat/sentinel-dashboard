@@ -43,15 +43,27 @@ const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetc
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer('./images/stars.json');
 const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_2012.png');
+
+const MINVISIBLERANGE = 1000000;
+const MAXVISIBLERANGE = 100000000000;
+
 const multiRangeAtmosphereLayer = new MultiRangeLayer('multiRangeAtmosphereLayer', {
     key: 'multiRangeAtmosphereLayer',
     layers: [{
         layer:defaultAtmosphereLayer,
-        rangeInterval: [1000000,100000000000]
+        rangeInterval: [MINVISIBLERANGE,MAXVISIBLERANGE]
     }]
 });
 const productsRequests = new window.Map();
 const defaultTopologyLayer = new SentinelTopologyLayer();
+const multiRangeTopologyLayer = new MultiRangeLayer('multiRangeTopologyLayer', {
+    key: 'multiRangeTopologyLayer',
+    layers: [{
+        layer:defaultTopologyLayer,
+        rangeInterval: [MINVISIBLERANGE,MAXVISIBLERANGE]
+    }]
+});
+
 
 export function getLayerKeySCIHubResult (layerConfig) {
     return `${layerConfig.id._text}`;
@@ -314,7 +326,7 @@ export const getLayers = createCachedSelector([
         defaultStarfieldLayer,
         defaultBackgroundLayer,
         multiRangeAtmosphereLayer,
-        defaultTopologyLayer
+        multiRangeTopologyLayer
     ];
 
     const sentinelDataLayersConfigs = filterSentinelDataLayersConfigs(layersConfig);
