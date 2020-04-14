@@ -66,7 +66,8 @@ const TimeWidget = (props) => {
             onStopTimer={onStopTimer}
             nowActive={select.rootSelectors.getFollowNow(state)}
             trackTimeActive={select.rootSelectors.getTrackTimeActive(state)}
-            mouseTime={timelineState.mouseTime}
+            // mouseTime={timelineState.mouseTime}
+            mouseTime={null}
             />
     )
 
