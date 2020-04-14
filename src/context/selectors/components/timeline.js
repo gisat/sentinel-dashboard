@@ -5,6 +5,7 @@ import moment from 'moment';
 
 import common from '../_common';
 import {getCurrentTime} from '../rootSelectors';
+import {convertToUTC} from '../../../utils/date';
 
 export const addItemToIndex = (array, index, item) => [...array.slice(0, index), item, ...array.slice(index)];
 export const removeItemByIndex = (array, index) => [...array.slice(0, index), ...array.slice(index + 1)];
@@ -19,8 +20,8 @@ const getOverlays = createCachedSelector([getSubstate, getCurrentTime], (substat
     const nowOverlayKey = 'now';
 
     const overlays = substate.overlays;
-    const now = moment(currentTime);
-
+    const time = currentTime ? convertToUTC(currentTime) : null;
+    const now = moment(time);
     const overlayIndex = overlays.findIndex(o => o.key === nowOverlayKey);
     const nowOverlay = overlays[overlayIndex];
     const nowOverlayPlusSecond = {...nowOverlay, start: now.clone(), end: now.clone()};

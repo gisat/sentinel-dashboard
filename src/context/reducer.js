@@ -159,31 +159,10 @@ const setTrackTime = (state, action) => {
     };
 }
 
-const setTimeLineDayWidth = (state, action) => {
-    return {
-        ...state,
-        timeLine: {...state.timeLine, dayWidth: action.payload}
-    };
-}
-
-const setTimeLineMouseTime = (state, action) => {
-    return {
-        ...state,
-        timeLine: {...state.timeLine, mouseTime: action.payload}
-    };
-}
-
 const setLandscape = (state, action) => {
     return {
         ...state,
         landscape: action.payload
-    };
-}
-
-const setOverlays = (state, action) => {
-    return {
-        ...state,
-        timeLine: {...state.timeLine, overlays: action.payload}
     };
 }
 
@@ -334,7 +313,6 @@ const setMapView = (state, action) => {
 
 export default (state, action) => {
     //change state logging
-    // console.log("beforeState", state, "action", action);
     
     switch(action.type) {
         case types.FOCUS_SATELLITE:
@@ -357,14 +335,8 @@ export default (state, action) => {
             return setFollowNow(state, action);
         case types.TRACK_TIME:
             return setTrackTime(state, action);
-        case types.CHANGE_TIME_LINE_DAY_WIDTH:
-            return setTimeLineDayWidth(state, action);
-        case types.TIME_LINE_SET_MOUSE_TIME:
-            return setTimeLineMouseTime(state, action);
         case types.CHANGE_LANDSCAPE:
             return setLandscape(state, action);
-        case types.SET_OVERLAYS:
-            return setOverlays(state, action);
         case types.COMPONENT.UPDATE:
             return updateComponent(state, action);
         case types.COMPONENT.SET:
