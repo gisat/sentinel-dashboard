@@ -5,7 +5,8 @@ const satellites = ['s1a', 's1b', 's2a', 's2b'];
 //cache tle in Map
 const cache = new Map();
 
-export const getPlansKeys = (aps) => aps && aps.length ? aps.map(a => `${a.start}_${a.end}`).join('') : '';
+export const getPlanKey = (aps) => aps ? `${aps.start}_${aps.end}` : '';
+export const getPlansKeys = (aps) => aps && aps.length ? aps.map(a => getPlanKey(a)).join('') : '';
 
 const parseAPSfiles = (result, satKey) => {
         const kmls = result.split('\n');

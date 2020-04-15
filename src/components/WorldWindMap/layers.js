@@ -17,6 +17,7 @@ import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts from '../../worldwind/products/Products';
 import {hubPassword, hubUsername} from "../../config";
+import { getSwathKey } from '../../utils/swath';
 
 window.WorldWind.configuration.baseUrl = `${window.location.origin}${window.location.pathname}`;
 console.log("WorldWind.configuration.baseUrl set to: ", window.WorldWind.configuration.baseUrl);
@@ -104,6 +105,10 @@ const filterAcquisitionPlanLayersConfigs = (layersConfig) => {
 
 const filterStatisticsLayersConfigs = (layersConfig) => {
     return layersConfig.filter(l => l.type === 'statistics');
+}
+
+const filterSwathLayersConfigs = (layersConfig) => {
+    return layersConfig.filter(l => l.type === 'swath');
 }
 
 const filterSatelliteLayersConfigs = (layersConfig) => {
@@ -236,8 +241,8 @@ const getStatisticsLayer = (layerConfig, wwd, time, onLayerChanged) => {
 }
 
 const getSwathLayer = (layerConfig, wwd, time) => {
-    const layerKey = `swath_${layerConfig.key}`;
-    const layerAcquisitionKey = layerConfig.key;
+    const layerKey = layerConfig.key;
+    const layerAcquisitionKey = layerConfig.apsKey;
     const cacheLayer = layersCache.get(layerKey);
     const cacheLayerAcquisition = layersCache.get(layerAcquisitionKey);
     // const plans = layerConfig.plans;
@@ -344,7 +349,8 @@ export const getLayers = createCachedSelector([
     const staticticsLayersConfigs = filterStatisticsLayersConfigs(layersConfig);
     const statisticsLayers = staticticsLayersConfigs.map((s) => getStatisticsLayer(s, wwd, time, onLayerChanged));
     
-    const swathLayers = acquisitionPlanLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
+    const swathLayersConfigs = filterSwathLayersConfigs(layersConfig);
+    const swathLayers = swathLayersConfigs.map((s) => getSwathLayer(s, wwd, time));
     
     const searchLayerConfigs = filterSearchLayersConfigs(layersConfig);
     const searchLayer = searchLayerConfigs.map((searchResult) => getFootprintLayer(searchResult));
@@ -358,6 +364,8 @@ export const getLayers = createCachedSelector([
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
 
     const acquisitionPlanLayers = filterAcquisitionPlanLayersConfigs(layersConfig);
+
+    const swathLayersConfigs = filterSwathLayersConfigs(layersConfig);
     
     const staticticsLayersConfigs = filterStatisticsLayersConfigs(layersConfig);
 
@@ -368,13 +376,15 @@ export const getLayers = createCachedSelector([
     const activeLayersKeys = sentinelDataLayersConfigs.map((layerConfig) => `${getLayerKeyFromConfig(layerConfig)}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`).join(',');
 
     const acquisitionPlanLayersKeys = acquisitionPlanLayers.map((aps) => `${aps.key}_${getPlansKeys(aps.plans)}`);
+    
+    const swathLayersKeys = swathLayersConfigs.map((swathCfg) => `${getSwathKey(swathCfg)}`).join(',');
 
     const statisticsLayersKeys = staticticsLayersConfigs.map(l => l.key).join(',');
     
     const searchLayerConfigs = filterSearchLayersConfigs(layersConfig);
     const searchLayerKey = searchLayerConfigs.map((layerConfig) => getLayerKeySCIHubResult(layerConfig.results[0]));
 
-    const cacheKey = `${searchLayerKey}-${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}-${statisticsLayersKeys}`;
+    const cacheKey = `${searchLayerKey}-${stringTime}-${stringCurrentTime}-${satellitesKeys}-${orbitKeys}-${activeLayersKeys}-${acquisitionPlanLayersKeys}-${swathLayersKeys}-${statisticsLayersKeys}`;
     return cacheKey;
 });
 
