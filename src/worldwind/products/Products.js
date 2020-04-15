@@ -304,4 +304,34 @@ export default class Products {
             throw (new Error('Error in loading products list'));
         }
     }
+
+    /**
+     * Load product bygiven key.
+     * @param key {String} Key of product
+     * @returns {Promise<Object>} Feed from the response.
+     */
+    async loadProduct(key = '') {
+        const getUrl = (key) => `https://scihub.copernicus.eu/apihub/odata/v1/Products('${key}')/`;
+        const url = getUrl(key);
+        const cached = this._cache.get(url);
+        if(cached) {
+            return JSON.parse(cached);
+        }
+
+        try {
+            const response = await this._fetch(url, {
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            const parsed = await response.json();
+
+            const entry = parsed.d;
+            this._cache.set(url, JSON.stringify(entry));
+            return entry;
+        } catch (error) {
+            throw (new Error(`Error in loading product ${key}`));
+        }
+    }
 }

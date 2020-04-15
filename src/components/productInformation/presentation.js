@@ -14,18 +14,18 @@ import "./style.css";
 //     display: 'flex',
 // };
 
-const getDownloadIcon = (url) => {
+const getDownloadIcon = (url, isOnline) => {
     if(url) {
-        return (<Button ghost onClick={() => {window.open(url, '_blank')}} icon={'download'} className={'ptr-download-product'} small></Button>);
+        return (<Button ghost disabled={!isOnline} onClick={() => {window.open(url, '_blank')}} icon={'download'} className={'ptr-download-product'} small></Button>);
     } else {
         return null;
     }
 }
 
 
-const Heading = ({product, text}) => {
+const Heading = ({product, text, isOnline}) => {
     const downloadUrl = product ? getProductDownloadUrl(product) : null;
-    const DownloadIcon = getDownloadIcon(downloadUrl);
+    const DownloadIcon = getDownloadIcon(downloadUrl, isOnline);
     return (<div className={'ptr-product-heading'}>{text}{DownloadIcon}</div>)
 }
 
@@ -35,7 +35,7 @@ const getDataList = (data) => {
     });
 };
 
-const ProductInformation = ({product, heading}) => {
+const ProductInformation = ({product, heading, online}) => {
     const {title, id, date, int, str, summary} = product;
 
     //dates
@@ -56,9 +56,12 @@ const ProductInformation = ({product, heading}) => {
     return (
         <div className={'product-info'}>
             <h1>
-                {heading ? heading : <Heading text={`${str.platformname} - ${str.producttype}`} product={product} />}
+                {heading ? heading : <Heading text={`${str.platformname} - ${str.producttype}`} product={product} isOnline={online}/>}
             </h1>
             <Form className={'ptr-product-info'}>
+                <section>
+                    <FormGroup title={'Online'} value={online} id={`online`} key={`online`} readOnly={true}/>
+                </section>
                 <section>
                     {titleItem}
                 </section>

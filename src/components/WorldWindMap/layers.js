@@ -395,6 +395,15 @@ const getSciProducts = async (layerConfig) => {
     }
 }
 
+export const getSciProductByKey = async (productKey) => {
+    try {
+        const product = productsScihub.loadProduct(productKey);
+        return await product;
+    } catch {
+        console.error('Can not get products.')
+    }
+}
+
 export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
     let rejected = false;
     cancelled.catch(() => {

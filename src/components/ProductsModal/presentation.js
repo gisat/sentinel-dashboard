@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from "prop-types";
 import Modal from '../Modal';
-import ProductInformation from './productInformation';
+import ProductInformation from '../productInformation';
 import {withContext} from '../../context/withContext';
 
 const ProductsModal = (props) => {
