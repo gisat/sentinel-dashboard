@@ -110,7 +110,7 @@ class SwathLayer extends RenderableLayer {
 
 
     /**
-     * @param time {Date} Time of the satellite.
+     * @param visible {Boolean} Time of the satellite.
      */
     setVisible(visible) {
         const update = this.visible !== visible;
@@ -126,7 +126,7 @@ class SwathLayer extends RenderableLayer {
     }
 
     /**
-     * @param time {Date} Time of the satellite.
+     * 
      */
     update() {
         this.removeAllRenderables();
@@ -142,8 +142,9 @@ class SwathLayer extends RenderableLayer {
             const nextHeadingRad = utils.headingAngleRadians(nextPosition.latitude, nextPosition.longitude, nNextPosition.latitude, nNextPosition.longitude);
             const nextHeading = utils.rad2deg(nextHeadingRad);
 
-            const {swathWidth, swathHeight, translateDistance} = getParams(this.satName, this.type);
-            if(swathWidth && swathHeight) {
+            const params = getParams(this.satName, this.type);
+            if(params && params.swathWidth && params.swathHeight) {
+                const {swathWidth, swathHeight, translateDistance} = params;
                 this.swath = new SwathCone({
                     currentPosition,
                     nextPosition,

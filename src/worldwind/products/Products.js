@@ -23,6 +23,22 @@ const getProductsInTime = (products, startDate, endDate) => {
     });
 }
 
+export const productIntersectTime = (product, time) => {
+    const timeMoment = moment(time);
+    const metadata = product.metadata();
+    const beginpositionDate = metadata.date.find((d) => {
+        return d._attributes.name === 'beginposition'
+    })
+    const beginposition = beginpositionDate && beginpositionDate._text && moment.utc(beginpositionDate._text)
+
+    const endpositionDate = metadata.date.find((d) => {
+            return d._attributes.name === 'endposition'
+        })
+    const endposition = endpositionDate && endpositionDate._text && moment.utc(endpositionDate._text)
+
+    return timeMoment.isBetween(beginposition, endposition);
+}
+
 const getCacheID = (shortName, products, location, hour) => {
     return `${shortName}-${products}-${location}-${hour}`;
 }

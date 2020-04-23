@@ -173,7 +173,18 @@ export const getActiveLayers = createCachedSelector(
             })
         }
     } else {
-        //pokud jsou viditelné "activeSentinelLayers", tak nastavení z nich
+        //if visible sentinelLayer for each add swath layer
+        activeSentinelLayers.forEach((sentinelLayer) => {
+            if(sentinelLayer.totalCount > 0) {
+                swathLayers.push({
+                    type: 'swath',
+                    key:`swath_${sentinelLayer.satKey}_${sentinelLayer.layerKey}`,
+                    sentinelLayerKey: sentinelLayer.layerKey,
+                    satName: sentinelLayer.satKey,
+                    tle: getOrbitForLayer(orbitsSubstate, `orbit-${sentinelLayer.satKey}`),
+                })
+            }
+        })
     }
 
     let statisticsLayers = [];
@@ -205,6 +216,8 @@ export const getActiveLayers = createCachedSelector(
     let swathLayers = '';
     if(selectTimePastOrCurrent){
         swathLayers = getSwathKeysFromAPS(acquisitionPlans.filter(p => visibleAcquisitionsPlans.includes(p.key)));
+    } else {
+        swathLayers = activeLayers.map(l => `swath-${l.layerKey}${l.satKey}${getBeginTime(selectTime, getSatelliteForLayer(satellitesSubstate, l.satKey).productsTimeWindow)}${endTime}`).join(',');
     };
     
     let statisticsLayers = '';

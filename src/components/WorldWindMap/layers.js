@@ -12,12 +12,11 @@ import MultiRangeLayer from './MultiRangeLayer';
 import FootPrintLayer from './FootPrintLayer';
 import SwathLayer from './SwathLayer';
 import {getPlansKeys} from '../../utils/acquisitionPlans';
-import wmsLayerUtils from './utils/wmsLayer';
 import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
-import SciHubProducts from '../../worldwind/products/Products';
+import SciHubProducts, {productIntersectTime} from '../../worldwind/products/Products';
 import {hubPassword, hubUsername} from "../../config";
-import { getSwathKey } from '../../utils/swath';
+import { getSwathKey, getColorForSatType } from '../../utils/swath';
 
 window.WorldWind.configuration.baseUrl = `${window.location.origin}${window.location.pathname}`;
 console.log("WorldWind.configuration.baseUrl set to: ", window.WorldWind.configuration.baseUrl);
@@ -29,14 +28,9 @@ const {
 
 const {
     RenderableLayer,
-    SurfacePolygon,
     AtmosphereLayer,
-    WmsLayer,
-    Location,
-    Sector,
 } = WorldWind;
 
-const {getLayerFromCapabilitiesUrl} = wmsLayerUtils;
 const csiRenderablesCache = new window.Map();
 const searchCache = new window.Map();
 const layersCache = new window.Map();
@@ -242,9 +236,9 @@ const getStatisticsLayer = (layerConfig, wwd, time, onLayerChanged) => {
 
 const getSwathLayer = (layerConfig, wwd, time) => {
     const layerKey = layerConfig.key;
-    const layerAcquisitionKey = layerConfig.apsKey;
+    
     const cacheLayer = layersCache.get(layerKey);
-    const cacheLayerAcquisition = layersCache.get(layerAcquisitionKey);
+
     // const plans = layerConfig.plans;
 
     if(cacheLayer) {
@@ -255,20 +249,47 @@ const getSwathLayer = (layerConfig, wwd, time) => {
 
         if(time.toString() !== cacheLayer.time.toString()) {
             cacheLayer.setTime(time);
-            const swath = cacheLayerAcquisition.getFootprints(0);
-            swath.then(data => {
-                //FIXME - remove
-                // console.log(data && data.outlines);
-                if(data && data.outlines && data.outlines.length > 0) {
-                    const color = data.interiors[0].attributes.interiorColor;
-                    const type = data.interiors[0].kmlProps.Mode;
-                    cacheLayer.setType(type);
-                    cacheLayer.setColor(color);
-                    cacheLayer.setVisible(true);
+            const layerAcquisitionKey = layerConfig.apsKey;
+            const sentinelLayerKey = layerConfig.sentinelLayerKey;
+            //check if in future
+            if(layerAcquisitionKey) {
+                const cacheLayerAcquisition = layersCache.get(layerAcquisitionKey);
+                const swath = cacheLayerAcquisition.getFootprints(0);
+                swath.then(data => {
+                    if(data && data.outlines && data.outlines.length > 0) {
+                        const color = data.interiors[0].attributes.interiorColor;
+                        const type = data.interiors[0].kmlProps.Mode;
+                        cacheLayer.setType(type);
+                        cacheLayer.setColor(color);
+                        cacheLayer.setVisible(true);
+                    } else {
+                        cacheLayer.setVisible(false);
+                    }
+                })
+            //check if in past over some data, between start and stop date
+            } else if(sentinelLayerKey){
+                const sentinelLayer = layersCache.get(`${layerConfig.satName}-${layerConfig.sentinelLayerKey}`)
+                const renderables = sentinelLayer.renderables;
+                if(renderables) {
+                    //check renderables intersect select time
+                    const products = renderables.map((r) => getProductByKey(r.userProperties.key));
+                    const intersectedProduct = products.find((p) => productIntersectTime(p, time))
+                    if(intersectedProduct) {
+                        const type = intersectedProduct.metadata().str.sensoroperationalmode;
+                        const color = getColorForSatType(layerConfig.satName, type); //get color by type
+                        cacheLayer.setType(type);
+                        cacheLayer.setColor(color);
+                        cacheLayer.setVisible(true);
+                    } else {
+                        cacheLayer.setVisible(false);
+                    }
                 } else {
                     cacheLayer.setVisible(false);
                 }
-            })
+            } else {
+                cacheLayer.setVisible(false);
+            }
+            
         }
 
         return cacheLayer;

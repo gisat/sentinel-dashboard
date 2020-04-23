@@ -313,7 +313,8 @@ const setMapView = (state, action) => {
 
 export default (state, action) => {
     //change state logging
-    
+    // console.log(state, action);
+
     switch(action.type) {
         case types.FOCUS_SATELLITE:
             return focusSatelite(state, action)
