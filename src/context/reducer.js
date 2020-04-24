@@ -5,7 +5,7 @@ import {removeItemByIndex,replaceItemOnIndex, addItemToIndex} from '../utils/arr
 import {removeItemByKey} from '../utils/objectManipulation';
 import WorldWindX from 'webworldwind-x';
 import {merge, cloneDeep} from 'lodash';
-import { breakStatement } from '@babel/types';
+import {initialState} from './context';
 
 const {
     EoUtils
@@ -311,9 +311,13 @@ const setMapView = (state, action) => {
     return {...state, map: {...state.map, view: action.payload.view }};
 };
 
+const componentsSearchToolbarClear = (state) => {
+    return {...state, components: {...state.components, searchToolbar: {...cloneDeep(initialState.components.searchToolbar)}}};
+};
+
 export default (state, action) => {
     //change state logging
-    // console.log(state, action);
+    console.log(state, action);
 
     switch(action.type) {
         case types.FOCUS_SATELLITE:
@@ -372,7 +376,8 @@ export default (state, action) => {
             return mapUpdateStatisticsLayer(state, action);
         case types.MAP.SET_VIEW:
             return setMapView(state, action);
-        
+        case types.COMPONENTS.SEARCH_TOOLBAR.CLEAR:
+            return componentsSearchToolbarClear(state);
         default:
             return state;
     }

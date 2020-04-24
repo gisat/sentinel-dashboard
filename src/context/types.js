@@ -28,6 +28,9 @@ export default {
     'COMPONENTS' :{
         'SEARCH': {
             'SET_PRODUCTS': 'COMPONENTS.SEARCH.SET_PRODUCTS',
+        },
+        'SEARCH_TOOLBAR': {
+            'CLEAR': 'COMPONENTS.SEARCH_TOOLBAR.CLEAR',
         }
     },
     'MAP': {

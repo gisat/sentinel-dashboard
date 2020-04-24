@@ -2,6 +2,7 @@ import * as satelliteSelect from './components/satellitesSelect';
 import * as timeline from './components/timeline';
 import * as timeWidget from './components/timeWidget';
 import * as search from './components/search';
+import * as searchToolbar from './components/searchToolbar';
 import * as satellites from './data/satellites';
 import * as layers from './data/layers';
 import * as map from './map';
@@ -18,6 +19,7 @@ export default {
         timeline,
         timeWidget,
         search,
+        searchToolbar,
     },
     map,
 }

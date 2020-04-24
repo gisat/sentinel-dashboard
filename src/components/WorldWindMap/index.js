@@ -9,8 +9,8 @@ import {
     setWwd,
     dataUpdateAcquisitionPlan,
     dataAcquisitionPlanSetVisibleCount,
-    clearComponent,
-    updateComponent,
+    // clearComponent,
+    // updateComponent,
 } from '../../context/actions';
 
 import{
@@ -21,8 +21,9 @@ import {
     setView,
 } from '../../context/actions/map';
 
-import {setGeometry} from '../../context/actions/components/searchForm/actions';
-import selectors from '../../context/selectors/';
+// import {setGeometry} from '../../context/actions/components/searchForm/actions';
+import {setGeometry, clearComponent, setVisibility} from '../../context/actions/components/searchToolbar';
+// import selectors from '../../context/selectors/';
 
 const WorldWindMap = (props) => {
     const {dispatch, state} = props;
@@ -70,36 +71,54 @@ const WorldWindMap = (props) => {
     }
 
     const searchOnCoords = (coordinates) => {
-        const {state} = props;
-        const modalKey = `${coordinates.longitude}-${coordinates.latitude}`;
-        const modalState = select.rootSelectors.getInfoModal(state, modalKey)
-        const open = modalState && modalState.open ? false : true;
-        const modalContent = {
-            type: 'SEARCH',
-            coordinates,
-            open,
-        };
-
-        //clear previous state
-        dispatch(clearComponent('search'));
-
+        // const {state} = props;
+        
         const geometry = {
             latitude:coordinates.latitude,
             longitude:coordinates.longitude,
             altitude:coordinates.altitude
         }
 
-        dispatch(setGeometry(geometry));
-        
-        // search catalogue
-        // dispatch(searchCatalogue(modalKey, modalContent));
 
-        dispatch(updateInfoModal(modalKey, modalContent));
-        dispatch(setActiveInfoModal(modalKey));
+        //open search toolbar component
+
+        //update search
+            //takes all visible products
+            //search for visible products/satellites on selected place
+            //order products by time
+            //display satName and product type in search toolbar
+            //move camera to product boundaries
+            //move select time to nearest product time
+        dispatch(clearComponent());
+        dispatch(setGeometry(geometry));
+        dispatch(setVisibility(true));
+       
+        // Old search
+        // const modalKey = `${coordinates.longitude}-${coordinates.latitude}`;
+        // const modalState = select.rootSelectors.getInfoModal(state, modalKey)
+        // const open = modalState && modalState.open ? false : true;
+        // const modalContent = {
+        //     type: 'SEARCH',
+        //     coordinates,
+        //     open,
+        // };
+        // //clear previous state
+        // dispatch(clearComponent('search'));
+
+        // const geometry = {
+        //     latitude:coordinates.latitude,
+        //     longitude:coordinates.longitude,
+        //     altitude:coordinates.altitude
+        // }
+
+        // dispatch(setGeometry(geometry));
+
+        // dispatch(updateInfoModal(modalKey, modalContent));
+        // dispatch(setActiveInfoModal(modalKey));
         
-        dispatch(updateComponent('timeline', {visible: false}));
-        dispatch(updateComponent('timeWidget', {visible: false}));
-        dispatch(updateComponent('satelliteSelect', {visible: false}));
+        // dispatch(updateComponent('timeline', {visible: false}));
+        // dispatch(updateComponent('timeWidget', {visible: false}));
+        // dispatch(updateComponent('satelliteSelect', {visible: false}));
         
     }
 

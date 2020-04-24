@@ -19,6 +19,7 @@ import WorldWindMap from './components/WorldWindMap';
 import SatelliteSelect from './components/SatelliteSelect';
 import MapsTimeline from './components/MapsTimeline';
 import TimeWidget from './components/TimeWidget/';
+import SearchToolbar from './components/SearchToolbar/';
 import {getNowUTCString} from './utils/date';
 
 class App extends React.PureComponent {
@@ -84,6 +85,7 @@ class App extends React.PureComponent {
         const satelliteSelectVisible = select.components.satelliteSelect.getVisible(state);
         const mapsTimelineVisible = select.components.timeline.getVisible(state);
         const timeWidgetVisible = select.components.timeWidget.getVisible(state);
+        const searchToolbarVisible = select.components.searchToolbar.getVisible(state);
         const maxSelectHeight = this.getMaxSatelliteSelectHeight();
 
         return (
@@ -103,6 +105,12 @@ class App extends React.PureComponent {
                         horizontal: !vertical,
                     })}>
                         {mapsTimelineVisible ? <MapsTimeline /> : null}
+                    </div>
+                    <div className={className('search-toolbar-wrapper', {
+                        vertical: vertical,
+                        horizontal: !vertical,
+                    })}>
+                        {searchToolbarVisible ? <SearchToolbar /> : null}
                     </div>
                     <div className={className('time-widget-wrapper', {
                         vertical: vertical,

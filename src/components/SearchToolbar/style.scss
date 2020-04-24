@@ -1,0 +1,32 @@
+.ReactModal__Content h2.modal-header{
+    margin-top: 0rem;
+}
+
+.ReactModal__Content .modal-content{
+    padding: 0.5rem;
+}
+
+.search-toolbar{
+    height:45px;
+    background: rgba(0, 0, 0, 0.39);
+    color: rgb(255, 255, 255);
+    font-size: 1.5rem;
+    padding: 0.3rem 0.3rem 0rem 0.3rem;
+    display: flex;
+    justify-content: center;
+    user-select: none;
+}
+
+@media screen and (max-width: 600px) {
+    .product-info {
+        margin: 0.2rem;
+    }
+
+    .product-info .item {
+        display: block;
+    }
+
+    .ReactModal__Content{
+        padding: 0.5rem;
+    }    
+} 

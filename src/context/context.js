@@ -4,6 +4,7 @@ import {getNowUTCString} from '../utils/date'
 import moment from 'moment';
 import period from '../utils/period';
 import {getSatDataByKey, getDefaultSatOrbitBySatKey} from './satData';
+import {cloneDeep} from 'lodash';
 
 const now = moment(getNowUTCString());
 
@@ -27,7 +28,7 @@ export const Context = createContext({
     infoModal: {},
 });
 
-const initialState = {
+export const initialState = {
     data: {
         layers: {
             //sentinel 1
@@ -203,12 +204,27 @@ const initialState = {
             type: null, //types by active satellite? SLC/GRD/OCN
             activeResultIndex: null,
             results: []    
+        },
+        searchToolbar: {
+            visible: false,
+            geometry: null, //{latitude:coordinates.latitude,longitude:coordinates.longitude,altitude:coordinates.altitude}
+            results: {
+                // s1a: [...],
+                // s2a: [...],
+            },
+            orderedResults: [
+                // ['s1a',1],
+                // ['s2a',1],
+                // ['s1a',2]
+            ],
+            activeResult: null, //['s1a',1]
+
         }
     }
 };
 
 export const ContextProvider = (props) => {
-    const [state, dispatch] =  React.useReducer(reducer, initialState);
+    const [state, dispatch] =  React.useReducer(reducer, cloneDeep(initialState));
     const value = {state, dispatch};
 
     return <Context.Provider value={value}>{props.children}</Context.Provider>;
