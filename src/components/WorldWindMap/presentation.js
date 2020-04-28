@@ -70,14 +70,14 @@ class Map extends Component {
     }
 
     componentDidUpdate (prevProps) {
-        const {time, focusedSatellite, currentTime} = this.props;
+        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload} = this.props;
 
         if(focusedSatellite !== prevProps.focusedSatellite) {
             console.log("focused satellite changed", focusedSatellite)
         }
 
         // TODO compare references only?
-        if (this.props.view && prevProps.view !== this.props.view) {
+        if (view && prevProps.view !== view) {
             this.updateNavigator();
         }
         
@@ -110,21 +110,21 @@ class Map extends Component {
             //check visibility change
             if(visibilityChanged && !newlyEnabledLayersKeys.some(lk => disabledLayers.has(lk))) {
                 //visibility changed
-                const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, this.props.onLayerChanged, currentTime);
+                const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, onLayerChanged, currentTime);
                 this.handleLayers(wwdLayers);
                 
                 //start loading layer
                 //reload only new layers
                 
                 const newlyEnabledLayersCfg = this.props.layers.filter((cfg) => newlyEnabledLayersKeys.includes(getLayerKeyFromConfig(cfg)));
-                reloadLayersRenderable(newlyEnabledLayersCfg, wwdLayers, this.wwd, this.props.onLayerChanged);
+                reloadLayersRenderable(newlyEnabledLayersCfg, wwdLayers, this.wwd, onLayerChanged, this.onRendarableAdd.bind(this));
             }  else if(!isEqual(disabledPrevLayers, disabledLayers)) {
                 //disabled changed
                 const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const disabledPrevLayersKeys = prevProps.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const enabledLayersKeys = this.props.layers.filter(l => !l.disabled).map((l) => getLayerKeyFromConfig(l));
                 const newlyEnabledLayersKeys = disabledPrevLayersKeys.filter(l => enabledLayersKeys.includes(l));
-                const wwdLayers = getLayers(this.props.layers, time, this.wwd, this.props.onLayerChanged, currentTime);
+                const wwdLayers = getLayers(this.props.layers, time, this.wwd, onLayerChanged, currentTime);
 
                 wwdLayers.forEach(l => {
                     if(newlyEnabledLayersKeys.includes(l.displayName)) {
@@ -139,7 +139,7 @@ class Map extends Component {
                 })
             } else if(time.toString() !== prevProps.time.toString() || currentTime.toString() !== prevProps.currentTime.toString()) {
                 const notDisabledLayers = this.props.layers.filter(l => !l.disabled);
-                const wwdLayers = getLayers(notDisabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime);
+                const wwdLayers = getLayers(notDisabledLayers, time, this.wwd, onLayerChanged, currentTime);
                 this.handleLayers(wwdLayers);
                 
             }
@@ -147,18 +147,18 @@ class Map extends Component {
             if(!visibilityChanged && !isEqual(prevLayers, Layers)) {
                 //layers date changed
                 //TODO reload only changed layers
-                const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, this.props.onLayerChanged, currentTime);
-                if(!this.props.preventReload) {
-                    reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, this.props.onLayerChanged);
+                const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, onLayerChanged, currentTime);
+                if(!preventReload) {
+                    reloadLayersRenderable(enabledLayersKeys, wwdLayers, this.wwd, onLayerChanged, this.onRendarableAdd.bind(this));
                 }
             }
         }
         
-        if(prevProps.preventReload !== this.props.preventReload && !this.props.preventReload) {
+        if(prevProps.preventReload !== preventReload && !preventReload) {
             const disabledLayersKeys = this.props.layers.filter(l => l.disabled).map((l) => getLayerKeyFromConfig(l));
-            const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, this.props.onLayerChanged, currentTime);
+            const wwdLayers = getLayers(enabledLayersKeys, time, this.wwd, onLayerChanged, currentTime);
             //dont reload disabled layers
-            reloadLayersRenderable(enabledLayersKeys.filter(lk => !disabledLayersKeys.includes(lk)), wwdLayers, this.wwd, this.props.onLayerChanged);
+            reloadLayersRenderable(enabledLayersKeys.filter(lk => !disabledLayersKeys.includes(lk)), wwdLayers, this.wwd, onLayerChanged, this.onRendarableAdd.bind(this));
         }
     }
 
@@ -167,7 +167,14 @@ class Map extends Component {
             this.wwd.layers = nextLayersData;
             this.wwd.redraw();
         }
-	}
+    }
+    
+    onRendarableAdd() {
+        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload} = this.props;
+        const wwdLayers = getLayers(this.props.layers, time, this.wwd, onLayerChanged, currentTime);
+        this.handleLayers(wwdLayers);
+        
+    }
 
     longClickHandler(clickedRenderables = [], evt, x, y, time, type) {
         const {searchOnCoords} = this.props;
@@ -221,7 +228,7 @@ class Map extends Component {
      * In this method we create the Web World Wind component itself and store it in the state for the later usage.
      */
     componentDidMount(){
-        const {time, currentTime} = this.props;
+        const {time, currentTime, onLayerChanged} = this.props;
         if(!this.wwdCreated) {
             const elevationModel = new EarthElevationModel();
             this.wwd = new WorldWindow("wwd-results", elevationModel, EnabledController, FreeCamera);
@@ -237,7 +244,7 @@ class Map extends Component {
             this.longClickPickController = new ClickPickController(this.wwd, this.longClickHandler.bind(this), 1500, 1000, 1000);
             this.wwdCreated=true;
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
-            const wwdLayers = getLayers(enabledLayers, time, this.wwd, this.props.onLayerChanged, currentTime);
+            const wwdLayers = getLayers(enabledLayers, time, this.wwd, onLayerChanged, currentTime);
             this.handleLayers(wwdLayers);
             this.props.onWwdCreated(this.wwd);
             this.updateNavigator(defaultMapView);

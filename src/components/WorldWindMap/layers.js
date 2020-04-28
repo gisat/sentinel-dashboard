@@ -247,8 +247,9 @@ const getSwathLayer = (layerConfig, wwd, time) => {
             cacheLayer.setTle(layerConfig.tle);
         }
 
-        if(time.toString() !== cacheLayer.time.toString()) {
-            cacheLayer.setTime(time);
+            if(time.toString() !== cacheLayer.time.toString()) {
+                cacheLayer.setTime(time);
+            }
             const layerAcquisitionKey = layerConfig.apsKey;
             const sentinelLayerKey = layerConfig.sentinelLayerKey;
             //check if in future
@@ -290,7 +291,6 @@ const getSwathLayer = (layerConfig, wwd, time) => {
                 cacheLayer.setVisible(false);
             }
             
-        }
 
         return cacheLayer;
     } else {
@@ -339,6 +339,7 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
     }
 }
 
+//call on add product renderable
 export const getLayers = createCachedSelector([
     (layersConfig) => layersConfig,
     (layersConfig, time) => time,
@@ -444,7 +445,7 @@ export const loadLatestProducts = async (shortName, products, location, beginTim
     }
 };
 
-export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
+export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled, onRenderableAdd) => {
     let rejected = false;
     cancelled.catch(() => {
         rejected = true;
@@ -520,6 +521,7 @@ export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallbac
                     key
                 }
                 layer.addRenderable(result);
+                onRenderableAdd(result);
                 redrawCallback();
                 // onLayerChanged(changedLayer, {status, loadedCount, totalCount});
             } else {
@@ -550,7 +552,7 @@ export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallbac
     return msg;
 }
 
-export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
+export const setRenderables = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled, onRenderableAdd) => {
     let rejected = false;
     cancelled.catch(() => {
         rejected = true;
@@ -634,6 +636,7 @@ export const setRenderables = async (layer, layerConfig, redrawCallback, onLayer
                 }
 
                 layer.addRenderable(result);
+                onRenderableAdd(result);
                 redrawCallback();
                 onLayerChanged(changedLayer, {status, loadedCount, totalCount});
             } else {
@@ -771,7 +774,7 @@ export const setFootprintRenderables = async (layer, layerConfig, redrawCallback
     return msg;
 }
 
-export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
+export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged, onRenderableAdd) => {
 
     const layerKey = getLayerKeyFromConfig(layerCfg);
     let rejected = false;
@@ -794,7 +797,7 @@ export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
     }
 
     try {
-        await setRenderables(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled);
+        await setRenderables(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled, onRenderableAdd);
         productsRequests.delete(layerKey);
     } catch (err) {
         if (err.message === "Cancelled") {
@@ -805,7 +808,7 @@ export const reloadLayer = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
     }
 }
 
-export const reloadFootprint = async (layerCfg, wwdLayer, wwd, onLayerChanged) => {
+export const reloadFootprint = async (layerCfg, wwdLayer, wwd, onLayerChanged, onRenderableAdd) => {
 
     const layerKey = getLayerKeySCIHubResult(layerCfg.results[0]);
     let rejected = false;
@@ -828,7 +831,7 @@ export const reloadFootprint = async (layerCfg, wwdLayer, wwd, onLayerChanged) =
     }
 
     try {
-        await setRenderablesFromConfig(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled);
+        await setRenderablesFromConfig(wwdLayer, layerCfg, wwd.redraw.bind(wwd), dispatchChange, cancelled, onRenderableAdd);
         productsRequests.delete(layerKey);
     } catch (err) {
         if (err.message === "Cancelled") {
@@ -839,21 +842,21 @@ export const reloadFootprint = async (layerCfg, wwdLayer, wwd, onLayerChanged) =
     }
 }
 
-export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged) => {
+export const reloadLayersRenderable = (layers, wwdLayers, wwd, onLayerChanged, onRenderableAdd) => {
     layers.forEach((layerCfg) => {
         //reload only sentinel data
         if(layerCfg.type === 'sentinelData') {
             const layerKey = getLayerKeyFromConfig(layerCfg);
             const wwdLayer = getLayerByName(layerKey, wwdLayers);   
             //split animation frame
-            window.setTimeout(() => reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged), 0);
+            window.setTimeout(() => reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged, onRenderableAdd), 0);
             // reloadLayer(layerCfg, wwdLayer, wwd, onLayerChanged);
         }
 
         if(layerCfg.type === 'sentinelFootprint') {
             const layerKey = getLayerKeySCIHubResult(layerCfg.results[0]);
             const wwdLayer = getLayerByName(layerKey, wwdLayers);   
-            reloadFootprint(layerCfg, wwdLayer, wwd, onLayerChanged);
+            reloadFootprint(layerCfg, wwdLayer, wwd, onLayerChanged, onRenderableAdd);
         }
     });
 }
