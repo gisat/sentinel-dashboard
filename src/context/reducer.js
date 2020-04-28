@@ -317,7 +317,7 @@ const componentsSearchToolbarClear = (state) => {
 
 export default (state, action) => {
     //change state logging
-    console.log(state, action);
+    // console.log(state, action);
 
     switch(action.type) {
         case types.FOCUS_SATELLITE:

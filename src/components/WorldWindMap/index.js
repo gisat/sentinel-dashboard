@@ -22,7 +22,7 @@ import {
 } from '../../context/actions/map';
 
 // import {setGeometry} from '../../context/actions/components/searchForm/actions';
-import {setGeometry, clearComponent, setVisibility} from '../../context/actions/components/searchToolbar';
+import {setGeometry, clearComponent, setVisibility, updateSearch} from '../../context/actions/components/searchToolbar';
 // import selectors from '../../context/selectors/';
 
 const WorldWindMap = (props) => {
@@ -71,7 +71,7 @@ const WorldWindMap = (props) => {
     }
 
     const searchOnCoords = (coordinates) => {
-        // const {state} = props;
+        const {state} = props;
         
         const geometry = {
             latitude:coordinates.latitude,
@@ -81,17 +81,10 @@ const WorldWindMap = (props) => {
 
 
         //open search toolbar component
-
-        //update search
-            //takes all visible products
-            //search for visible products/satellites on selected place
-            //order products by time
-            //display satName and product type in search toolbar
-            //move camera to product boundaries
-            //move select time to nearest product time
         dispatch(clearComponent());
-        dispatch(setGeometry(geometry));
         dispatch(setVisibility(true));
+        dispatch(setGeometry(geometry));
+        // updateSearch(dispatch, state, geometry);
        
         // Old search
         // const modalKey = `${coordinates.longitude}-${coordinates.latitude}`;

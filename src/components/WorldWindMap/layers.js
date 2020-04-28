@@ -435,6 +435,15 @@ export const getSciProductByKey = async (productKey) => {
     }
 }
 
+export const loadLatestProducts = async (shortName, products, location, beginTime, endTime, startIndex) => {
+    const feed = await productsScihub.load({shortName, products, location, beginTime, endTime, startIndex});
+    if(feed.entry && feed.entry.length > 0) {
+        return feed.entry
+    } else {
+        return null
+    }
+};
+
 export const setRenderablesFromConfig = async (layer, layerConfig, redrawCallback, onLayerChanged, cancelled) => {
     let rejected = false;
     cancelled.catch(() => {

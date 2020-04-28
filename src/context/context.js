@@ -207,17 +207,10 @@ export const initialState = {
         },
         searchToolbar: {
             visible: false,
+            loading: false,
             geometry: null, //{latitude:coordinates.latitude,longitude:coordinates.longitude,altitude:coordinates.altitude}
-            results: {
-                // s1a: [...],
-                // s2a: [...],
-            },
-            orderedResults: [
-                // ['s1a',1],
-                // ['s2a',1],
-                // ['s1a',2]
-            ],
-            activeResult: null, //['s1a',1]
+            orderedResults: [],
+            activeOrderedResultIndex: null,
 
         }
     }

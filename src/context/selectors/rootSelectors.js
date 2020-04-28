@@ -1,4 +1,5 @@
 import createCachedSelector from 're-reselect';
+import { createSelector } from 'reselect'
 import momentjs from 'moment';
 import common from './_common';
 import {getSubstate as getOrbitsSubstate} from './data/orbits';
@@ -52,7 +53,7 @@ export const getPureActiveLayers = createCachedSelector(
     }
 )((state) => {
     const activeLayers = common.getByPath(state, ['activeLayers'])
-    const cacheKey = activeLayers.map(l => `${l.layerKey}${l.satKey}`).join(',');
+    const cacheKey = activeLayers ? activeLayers.map(l => `${l.layerKey}${l.satKey}`).join(',') : 'null';
     return cacheKey;
 })
 
@@ -82,6 +83,26 @@ const getOrbitForLayer = (orbitsSubstate, orbitKey) => {
     const orbit = orbitsSubstate.find(o => o.key === orbitKey);
     return (orbit && orbit.specs) || null;
 }
+
+export const getActiveSatProductsPairs = createCachedSelector([getPureActiveLayers], (activeLayers) => {
+    const activeLayersPairs = activeLayers ? activeLayers.map(l => [l.satKey, l.layerKey]) : [];
+    const mergedBySatellite = activeLayersPairs.reduce((acc, value) => {
+        const sat = value[0];
+        const layerKey = value[1];
+        if(acc.hasOwnProperty(sat)) {
+            return {...acc, [sat]: [...acc[sat], layerKey]};
+        } else {
+            return {...acc, [sat]: [layerKey]};
+        }
+    }, {})
+
+    return Object.entries(mergedBySatellite);
+})((state) => {
+    const activeLayers = getPureActiveLayers(state);
+    const activeLayersPairs = activeLayers ? activeLayers.map(l => `${l.satKey}-${l.layerKey}`) : [];
+    
+    return activeLayersPairs.join(',');
+});
 
 export const getActiveLayers = createCachedSelector(
     getPureActiveLayers,

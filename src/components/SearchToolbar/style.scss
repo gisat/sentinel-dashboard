@@ -15,6 +15,13 @@
     display: flex;
     justify-content: center;
     user-select: none;
+
+    .title{
+        white-space: nowrap;
+        max-width: 24rem;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
 }
 
 @media screen and (max-width: 600px) {
