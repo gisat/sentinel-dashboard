@@ -49,10 +49,10 @@ const SearchToolbarPresentation = (props) => {
 
 
     return (<div className={'search-toolbar'}>
-            { loading ? <div>loading</div> : null}
+            { !displayNoProductsActive && loading ? <div>loading</div> : null}
             { displayNoProductsActive ? <div>No products selected</div> : null}
             { !loading && !displayNoProductsActive &&!activeProduct && activeSatProductsPairs ? <div>No data</div> : null}
-            {activeProduct ? 
+            {!loading && activeProduct ? 
               <>
                 <Button 
                   ghost
