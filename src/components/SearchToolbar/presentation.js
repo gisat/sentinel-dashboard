@@ -1,6 +1,7 @@
-import React, {useRef, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import PropTypes from "prop-types";
 import Icon from '../atoms/Icon';
+import usePrevious from '../../utils/hooks/usePrevious';
 import Button from '../atoms/Button';
 import { css } from '@emotion/core'
 import './style.scss';
@@ -31,22 +32,17 @@ const getSatPairsInString = (satPairs = []) => {
 const SearchToolbarPresentation = (props) => {
     const {onClose, vertical, onPreviousResultClick, onNextResultClick, loading, displayNoProductsActive, activeSatProductsPairs, onSearchParamsChanged, geometry, activeProduct} = props;
 
-    const prevActiveSatProductsPairsRef = useRef();
-    const prevGeometryRef = useRef();
+    const prevAmount = usePrevious({activeSatProductsPairs, geometry});
+
     useEffect(() => {
-      prevActiveSatProductsPairsRef.current = activeSatProductsPairs;
-      prevGeometryRef.current = geometry;
+      if(prevAmount) {
+        const activeSatProductsPairsSame = (prevAmount.activeSatProductsPairs === activeSatProductsPairs) || (prevAmount.activeSatProductsPairs && getSatPairsInString(prevAmount.activeSatProductsPairs) === (activeSatProductsPairs && getSatPairsInString(activeSatProductsPairs)));
+        const geometryChanged = prevAmount.geometry !== geometry;
+        if(!activeSatProductsPairsSame || geometryChanged) {
+          onSearchParamsChanged();
+        }
+      }
     });
-    const prevActiveSatProductsPairs = prevActiveSatProductsPairsRef.current;
-    const activeSatProductsPairsSame = (prevActiveSatProductsPairs === activeSatProductsPairs) || (prevActiveSatProductsPairs && getSatPairsInString(prevActiveSatProductsPairs) === (activeSatProductsPairs && getSatPairsInString(activeSatProductsPairs)));
-    
-    const prevGeometry = prevGeometryRef.current;
-    const geometryChanged = prevGeometry !== geometry;
-
-    if(!activeSatProductsPairsSame || geometryChanged) {
-      onSearchParamsChanged()
-    }
-
 
     return (<div className={'search-toolbar'}>
             { !displayNoProductsActive && loading ? <div>loading</div> : null}
@@ -80,13 +76,29 @@ const SearchToolbarPresentation = (props) => {
 }
 
 SearchToolbarPresentation.propTypes = {
-    vertical:PropTypes.bool,
-    onClose:PropTypes.func,
+    vertical: PropTypes.bool,
+    onClose: PropTypes.func,
+    onPreviousResultClick: PropTypes.func,
+    onNextResultClick: PropTypes.func,
+    loading: PropTypes.bool,
+    displayNoProductsActive: PropTypes.bool,
+    activeSatProductsPairs: PropTypes.array,
+    onSearchParamsChanged: PropTypes.func,
+    geometry: PropTypes.object,
+    activeProduct: PropTypes.object,
   }
 
   SearchToolbarPresentation.defaultProps = {
     vertical:false,
     onClose:() => {},
+    onPreviousResultClick: () => {},
+    onNextResultClick: () => {},
+    loading: false,
+    displayNoProductsActive: false,
+    activeSatProductsPairs: [],
+    onSearchParamsChanged: () => {},
+    geometry: null,
+    activeProduct: null,
   }
 
 export default SearchToolbarPresentation;
