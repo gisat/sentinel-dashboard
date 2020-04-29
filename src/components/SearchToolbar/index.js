@@ -9,6 +9,12 @@ import {
     updateSearch,
 } from '../../context/actions/components/searchToolbar';
 
+import {
+    setTrackTime,
+    stopFollowNow,
+    stopTimer
+} from '../../context/actions';
+
 
 const SearchToolbar = ({dispatch, state}) => {
     //info modal state
@@ -33,14 +39,22 @@ const SearchToolbar = ({dispatch, state}) => {
     }
 
     const onSearchParamsChanged = () => {
+        dispatch(stopFollowNow());
+        dispatch(stopTimer());
         updateSearch(dispatch, state);
     }
 
     const onNextResultClick = nextResultIndex !== null ? () => {
+        dispatch(stopFollowNow());
+        dispatch(stopTimer());
+
         setActiveIndexAndUpdateTime(dispatch, state, nextResultIndex);
     } : null;
 
     const onPreviousResultClick = previousResultIndex !== null ? () => {
+        dispatch(stopFollowNow());
+        dispatch(stopTimer());
+
         setActiveIndexAndUpdateTime(dispatch, state, previousResultIndex);
     } : null;
     
