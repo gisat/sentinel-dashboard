@@ -43,6 +43,10 @@ const getParams = (satName, type) => {
     else if (satName === 's2a' || satName === 's2b') {
         swathWidth = 145;
         translateDistance = undefined;
+    } else if (satName === 's3a' || satName === 's3b') {
+        //FIXME
+        swathWidth = 145;
+        translateDistance = undefined;
     }
 
     return {

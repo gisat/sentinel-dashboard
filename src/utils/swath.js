@@ -38,6 +38,12 @@ const satellitesSwathColors = {
         DARK: '407f7f7f',
         NOBS: '40ffff00',
         VIC: '40ff00ff'
+    },
+    s3a: {
+        "Earth Observation": 'FF0000FF',
+    },
+    s3b: {
+        "Earth Observation": 'FF0000FF',
     }
 }
 
