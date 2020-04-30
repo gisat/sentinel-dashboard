@@ -51,15 +51,20 @@ export const clearComponent = () => {
 };
 
 const getResultBeginDate = (result) => {
-    const strDate = result.date[0]._text;
+    const beginPositionIndex = result.date.findIndex((d) => d._attributes.name === 'beginposition');
+    const strDate = result.date[beginPositionIndex]._text;
+    return strDate ? new Date(strDate) : null;
+}
+
+const getResultEndDate = (result) => {
+    const beginPositionIndex = result.date.findIndex((d) => d._attributes.name === 'endposition');
+    const strDate = result.date[beginPositionIndex]._text;
     return strDate ? new Date(strDate) : null;
 }
 
 const getResultMiddleDate = (result) => {
-    const beginStrDate = result.date[0]._text;
-    const beginDate = beginStrDate ? new Date(beginStrDate) : null;
-    const endStrDate = result.date[1]._text;
-    const endDate = endStrDate ? new Date(endStrDate) : null;
+    const beginDate = getResultBeginDate(result);
+    const endDate = getResultEndDate(result);
 
     if(beginDate && endDate) {
         const middleTime =  beginDate.getTime() + ((endDate.getTime() - beginDate.getTime()) / 2)

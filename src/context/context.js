@@ -64,34 +64,34 @@ export const initialState = {
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
             //sentinel 3
-            'OL_1_EFR': {
-                key: 'OL_1_EFR',
-                name: 'OL_1_EFR',
+            'OL_1_EFR___': {
+                key: 'OL_1_EFR___',
+                name: 'OL_1_EFR___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'OL_1_ERR': {
-                key: 'OL_1_ERR',
-                name: 'OL_1_ERR',
+            'OL_1_ERR___': {
+                key: 'OL_1_ERR___',
+                name: 'OL_1_ERR___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'OL_2_LFR': {
-                key: 'OL_2_LFR',
-                name: 'OL_2_LFR',
+            'OL_2_LFR___': {
+                key: 'OL_2_LFR___',
+                name: 'OL_2_LFR___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'OL_2_LRR': {
-                key: 'OL_2_LRR',
-                name: 'OL_2_LRR',
+            'OL_2_LRR___': {
+                key: 'OL_2_LRR___',
+                name: 'OL_2_LRR___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SR_1_SRA': {
-                key: 'SR_1_SRA',
-                name: 'SR_1_SRA',
+            'SR_1_SRA___': {
+                key: 'SR_1_SRA___',
+                name: 'SR_1_SRA___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SR_1_SRA_A': {
-                key: 'SR_1_SRA_A',
-                name: 'SR_1_SRA_A',
+            'SR_1_SRA_A_': {
+                key: 'SR_1_SRA_A_',
+                name: 'SR_1_SRA_A_',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
             'SR_1_SRA_BS': {
@@ -99,39 +99,39 @@ export const initialState = {
                 name: 'SR_1_SRA_BS',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SR_2_LAN': {
-                key: 'SR_2_LAN',
-                name: 'SR_2_LAN',
+            'SR_2_LAN___': {
+                key: 'SR_2_LAN___',
+                name: 'SR_2_LAN___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SR_1_RBT': {
-                key: 'SR_1_RBT',
-                name: 'SR_1_RBT',
+            'SL_1_RBT___': {
+                key: 'SL_1_RBT___',
+                name: 'SL_1_RBT___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SL_2_LST': {
-                key: 'SL_2_LST',
-                name: 'SL_2_LST',
+            'SL_2_LST___': {
+                key: 'SL_2_LST___',
+                name: 'SL_2_LST___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SY_2_SYN': {
-                key: 'SY_2_SYN',
-                name: 'SY_2_SYN',
+            'SY_2_SYN___': {
+                key: 'SY_2_SYN___',
+                name: 'SY_2_SYN___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SY_2_V10': {
-                key: 'SY_2_V10',
-                name: 'SY_2_V10',
+            'SY_2_V10___': {
+                key: 'SY_2_V10___',
+                name: 'SY_2_V10___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SY_2_VG1': {
-                key: 'SY_2_VG1',
-                name: 'SY_2_VG1',
+            'SY_2_VG1___': {
+                key: 'SY_2_VG1___',
+                name: 'SY_2_VG1___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
-            'SY_2_VGP': {
-                key: 'SY_2_VGP',
-                name: 'SY_2_VGP',
+            'SY_2_VGP___': {
+                key: 'SY_2_VGP___',
+                name: 'SY_2_VGP___',
                 description: 'Level-1 Single Look Complex (SLC) products consist of focused SAR data geo-referenced using orbit and attitude data from the satellite and provided in zero-Doppler slant-range geometry. The products include a single look in each dimension using the full transmit signal bandwidth and consist of complex samples preserving the phase information.'
             },
         },
@@ -140,8 +140,8 @@ export const initialState = {
             {id: 's1b', name: 'S1-B', model: 'S1', iconClass: 'sentinel-1', satData: getSatDataByKey('s1b'), layers:['SLC', 'GRD', 'OCN'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
             {id: 's2a', name: 'S2-A', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2a'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap'],statisticsKey: 'sentinel-2a', acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
             {id: 's2b', name: 'S2-B', model: 'S2', iconClass: 'sentinel-2', satData: getSatDataByKey('s2b'), layers:['S2MSI1C','S2MSI2A','S2MSI2Ap'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
-            {id: 's3a', name: 'S3-A', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3a'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
-            {id: 's3b', name: 'S3-B', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3b'), layers:['OL_1_EFR','OL_1_ERR','OL_2_LFR','OL_2_LRR','SR_1_SRA','SR_1_SRA_A','SR_1_SRA_BS','SR_2_LAN','SR_1_RBT','SL_2_LST','SY_2_SYN','SY_2_V10','SY_2_VG1','SY_2_VGP'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
+            {id: 's3a', name: 'S3-A', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3a'), layers:['OL_1_EFR___','OL_1_ERR___','OL_2_LFR___','OL_2_LRR___','SR_1_SRA___','SR_1_SRA_A_','SR_1_SRA_BS','SR_2_LAN___','SL_1_RBT___','SL_2_LST___','SY_2_SYN___','SY_2_V10___','SY_2_VG1___','SY_2_VGP___'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
+            {id: 's3b', name: 'S3-B', model: 'S3', iconClass: 'sentinel-3', satData: getSatDataByKey('s3b'), layers:['OL_1_EFR___','OL_1_ERR___','OL_2_LFR___','OL_2_LRR___','SR_1_SRA___','SR_1_SRA_A_','SR_1_SRA_BS','SR_2_LAN___','SL_1_RBT___','SL_2_LST___','SY_2_SYN___','SY_2_V10___','SY_2_VG1___','SY_2_VGP___'], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000},
             {id: 's5p', name: 'S-5', model: 'S5', iconClass: 'sentinel-5', satData: getSatDataByKey('s5p'), layers:[], acquisitionPlanTimeWindow: 1200000, productsTimeWindow: 300000}
         ], // All the available satellites.
         orbits: [

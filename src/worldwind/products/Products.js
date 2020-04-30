@@ -285,7 +285,6 @@ export default class Products {
      * @returns {Promise<Object>} Feed from the response.
      */
     async load({shortName, products = [], location, beginTime, endTime, startIndex} = {}) {
-        //tady seskládat 
         const query = new Query({shortName, products, location, beginTime, endTime, startIndex});
         const url = this._baseUrl + query.url();
         const cached = this._cache.get(url);
