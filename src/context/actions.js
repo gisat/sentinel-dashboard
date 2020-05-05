@@ -26,8 +26,6 @@ const DEFAULT_NAVIGATOR = {
     roll: 0,
 }
 
-let timer = null;
-let nowTimer = null;
 let intervalKeyZoom = null;
 let intervalKeyScroll = null;
 
@@ -291,15 +289,12 @@ export const clearComponent = (component) => {
 	}
 }
 
-export const startTrackNowTime = (state, dispatch) => {
-    window.clearInterval(nowTimer);
-    nowTimer = window.setInterval(() => dispatch(nowTick()), 1000);
-    dispatch(nowTick())
-}
-
-const nowTick = () => {
+export const nowTick = (dispatch, state) => {
     const now = getNowUTCString();
-    return changeCurrentTime(now.toString());
+    dispatch(changeCurrentTime(now.toString()));
+    if(select.rootSelectors.getFollowNow(state)) {
+        dispatch(changeSelectTime(now, dispatch, select.rootSelectors.getSelectTime(state), state));
+    }
 };
 
 export const stopTimer = () => {

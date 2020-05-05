@@ -100,28 +100,10 @@ const setSelectTime = (state, action) => {
 }
 
 const setCurrentTime = (state, action) => {
-    //FIXME - should be dispatched separated to set selectTimePastOrCurrent and setSelectTime
     const currentTime = action.payload;
-    let selectTime = select.rootSelectors.getSelectTime(state);
-    //if follow now
-    let selectTimeState = {};
-
-    //not clear solution, because I don't know, how to acces to current state in timer in action
-    let followNow = false;
-    if(select.rootSelectors.getFollowNow(state)) {
-        followNow = true;
-        selectTimeState = setSelectTime(state, {
-            payload: currentTime
-        });
-    }
-    
-    const selectTimeMoment = moment(selectTime);
-
     return {
         ...state,
-        ...selectTimeState,
         currentTime: currentTime,
-        selectTimePastOrCurrent: selectTimeMoment.isAfter(currentTime) || followNow,
     };
 }
 

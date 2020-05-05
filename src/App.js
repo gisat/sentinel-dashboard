@@ -5,12 +5,12 @@ import Div100vh from 'react-div-100vh'
 
 import {Context} from './context/context';
 import {
-    startTrackNowTime,
     setOrientation,
     updateTleData,
     updateApsData,
     changeSelectTime,
     setFollowNow,
+    nowTick
 } from './context/actions';
 import select from './context/selectors/';
 import ProductsModal from './components/ProductsModal/';
@@ -33,11 +33,13 @@ class App extends React.PureComponent {
         }
 
         this.onResize = this.onResize.bind(this);
+        this.startTrackNowTime = this.startTrackNowTime.bind(this);
+        this.tick = this.tick.bind(this);
     }
 
     componentDidMount() {
         const {state, dispatch} = this.context;
-        startTrackNowTime(state, dispatch);
+        this.startTrackNowTime();
         const initTime = getNowUTCString();
         changeSelectTime(initTime, dispatch, initTime)
         //set Tle data
@@ -50,6 +52,18 @@ class App extends React.PureComponent {
         setTimeout(() => {
             dispatch(setFollowNow(true));
         }, 500);
+    }
+
+
+    tick() {
+        const {state, dispatch} = this.context;
+        nowTick(dispatch, state);
+    }
+
+    startTrackNowTime() {
+        const {state, dispatch} = this.context;
+        const timer = window.setInterval(this.tick, 1000);
+        nowTick(dispatch, state);
     }
 
     onResize(width, height) {
