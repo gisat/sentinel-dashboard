@@ -19,10 +19,12 @@ function getChangedViewParams(prev, next) {
 		}
 
 		if ((prev.center.lat !== next.center.lat) ||
-			(prev.center.lon !== next.center.lon) ) {
+			(prev.center.lon !== next.center.lon) ||
+			(prev.center.altitude !== next.center.altitude)) {
 			changed.center = {
 				lat: next.center.lat,
-				lon: next.center.lon
+				lon: next.center.lon,
+				altitude: next.center.altitude,
 			}
 		}
 
@@ -70,6 +72,11 @@ function update(wwd, view) {
 		shouldRedraw = true;
 	}
 
+	if (wwdUpdate.lookAtLocation && wwdUpdate.lookAtLocation.altitude && state.lookAtLocation.altitude !== wwdUpdate.lookAtLocation.altitude){
+		state.lookAtLocation.altitude = wwdUpdate.lookAtLocation.altitude;
+		shouldRedraw = true;
+	}
+
 	// if (wwd.verticalExaggeration && wwdUpdate.elevation && wwd.verticalExaggeration !== wwdUpdate.elevation){
 	// 	wwd.verticalExaggeration = wwdUpdate.elevation;
 	// 	shouldRedraw = true;
@@ -100,6 +107,10 @@ function getWorldWindNavigatorFromViewParams(view) {
 		if (center.lon) {
 			navigator.lookAtLocation.longitude = center.lon;
 		}
+
+		if (center.altitude) {
+			navigator.lookAtLocation.altitude = center.altitude;
+		}
 	}
 
 	return navigator;
@@ -122,6 +133,9 @@ function getViewParamsFromWorldWindNavigator(navigator) {
 		if (lookAtLocation.longitude) {
 			view.center.lon = lookAtLocation.longitude;
 		}
+		if (lookAtLocation.altitude) {
+			view.center.altitude = lookAtLocation.altitude;
+		}
 	}
 
 	if (navigator.heading || navigator.heading === 0) {
@@ -139,8 +153,27 @@ function getViewParamsFromWorldWindNavigator(navigator) {
 	return view;
 }
 
+const updateFixedView = (wwd, viewFixed) => {
+	const navigator = wwd.navigator;
+	const worldWindowController = wwd.worldWindowController;
+	let changed = false;
+	if(navigator.camera._isFixed !== viewFixed) {
+		navigator.camera._isFixed = viewFixed;
+		changed = true;
+	}
+	if(worldWindowController._isFixed !== viewFixed) {
+		worldWindowController._isFixed = viewFixed;
+		changed = true;
+	}
+
+	if(changed) {
+		wwd.redraw();
+	}
+}
+
 export default {
 	getChangedViewParams,
 	getViewParamsFromWorldWindNavigator,
-	update
+	update,
+	updateFixedView,
 }

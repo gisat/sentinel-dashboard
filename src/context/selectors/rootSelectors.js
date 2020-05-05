@@ -65,7 +65,7 @@ export function getPeriodLimit (state)  {return common.getByPath(state, ['period
 
 export function getLandscape (state)  {return common.getByPath(state, ['landscape'])};
 
-export function getFocusedSattelite (state)  {return common.getByPath(state, ['focus'])};
+export function getFocusedSatellite (state)  {return common.getByPath(state, ['focus'])};
 
 //round time on minutes to prevent rerender on every second?
 
@@ -113,7 +113,7 @@ export const getActiveLayers = createCachedSelector(
     getVisibleAcquisitionsPlans,
     getVisibleStatistics,
     (state, selectTime) => selectTime,
-    getFocusedSattelite,
+    getFocusedSatellite,
     getSearchLayer,
     (activeLayers, selectTimePastOrCurrent, orbitsSubstate, satellitesSubstate, acquisitionPlans, visibleAcquisitionsPlans, visibleStatistics, selectTime, focusedSatellite, searchLayer) => {
     const activeSentinelLayers = [];

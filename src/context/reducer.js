@@ -113,19 +113,6 @@ const setCurrentTime = (state, action) => {
         selectTimeState = setSelectTime(state, {
             payload: currentTime
         });
-
-        const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
-        if(focusedSatellite) {
-            const orbitInfo = state.data.orbits
-                .filter(orbit => {
-                    return orbit.key === 'orbit-' + focusedSatellite
-                })[0];
-            if (state.wwd && orbitInfo) {
-                const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-                const position = EoUtils.getOrbitPosition(satrec, new Date(currentTime));
-                state.wwd.goTo(position);
-            }
-        }
     }
     
     const selectTimeMoment = moment(selectTime);
@@ -203,10 +190,6 @@ const updateInfoModal = (state, action) => {
 const setActiveInfoModal = (state, action) => {
     const {modalKey} = action.payload
     return {...state, infoModal: {...state.infoModal, active: modalKey}};
-}
-
-const setWwd = (state, action) => {
-    return {...state, wwd: action.payload};
 }
 
 const updateActiveLayer = (state, action) => {
@@ -362,8 +345,6 @@ export default (state, action) => {
             return dataUpdateAcquisitionPlan(state, action);
         case types.DATA_ACQUISITIONPLANS_SET_VISIBLE_COUNT:
             return setVisibleAcquisitionPlan(state, action);
-        case types.SET_WWD:
-            return setWwd(state, action);
         case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:
             return mapAddVisibleAcquisitionPlan(state, action);
         case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:

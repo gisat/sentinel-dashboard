@@ -70,7 +70,7 @@ class Map extends Component {
     }
 
     componentDidUpdate (prevProps) {
-        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload} = this.props;
+        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload, viewFixed} = this.props;
 
         if(focusedSatellite !== prevProps.focusedSatellite) {
             console.log("focused satellite changed", focusedSatellite)
@@ -79,6 +79,10 @@ class Map extends Component {
         // TODO compare references only?
         if (view && prevProps.view !== view) {
             this.updateNavigator();
+        }
+
+        if (viewFixed !== prevProps.viewFixed) {
+            this.updateViewFixed(viewFixed);
         }
         
         const enabledLayersKeys = this.props.layers.filter(l => !l.disabled);
@@ -246,7 +250,6 @@ class Map extends Component {
             const enabledLayers = this.props.layers.filter(l => !l.disabled);
             const wwdLayers = getLayers(enabledLayers, time, this.wwd, onLayerChanged, currentTime);
             this.handleLayers(wwdLayers);
-            this.props.onWwdCreated(this.wwd);
             this.updateNavigator(defaultMapView);
         }
     }
@@ -263,7 +266,11 @@ class Map extends Component {
             }
         }
 		navigator.update(this.wwd, nextView);
-	}
+    }
+    
+    updateViewFixed(viewFixed) {
+        navigator.updateFixedView(this.wwd, viewFixed);
+    }
 
     render(){
         return (

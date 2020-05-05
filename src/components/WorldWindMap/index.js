@@ -6,7 +6,6 @@ import {
     updateActiveLayer,
     updateInfoModal,
     setActiveInfoModal,
-    setWwd,
     dataUpdateAcquisitionPlan,
     dataAcquisitionPlanSetVisibleCount,
     // clearComponent,
@@ -115,18 +114,15 @@ const WorldWindMap = (props) => {
         
     }
 
-    const onWwdCreated = (wwd) => {
-        dispatch(setWwd(wwd));
-    };
-
     // prevent reloading layers while moving timeline
     const timelineState = select.components.timeline.getSubstate(state);
     const preventReloadLayers = select.rootSelectors.getPreventReloadLayers(state) || timelineState.moving;
     const selectTime = select.rootSelectors.getSelectTime(state);
     const currentTime = new Date(select.rootSelectors.getCurrentTime(state));
-    const focusedSatellite = select.rootSelectors.getFocusedSattelite(state);
+    const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
     const layers = select.rootSelectors.getActiveLayers(state, selectTime);
     const view = select.map.getView(state);
+    const viewFixed = !!focusedSatellite;
 
     const onViewChange = (view) => {
         dispatch(setView(view));
@@ -134,6 +130,7 @@ const WorldWindMap = (props) => {
 
     return (
         <Presentation 
+            viewFixed={viewFixed}
             time={selectTime}
             currentTime={currentTime}
             layers = {layers}
@@ -141,7 +138,6 @@ const WorldWindMap = (props) => {
             onLayerChanged={onLayerChanged}
             onProductsClick={onProductsClick}
             searchOnCoords={searchOnCoords}
-            onWwdCreated={onWwdCreated}
             preventReload={preventReloadLayers}
             onViewChange={onViewChange}
             view={view}

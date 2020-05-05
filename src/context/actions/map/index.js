@@ -1,5 +1,22 @@
 import types from '../../types';
 
+
+export const setViewFromNavigator = (navigator) => {
+    const mapView = {
+        center: {
+            lat: navigator.lookAtLocation.latitude,
+            lon: navigator.lookAtLocation.longitude,
+            altitude: navigator.lookAtLocation.altitude
+        },
+        range: navigator.range,
+        heading: navigator.heading,
+        tilt: navigator.tilt,
+        roll: navigator.roll,
+
+    }
+    return setView(mapView);
+}
+
 export const setView = (mapView) => {
     return {
         type: types.MAP.SET_VIEW,

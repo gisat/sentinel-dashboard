@@ -7,8 +7,11 @@ import {
     toggleAcquisitionPlan,
     toggleStatistics,
     updateComponent,
-    toggleSatelliteFocus,
+    setNavigatorFromOrbit,
+    focusSatellite,
+    clearComponent,
 } from '../../context/actions';
+import {setView} from '../../context/actions/map';
 
 const SetalliteSelect = (props) => {
     const {dispatch, state, maxHeight} = props;
@@ -31,9 +34,25 @@ const SetalliteSelect = (props) => {
         dispatch(toggleStatistics(state, satKey));
     }
 
-    const onSatteliteClick = (satKey) => {
+    const onSatelliteClick = (satKey) => {
         const {state} = props;
-        dispatch(toggleSatelliteFocus(satKey, state))
+        const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
+        const satelliteIsFocused = focusedSatellite === satKey;
+        if(satelliteIsFocused) {
+            dispatch(focusSatellite(null))
+            //TODO - dont set prev navigator, but respect current
+            const prevNavigator = select.components.navigatorBackup.getSubstate(state);
+            dispatch(setView(prevNavigator));
+            dispatch(clearComponent('navigatorBackup'));
+        } else {
+            const navigator = select.map.getView(state);
+            //save current view
+            dispatch(updateComponent('navigatorBackup', {...navigator, center: {...navigator.center}}));
+            dispatch(focusSatellite(satKey))
+            const orbitInfo = select.data.orbits.getByKey(state, `orbit-${satKey}`);
+            const selectTime = select.rootSelectors.getSelectTime(state);
+            dispatch(setNavigatorFromOrbit(selectTime, orbitInfo));
+        }
     }
 
     const onSatelliteCollapsClick = (evt) => {
@@ -51,7 +70,7 @@ const SetalliteSelect = (props) => {
             options={sateliteOptions}
             open={satelliteSelectState.open}
             onLayerClick={onLayerClick}
-            onSatteliteClick={onSatteliteClick}
+            onSatelliteClick={onSatelliteClick}
             onAcquisitionPlanClick={onAcquisitionPlanClick}
             onStatisticsClick={onStatisticsClick}
             onCollapsClick={onSatelliteCollapsClick}

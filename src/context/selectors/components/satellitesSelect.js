@@ -5,7 +5,7 @@ import {getSubstate as getSatellitesSubstate} from '../data/satellites';
 import {getVisibleAcquisitionsPlans, getVisibleStatistics, getLoadingStatistics} from '../map';
 import {getSubstate as getLayersSubstate, getByKey as getLayerByKey} from '../data/layers';
 import {getPlansForDate, getLoadingAcquisitionsPlans} from '../data/acquisitionPlans';
-import {getActiveLayers, getActiveLayerByKey, getFocusedSattelite, isLayerDisabled, getSelectTimePastOrCurrent, getSelectTime} from '../rootSelectors';
+import {getActiveLayers, getActiveLayerByKey, getFocusedSatellite, isLayerDisabled, getSelectTimePastOrCurrent, getSelectTime} from '../rootSelectors';
 import satellitesUtils from '../../../utils/satellites';
 
 const getSubstate = (state) => common.getByPath(state, ['components', 'satelliteSelect']);
@@ -17,7 +17,7 @@ const getSatelitesSelectOptions = createSelector(
         getSatellitesSubstate,
         getLayersSubstate,
         getActiveLayers,
-        getFocusedSattelite,
+        getFocusedSatellite,
         getSelectTimePastOrCurrent,
         getVisibleAcquisitionsPlans,
         getVisibleStatistics,
@@ -26,7 +26,7 @@ const getSatelitesSelectOptions = createSelector(
         getLoadingStatistics,
         getSelectTime,
     ],
-    (satellites, layersSubState, activeLayers, focusedSattelite, selectTimePastOrCurrent, visibleAcquisitionsPlans, visibleStatistics, acquisitionPlansData, loadingAcquisitionsPlans, loadingStatistics, selectTime) => {
+    (satellites, layersSubState, activeLayers, focusedSatellite, selectTimePastOrCurrent, visibleAcquisitionsPlans, visibleStatistics, acquisitionPlansData, loadingAcquisitionsPlans, loadingStatistics, selectTime) => {
         
         const getLayerOption = (layerKey, satConfig) => {
             const satKey = satConfig.id;
@@ -59,14 +59,14 @@ const getSatelitesSelectOptions = createSelector(
                     value: satConfig.id,
                     icon: satConfig.iconClass,
                     disabled: !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
-                    active: focusedSattelite === satConfig.id,
+                    active: focusedSatellite === satConfig.id,
                     loading: loadingAcquisitionsPlans.some(l => l.key === satConfig.id) || loadingStatistics.some(s => s.key === satConfig.id), //todo
                 },
                 label: satConfig.name,
                 options: []
             }
 
-            //add acquisition plan option if sattelite contains data for it
+            //add acquisition plan option if satellite contains data for it
             if(hasAPS) {
                 satOption.options.push({
                     type: 'acquisitionPlan',
@@ -80,7 +80,7 @@ const getSatelitesSelectOptions = createSelector(
                 })
             }
 
-            //add acquisition plan option if sattelite contains data for it
+            //add acquisition plan option if satellite contains data for it
             if(hasStatistics) {
                 satOption.options.push({
                     type: 'statistics',

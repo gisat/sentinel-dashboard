@@ -158,11 +158,15 @@ export const initialState = {
     map: {
         acquisitionPlans: [],
         statistics: [],
-        view: {},
+        viewFocused: false,
+        view: {
+            boxRange: 10060000,
+            center: {lat: 41, lon: 7}
+        },
     },
     periodLimit: stringPeriodLimit,
     activeLayers: [],
-    focus: null, // Fix camera on sattelite
+    focus: null, // Fix camera on satellite
     selectTime: null,
     currentTime: getNowUTCString(),
     landscape: true,
@@ -211,8 +215,8 @@ export const initialState = {
             geometry: null, //{latitude:coordinates.latitude,longitude:coordinates.longitude,altitude:coordinates.altitude}
             orderedResults: [],
             activeOrderedResultIndex: null,
-
-        }
+        },
+        navigatorBackup: {},
     }
 };
 

@@ -1,6 +1,7 @@
 import types from './types';
 import moment from 'moment';
 import select from './selectors/';
+import {setViewFromNavigator, setView} from './actions/map';
 import {getInside} from '../utils/period';
 import {getNowUTCString} from '../utils/date';
 import {getTle} from '../utils/tle';
@@ -8,77 +9,80 @@ import {getAllAcquisitionPlans} from '../utils/acquisitionPlans';
 import satellitesUtils from '../utils/satellites';
 import WorldWind from 'webworldwind-esa';
 import WordWindX from 'webworldwind-x';
+
 const {
     EoUtils
 } = WordWindX;
 
-const {
-    Position
-} = WorldWind;
-
+const DEFAULT_NAVIGATOR = {
+    lookAtLocation: {
+        latitude: 0,
+        longitude: 0,
+        altitude: 0,
+    },
+    range: 0,
+    heading: 0,
+    tilt: 0,
+    roll: 0,
+}
 
 let timer = null;
 let nowTimer = null;
 let intervalKeyZoom = null;
 let intervalKeyScroll = null;
-/**
- * 
- * @param {string} satelliteId 
- * @param {Object} state 
- */
-export const toggleSatelliteFocus = (satelliteId, state) => {
-    const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
-    const satteliteIsFocused = focusedSattelite === satelliteId;
 
-    const orbitInfo = state.data.orbits
-        .filter(orbit => {return orbit.key === 'orbit-' + satelliteId})[0];
+export const focusSatellite = (satelliteId) => {
+    return {
+        type: types.FOCUS_SATELLITE,
+        payload: satelliteId
+    }
+}
 
-    state.wwd.worldWindowController._isFixed = !satteliteIsFocused;
-    state.wwd.navigator.camera._isFixed = !satteliteIsFocused;
-    if(state.wwd && orbitInfo && !satteliteIsFocused) {
-        const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-        const position = EoUtils.getOrbitPosition(satrec, new Date(state.selectTime));
+// export const resetNavigatorFromPrevState = (state) => {
+
+//     const savedNavigator = {};
+//     // const currentPosition = state.wwd.navigator.lookAtLocation;
+//     const navigator = {
+//         lookAtLocation: {
+//             latitude: savedNavigator.latitude,
+//             longitude: savedNavigator.longitude,
+//             altitude: savedNavigator.altitude
+//         },
+//         // The range needs to be changed gradually to tha altitude of the satellite.
+//         // This one needs to properly clean to the satellite.
+//         range: 2 * savedNavigator.altitude,
+//         heading: 0,
+//         tilt: 0,
+//         roll: 0,
+//     }
+
+//     return setNavigator(navigator)
+
+// }
+export const setNavigatorFromOrbit = (selectTime, orbitInfo) => {
+    const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
+    const position = EoUtils.getOrbitPosition(satrec, new Date(selectTime));
+    const navigator = {
+        lookAtLocation: {
+            latitude: position.latitude,
+            longitude: position.longitude,
+            altitude: position.altitude
+        },
         // The range needs to be changed gradually to tha altitude of the satellite.
         // This one needs to properly clean to the satellite.
-
-        state.wwd.navigator.range = 2 * position.altitude;
-        state.wwd.navigator.lookAtLocation.latitude = position.latitude;
-        state.wwd.navigator.lookAtLocation.longitude = position.longitude;
-        state.wwd.navigator.lookAtLocation.altitude = position.altitude;
-        state.wwd.redraw();
+        range: 2 * position.altitude,
     }
+    
+    return setNavigator(navigator)
 
-    if (satteliteIsFocused) {
-        const currentPosition = state.wwd.navigator.lookAtLocation;
-        // Simply clean heading, roll and tilt to 0 gradually. The range should change to twice the current.
-        // No position change necessary.
-        state.wwd.navigator.range = 2 * currentPosition.altitude;
-        state.wwd.navigator.lookAtLocation.latitude = currentPosition.latitude;
-        state.wwd.navigator.lookAtLocation.longitude = currentPosition.longitude;
-        state.wwd.navigator.lookAtLocation.altitude = currentPosition.altitude;
-        state.wwd.navigator.heading = 0;
-        state.wwd.navigator.tilt = 0;
-        state.wwd.navigator.roll = 0;
-        state.wwd.redraw();
-
-        return {
-            type: types.FOCUS_SATELLITE,
-            payload: null
-        };
-    } else {
-        return {
-            type: types.FOCUS_SATELLITE,
-            payload: satelliteId
-        };
-    }
-};
-
-export const setWwd = (wwd) => {
-    return {
-        type: types.SET_WWD,
-        payload: wwd
-    }
-};
+}
+export const updateNavigator = (prevNavigator, navigator) => {
+    const updatedNavigator = {...DEFAULT_NAVIGATOR, ...prevNavigator, ...navigator};
+    return setNavigator(updatedNavigator);
+}
+export const setNavigator = (navigator) => {
+    return setViewFromNavigator(navigator);
+}
 
 /**
  * 
@@ -202,29 +206,26 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
         updateTleData(dispatch, time);
     }
 
-
-    const focusedSattelite = select.rootSelectors.getFocusedSattelite(state);
-
-    if(focusedSattelite) {
-        const satellite = select.data.satellites.getSatelliteByKey(state, focusedSattelite);
+    const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
+    const viewFixed = !!focusedSatellite;
+    if(focusedSatellite) {
+        const satellite = select.data.satellites.getSatelliteByKey(state, focusedSatellite);
         const isReleased = satellitesUtils.isSatelliteReleaseBeforeDate(satellite, selectTime)
-
-        if(isReleased && state.wwd.worldWindowController._isFixed) {
-            const orbitInfo = state.data.orbits
-            .filter(orbit => {return orbit.key === 'orbit-' + focusedSattelite})[0];
-            const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
-            const position = EoUtils.getOrbitPosition(satrec, new Date(time));
+        if(isReleased && viewFixed) {
+            const orbitInfo = select.data.orbits.getByKey(state, `orbit-${focusedSatellite}`);
             // The range needs to be changed gradually to tha altitude of the satellite.
             // This one needs to properly clean to the satellite.
             // state.wwd.navigator.range = 2 * position.altitude;
-            
-            state.wwd.navigator.lookAtLocation.latitude = position.latitude;
-            state.wwd.navigator.lookAtLocation.longitude = position.longitude;
-            state.wwd.navigator.lookAtLocation.altitude = position.altitude;
-            state.wwd.redraw();
-        } else if(!isReleased && state.wwd.worldWindowController._isFixed){
+            //TODO - hold camera position when crossing poles
+            dispatch(setNavigatorFromOrbit(new Date(time), orbitInfo));
+        } else if(!isReleased && viewFixed){
             //release focused satellite if selected date is before satellite release
-            dispatch(toggleSatelliteFocus(focusedSattelite, state));
+            dispatch(focusSatellite(null))
+            //TODO - dont set prev navigator, but respect current
+            const prevNavigator = select.components.navigatorBackup.getSubstate(state);
+            dispatch(setView(prevNavigator));
+            dispatch(clearComponent('navigatorBackup'));
+
         }
     }
 

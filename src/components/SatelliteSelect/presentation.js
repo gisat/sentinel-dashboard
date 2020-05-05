@@ -23,7 +23,7 @@ class Select extends React.PureComponent {
     static defaultProps = {
         onLayerClick: () => {},
         onCollapsClick: () => {},
-        onSatteliteClick: () => {},
+        onSatelliteClick: () => {},
         onAcquisitionPlanClick: () => {},
         onStatisticsClick: () => {},
     }
@@ -35,7 +35,7 @@ class Select extends React.PureComponent {
         onLayerClick: PropTypes.func,
         onInfoClick: PropTypes.func,
         onCollapsClick: PropTypes.func,
-        onSatteliteClick: PropTypes.func,
+        onSatelliteClick: PropTypes.func,
         onAcquisitionPlanClick: PropTypes.func,
         onStatisticsClick: PropTypes.func,
         onReleaseCamera: PropTypes.func,
@@ -43,7 +43,7 @@ class Select extends React.PureComponent {
     }
 
     render() {
-        const {open, options, onCollapsClick, onSatteliteClick, maxHeight, onLayerClick, onAcquisitionPlanClick, onStatisticsClick} = this.props;
+        const {open, options, onCollapsClick, onSatelliteClick, maxHeight, onLayerClick, onAcquisitionPlanClick, onStatisticsClick} = this.props;
 
         // style
         //TODO -> extract style to file
@@ -164,7 +164,7 @@ class Select extends React.PureComponent {
         const components = {
             ValueContainer: ValueContainer,
             Option: getOption({onLayerClick, onAcquisitionPlanClick, onStatisticsClick}),
-            GroupHeading: getSatelliteGroupHeading(onSatteliteClick),
+            GroupHeading: getSatelliteGroupHeading(onSatelliteClick),
             Group: SatelliteGroupOption,
             SelectContainer,
         }
