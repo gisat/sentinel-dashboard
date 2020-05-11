@@ -36,28 +36,7 @@ export const focusSatellite = (satelliteId) => {
     }
 }
 
-// export const resetNavigatorFromPrevState = (state) => {
-
-//     const savedNavigator = {};
-//     // const currentPosition = state.wwd.navigator.lookAtLocation;
-//     const navigator = {
-//         lookAtLocation: {
-//             latitude: savedNavigator.latitude,
-//             longitude: savedNavigator.longitude,
-//             altitude: savedNavigator.altitude
-//         },
-//         // The range needs to be changed gradually to tha altitude of the satellite.
-//         // This one needs to properly clean to the satellite.
-//         range: 2 * savedNavigator.altitude,
-//         heading: 0,
-//         tilt: 0,
-//         roll: 0,
-//     }
-
-//     return setNavigator(navigator)
-
-// }
-export const setNavigatorFromOrbit = (selectTime, orbitInfo) => {
+export const setNavigatorFromOrbit = (selectTime, orbitInfo, prevMapView) => {
     const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
     const position = EoUtils.getOrbitPosition(satrec, new Date(selectTime));
     const navigator = {
@@ -71,9 +50,10 @@ export const setNavigatorFromOrbit = (selectTime, orbitInfo) => {
         range: 2 * position.altitude,
     }
     
-    return setNavigator(navigator)
+    return updateNavigator(prevMapView, navigator)
 
 }
+
 export const updateNavigator = (prevNavigator, navigator) => {
     const updatedNavigator = {...DEFAULT_NAVIGATOR, ...prevNavigator, ...navigator};
     return setNavigator(updatedNavigator);
@@ -211,11 +191,8 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
         const isReleased = satellitesUtils.isSatelliteReleaseBeforeDate(satellite, selectTime)
         if(isReleased && viewFixed) {
             const orbitInfo = select.data.orbits.getByKey(state, `orbit-${focusedSatellite}`);
-            // The range needs to be changed gradually to tha altitude of the satellite.
-            // This one needs to properly clean to the satellite.
-            // state.wwd.navigator.range = 2 * position.altitude;
-            //TODO - hold camera position when crossing poles
-            dispatch(setNavigatorFromOrbit(new Date(time), orbitInfo));
+            const mapView = select.map.getPureView(state);
+            dispatch(setNavigatorFromOrbit(new Date(time), orbitInfo, mapView));
         } else if(!isReleased && viewFixed){
             //release focused satellite if selected date is before satellite release
             dispatch(focusSatellite(null))

@@ -11,8 +11,6 @@ import {
     getLayerKeyFromConfig,
     getLayerIdFromConfig,
     reloadLayersRenderable,
-    reloadFootprintLayersRenderable,
-    getLayerKeySCIHubResult,
 } from './layers';
 import './style.css';
 import EnabledController from "../../worldwind/EnabledController";
@@ -76,9 +74,8 @@ class Map extends Component {
             console.log("focused satellite changed", focusedSatellite)
         }
 
-        // TODO compare references only?
         if (view && prevProps.view !== view) {
-            this.updateNavigator();
+            this.updateNavigator(null);
         }
 
         if (viewFixed !== prevProps.viewFixed) {
@@ -206,12 +203,14 @@ class Map extends Component {
         }
     }
 
+    // Handler called after user interaction
     onNavigatorChange(event) {
+        const {view} = this.props;
 		if (event) {
             const viewParams = navigator.getViewParamsFromWorldWindNavigator(event);
             
-			const changedViewParams = navigator.getChangedViewParams({...defaultMapView, ...this.props.view}, viewParams);
-
+            const changedViewParams = navigator.getChangedViewParams({...defaultMapView, ...view}, viewParams);
+            
             if(changedViewParams.boxRange < MINRANGE){
                 changedViewParams.boxRange = MINRANGE;
             }
@@ -240,6 +239,11 @@ class Map extends Component {
             decorateWorldWindowController(this.wwd.worldWindowController);
             this.wwd.worldWindowController.onNavigatorChanged = this.onNavigatorChange.bind(this);
 
+            if(this.wwd.worldWindowController.fixedController) {
+                decorateWorldWindowController(this.wwd.worldWindowController.fixedController);
+                this.wwd.worldWindowController.fixedController.onNavigatorChanged = this.onNavigatorChange.bind(this);
+            }
+
             this.wwd.animator = new Animator(this.wwd);
             this.wwd.deepPicking = true;
 
@@ -254,9 +258,12 @@ class Map extends Component {
         }
     }
 
+    // Apply changed mapView into WWW navigator
 	updateNavigator(defaultView) {
-		let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
-        let nextView = {...currentView, ...this.props.view};
+        const {view} = this.props;
+        let currentView = defaultView || navigator.getViewParamsFromWorldWindNavigator(this.wwd.navigator);
+        
+        let nextView = {...currentView, ...view};
 
         //call onUpdateNavigator on each wwd layer
         const layers = this.wwd.layers;
@@ -265,6 +272,7 @@ class Map extends Component {
                 layer.onUpdateNavigator(nextView);
             }
         }
+
 		navigator.update(this.wwd, nextView);
     }
     

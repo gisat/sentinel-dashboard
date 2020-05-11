@@ -11,7 +11,7 @@ import {
     focusSatellite,
     clearComponent,
 } from '../../context/actions';
-import {setView} from '../../context/actions/map';
+import {setView, updateMapView} from '../../context/actions/map';
 
 const SetalliteSelect = (props) => {
     const {dispatch, state, maxHeight} = props;
@@ -39,19 +39,23 @@ const SetalliteSelect = (props) => {
         const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
         const satelliteIsFocused = focusedSatellite === satKey;
         if(satelliteIsFocused) {
+            //disable focused satellite
             dispatch(focusSatellite(null))
             //TODO - dont set prev navigator, but respect current
             const prevNavigator = select.components.navigatorBackup.getSubstate(state);
+            dispatch(updateMapView({headingCorrection: 0}));
             dispatch(setView(prevNavigator));
             dispatch(clearComponent('navigatorBackup'));
         } else {
+            //set focused satellite
             const navigator = select.map.getView(state);
             //save current view
             dispatch(updateComponent('navigatorBackup', {...navigator, center: {...navigator.center}}));
             dispatch(focusSatellite(satKey))
             const orbitInfo = select.data.orbits.getByKey(state, `orbit-${satKey}`);
             const selectTime = select.rootSelectors.getSelectTime(state);
-            dispatch(setNavigatorFromOrbit(selectTime, orbitInfo));
+            const mapView = select.map.getView(state);
+            dispatch(setNavigatorFromOrbit(selectTime, orbitInfo, mapView));
         }
     }
 

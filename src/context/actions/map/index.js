@@ -14,9 +14,18 @@ export const setViewFromNavigator = (navigator) => {
         roll: navigator.roll,
 
     }
-    return setView(mapView);
+
+    return updateMapView(mapView);
 }
 
+export const updateMapView = (mapView) => {
+    return {
+        type: types.MAP.UPDATE_VIEW,
+        payload: {
+            view: mapView,
+        }
+    }
+}
 export const setView = (mapView) => {
     return {
         type: types.MAP.SET_VIEW,

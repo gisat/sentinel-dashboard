@@ -18,6 +18,10 @@ function getChangedViewParams(prev, next) {
 			changed.roll = next.roll;
 		}
 
+		if (prev.headingCorrection !== next.headingCorrection){
+			changed.headingCorrection = next.headingCorrection;
+		}
+
 		if ((prev.center.lat !== next.center.lat) ||
 			(prev.center.lon !== next.center.lon) ||
 			(prev.center.altitude !== next.center.altitude)) {
@@ -74,6 +78,11 @@ function update(wwd, view) {
 
 	if (wwdUpdate.lookAtLocation && wwdUpdate.lookAtLocation.altitude && state.lookAtLocation.altitude !== wwdUpdate.lookAtLocation.altitude){
 		state.lookAtLocation.altitude = wwdUpdate.lookAtLocation.altitude;
+		shouldRedraw = true;
+	}
+
+	if (state.lookAtLocation && state.lookAtLocation.altitude && wwdUpdate.lookAtLocation && !wwdUpdate.lookAtLocation.hasOwnProperty('altitude')){
+		state.lookAtLocation.altitude = 0;
 		shouldRedraw = true;
 	}
 

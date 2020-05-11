@@ -40,18 +40,22 @@ const DEFAULT_MODEL_OPTIONS = {
  * @param options {Object}
  * @param options.key {String}
  * @param options.time {Date} Time of the satellite.
+ * @param options.onLayerChanged {func}
  * @augments WorldWind.RenderableLayer
  * @constructor
  */
 class SatelliteModelLayer extends RenderableLayer {
 	constructor(options, satelliteOptions) {
         super(options);
+        this.type = 'SatelliteModelLayer';
         this._satelliteOptions = satelliteOptions;
         this._rerenderMap = null;
         this.key = options.key;
         this.model = null;
         this.time = options.time;
         this.Tle = null;
+        this.heading = null;
+        this.onLayerChanged = options.onLayerChanged || null;
     };
     
     /**
@@ -110,6 +114,18 @@ class SatelliteModelLayer extends RenderableLayer {
         const nextPosition = EoUtils.getOrbitPosition(satrec, new Date(now + 10000));
         const headingRad = EoUtils.headingAngleRadians(currentPosition.latitude, currentPosition.longitude, nextPosition.latitude, nextPosition.longitude);
         const heading = EoUtils.rad2deg(headingRad);
+        this.heading = heading;
+
+        if(typeof this.onLayerChanged === 'function') {
+            this.onLayerChanged({
+                satKey: this.satName,
+                layerKey: this.key,
+                type: this.type,
+            }, {update: {
+                heading: this.heading
+            }});
+        }
+
         const angle = (heading + rotations.headingAdd) * rotations.headingMultiply;
 
         if (heading !== 0) {

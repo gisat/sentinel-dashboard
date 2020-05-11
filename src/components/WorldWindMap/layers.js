@@ -301,7 +301,7 @@ const getSwathLayer = (layerConfig, wwd, time) => {
     }
 }
 
-const getSatelliteLayer = (layerConfig, time, wwd) => {
+const getSatelliteLayer = (layerConfig, time, wwd, onLayerChanged) => {
     const layerKey = layerConfig.key;
     const cacheLayer = layersCache.get(layerKey);
     if(cacheLayer) {
@@ -324,7 +324,7 @@ const getSatelliteLayer = (layerConfig, time, wwd) => {
             translations: layerConfig.satData.translations,
             ignoreLocalTransforms: layerConfig.satData.ignoreLocalTransforms,
         }
-        const layer = new SatelliteModelLayer({key: layerKey, time: time}, options);
+        const layer = new SatelliteModelLayer({key: layerKey, time: time, onLayerChanged}, options);
         layer.setRerender(() => wwd.redraw());
         getModel(`${layerConfig.satData.filePath}${layerConfig.satData.fileName}`, layerKey).then(
             (model) => {
@@ -363,7 +363,7 @@ export const getLayers = createCachedSelector([
     const orbitLayers = orbitLayersConfigs.map((o) => getOrbitLayer(o, time, wwd, currentTime));
 
     const satellitesLayersConfigs = filterSatelliteLayersConfigs(layersConfig);
-    const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd));
+    const satelliteLayers = satellitesLayersConfigs.map((s) => getSatelliteLayer(s, time, wwd, onLayerChanged));
     
     const acquisitionPlanLayersConfigs = filterAcquisitionPlanLayersConfigs(layersConfig);
     const acquisitionPlanLayers = acquisitionPlanLayersConfigs.map((s) => getAcquisitionPlanLayer(s, wwd, time, onLayerChanged));

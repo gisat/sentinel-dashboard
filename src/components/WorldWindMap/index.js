@@ -13,8 +13,12 @@ import {
 } from '../../context/actions';
 
 import{
-    updateStatistics
+    updateStatistics,
 } from '../../context/actions/map';
+
+import{
+    setHeadingAndUpdateViewHeadingCorrection
+} from '../../context/actions/data/satellites/actions';
 
 import {
     setView,
@@ -42,6 +46,9 @@ const WorldWindMap = (props) => {
             //TODO -set statistics are loading
             // dispatch(updateActiveLayer(layerKey, change))
             dispatch(updateStatistics(layerKey.satKey, change));
+        } else if(layerKey && layerKey.type && layerKey.type === 'SatelliteModelLayer') {
+            //set heading to satellite
+            dispatch(setHeadingAndUpdateViewHeadingCorrection(layerKey.layerKey, change.update.heading));
         } else {
             dispatch(updateActiveLayer(layerKey, change))
         }     
@@ -125,7 +132,12 @@ const WorldWindMap = (props) => {
     const viewFixed = !!focusedSatellite;
 
     const onViewChange = (view) => {
-        dispatch(setView(view));
+        const mapView = select.map.getView(state);
+        const updateView = {...view};
+        if(mapView.hasOwnProperty('headingCorrection')) {
+            updateView.heading += mapView.headingCorrection;
+        }
+        dispatch(setView(updateView));
     }
 
     return (

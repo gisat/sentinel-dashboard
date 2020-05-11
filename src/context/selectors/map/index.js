@@ -15,11 +15,24 @@ const isVisibleStatisticsByKey = (state, key) => {
     return statistics && statistics.includes(key);
 };
 
-const getView = (state) => getSubstate(state)['view'];
+const getView = (state) => {
+    const view = getSubstate(state)['view'];
+    if(view.hasOwnProperty('headingCorrection')) {
+        return {
+            ...view,
+            heading: view.heading - view.headingCorrection
+        }
+    } else {
+        return view;
+    }
+};
+
+const getPureView = (state) => getSubstate(state)['view'];
 
 export {
     getSubstate,
     getView,
+    getPureView,
     getVisibleAcquisitionsPlans,
     getVisibleStatistics,
     getLoadingStatistics,

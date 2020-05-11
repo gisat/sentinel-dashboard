@@ -239,6 +239,25 @@ const setVisibleAcquisitionPlan = (state, action) => {
     return {...state, data: {...state.data, acquisitionPlans: [...replaceItemOnIndex(state.data.acquisitionPlans, acquisitionPlansKeyIndex, {...state.data.acquisitionPlans[acquisitionPlansKeyIndex], visiblePlans: count})]}};
 };
 
+const setSatelliteHeadingAndUpdateViewHeadingCorrection = (state, action) => {
+    const satelliteIndex = state.data.satellites.findIndex((sat) => sat.id === action.id);
+
+    //check if sat fixed
+    const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
+    if(focusedSatellite && focusedSatellite === action.id) {
+        //set headingCorrection into view
+        const satData = select.data.satellites.getSatelliteByKey(state, focusedSatellite);
+        state = updateMapView(state, {payload: {view: {headingCorrection: satData.heading}}});
+    }
+
+    return {...state, data: {...state.data, satellites: [...replaceItemOnIndex(state.data.satellites, satelliteIndex, {...state.data.satellites[satelliteIndex], heading: action.heading})]}};
+}
+
+const setSatelliteHeading = (state, action) => {
+    const satelliteIndex = state.data.satellites.findIndex((sat) => sat.id === action.id);;
+    return {...state, data: {...state.data, satellites: [...replaceItemOnIndex(state.data.satellites, satelliteIndex, {...state.data.satellites[satelliteIndex], heading: action.heading})]}};
+}
+
 const mapAddVisibleAcquisitionPlan = (state, action) => {
     const acquisitionPlanKey = action.payload.key;
     return {...state, map: {...state.map, acquisitionPlans: [...state.map.acquisitionPlans, acquisitionPlanKey]}};
@@ -274,6 +293,10 @@ const mapUpdateStatisticsLayer = (state, action) => {
 
 const setMapView = (state, action) => {
     return {...state, map: {...state.map, view: action.payload.view }};
+};
+
+const updateMapView = (state, action) => {
+    return {...state, map: {...state.map, view: {...state.map.view, ...action.payload.view} }};
 };
 
 const componentsSearchToolbarClear = (state) => {
@@ -327,6 +350,10 @@ export default (state, action) => {
             return dataUpdateAcquisitionPlan(state, action);
         case types.DATA_ACQUISITIONPLANS_SET_VISIBLE_COUNT:
             return setVisibleAcquisitionPlan(state, action);
+        case types.DATA.SATELLITES.SET_HEADING:
+            return setSatelliteHeading(state, action);
+        case types.DATA.SATELLITES.SET_HEADING_AND_UPDATE_VIEW_HEADING_CORRECTION:
+            return setSatelliteHeadingAndUpdateViewHeadingCorrection(state, action);
         case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:
             return mapAddVisibleAcquisitionPlan(state, action);
         case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:
@@ -339,6 +366,8 @@ export default (state, action) => {
             return mapUpdateStatisticsLayer(state, action);
         case types.MAP.SET_VIEW:
             return setMapView(state, action);
+        case types.MAP.UPDATE_VIEW:
+            return updateMapView(state, action);
         case types.COMPONENTS.SEARCH_TOOLBAR.CLEAR:
             return componentsSearchToolbarClear(state);
         default:
