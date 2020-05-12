@@ -36,7 +36,7 @@ export const focusSatellite = (satelliteId) => {
     }
 }
 
-export const setNavigatorFromOrbit = (selectTime, orbitInfo, prevMapView) => {
+export const setNavigatorFromOrbit = (selectTime, orbitInfo, prevMapView, respectHeading = 0, respectRoll = 0, respectTilt = 0) => {
     const satrec = EoUtils.computeSatrec(orbitInfo.specs[0], orbitInfo.specs[1]);
     const position = EoUtils.getOrbitPosition(satrec, new Date(selectTime));
     const navigator = {
@@ -48,6 +48,9 @@ export const setNavigatorFromOrbit = (selectTime, orbitInfo, prevMapView) => {
         // The range needs to be changed gradually to tha altitude of the satellite.
         // This one needs to properly clean to the satellite.
         range: 2 * position.altitude,
+        heading: respectHeading,
+        roll: respectRoll,
+        tilt: respectTilt,
     }
     
     return updateNavigator(prevMapView, navigator)
@@ -192,7 +195,7 @@ export const changeSelectTime = (time, dispatch, selectTime, state) => {
         if(isReleased && viewFixed) {
             const orbitInfo = select.data.orbits.getByKey(state, `orbit-${focusedSatellite}`);
             const mapView = select.map.getPureView(state);
-            dispatch(setNavigatorFromOrbit(new Date(time), orbitInfo, mapView));
+            dispatch(setNavigatorFromOrbit(new Date(time), orbitInfo, mapView, mapView.heading, mapView.roll, mapView.tilt));
         } else if(!isReleased && viewFixed){
             //release focused satellite if selected date is before satellite release
             dispatch(focusSatellite(null))

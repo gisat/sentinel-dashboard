@@ -253,6 +253,12 @@ const setSatelliteHeadingAndUpdateViewHeadingCorrection = (state, action) => {
     return {...state, data: {...state.data, satellites: [...replaceItemOnIndex(state.data.satellites, satelliteIndex, {...state.data.satellites[satelliteIndex], heading: action.heading})]}};
 }
 
+const updateViewHeadingCorrectionFromFocusedSatellite = (state) => {
+    const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
+    const satData = select.data.satellites.getSatelliteByKey(state, focusedSatellite);
+    return updateMapView(state, {payload: {view: {headingCorrection: satData.heading}}});
+}
+
 const setSatelliteHeading = (state, action) => {
     const satelliteIndex = state.data.satellites.findIndex((sat) => sat.id === action.id);;
     return {...state, data: {...state.data, satellites: [...replaceItemOnIndex(state.data.satellites, satelliteIndex, {...state.data.satellites[satelliteIndex], heading: action.heading})]}};
@@ -354,6 +360,8 @@ export default (state, action) => {
             return setSatelliteHeading(state, action);
         case types.DATA.SATELLITES.SET_HEADING_AND_UPDATE_VIEW_HEADING_CORRECTION:
             return setSatelliteHeadingAndUpdateViewHeadingCorrection(state, action);
+        case types.MAP.UPDATE_VIEW_HEADING_CORRECTION_FROM_FOCUSED_SATELLITE:
+            return updateViewHeadingCorrectionFromFocusedSatellite(state, action);
         case types.MAP_ADD_VISIBLE_ACQUISITION_PLAN:
             return mapAddVisibleAcquisitionPlan(state, action);
         case types.MAP_REMOVE_VISIBLE_ACQUISITION_PLAN:

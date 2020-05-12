@@ -6,19 +6,19 @@ function getChangedViewParams(prev, next) {
 			changed.boxRange = next.boxRange;
 		}
 
-		if (prev.heading !== next.heading){
+		if (typeof next.heading === 'number' && prev.heading !== next.heading){
 			changed.heading = next.heading;
 		}
 
-		if (prev.tilt !== next.tilt){
+		if (typeof next.tilt === 'number' && prev.tilt !== next.tilt){
 			changed.tilt = next.tilt;
 		}
 
-		if (prev.roll !== next.roll){
+		if (typeof next.roll === 'number' && prev.roll !== next.roll){
 			changed.roll = next.roll;
 		}
 
-		if (prev.headingCorrection !== next.headingCorrection){
+		if (typeof next.headingCorrection === 'number' && prev.headingCorrection !== next.headingCorrection){
 			changed.headingCorrection = next.headingCorrection;
 		}
 
@@ -51,17 +51,17 @@ function update(wwd, view) {
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.tilt && state.tilt !== wwdUpdate.tilt){
+	if (typeof wwdUpdate.tilt === 'number' && state.tilt !== wwdUpdate.tilt){
 		state.tilt = wwdUpdate.tilt;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.roll && state.roll !== wwdUpdate.roll){
+	if (typeof wwdUpdate.roll === 'number' && state.roll !== wwdUpdate.roll){
 		state.roll = wwdUpdate.roll;
 		shouldRedraw = true;
 	}
 
-	if (wwdUpdate.heading && state.heading !== wwdUpdate.heading){
+	if (typeof wwdUpdate.heading === 'number' && state.heading !== wwdUpdate.heading){
 		state.heading = wwdUpdate.heading;
 		shouldRedraw = true;
 	}

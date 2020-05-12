@@ -68,11 +68,7 @@ class Map extends Component {
     }
 
     componentDidUpdate (prevProps) {
-        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload, viewFixed} = this.props;
-
-        if(focusedSatellite !== prevProps.focusedSatellite) {
-            console.log("focused satellite changed", focusedSatellite)
-        }
+        const {time, currentTime, view, onLayerChanged, preventReload, viewFixed} = this.props;
 
         if (view && prevProps.view !== view) {
             this.updateNavigator(null);
@@ -171,7 +167,7 @@ class Map extends Component {
     }
     
     onRendarableAdd() {
-        const {time, focusedSatellite, currentTime, view, onLayerChanged, preventReload} = this.props;
+        const {time, currentTime, view, onLayerChanged, preventReload} = this.props;
         const wwdLayers = getLayers(this.props.layers, time, this.wwd, onLayerChanged, currentTime);
         this.handleLayers(wwdLayers);
         

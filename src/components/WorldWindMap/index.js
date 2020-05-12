@@ -22,6 +22,7 @@ import{
 
 import {
     setView,
+    updateMapView,
 } from '../../context/actions/map';
 
 // import {setGeometry} from '../../context/actions/components/searchForm/actions';
@@ -134,10 +135,12 @@ const WorldWindMap = (props) => {
     const onViewChange = (view) => {
         const mapView = select.map.getView(state);
         const updateView = {...view};
-        if(mapView.hasOwnProperty('headingCorrection')) {
+        const validHeadingCorrection = mapView.hasOwnProperty('headingCorrection') && (mapView.headingCorrection >= 0 || mapView.headingCorrection <= 0)
+        const validHeading = updateView.hasOwnProperty('heading') && (updateView.heading >= 0 || updateView.heading <= 0)
+        if(validHeadingCorrection && validHeading) {
             updateView.heading += mapView.headingCorrection;
         }
-        dispatch(setView(updateView));
+        dispatch(updateMapView(updateView));
     }
 
     return (
@@ -146,7 +149,6 @@ const WorldWindMap = (props) => {
             time={selectTime}
             currentTime={currentTime}
             layers = {layers}
-            focusedSatellite = {focusedSatellite}
             onLayerChanged={onLayerChanged}
             onProductsClick={onProductsClick}
             searchOnCoords={searchOnCoords}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useRef} from 'react';
 import moment from 'moment';
 import Presentation from './presentation';
 import select from '../../context/selectors/';
@@ -18,6 +18,11 @@ import {
 const TimeWidget = (props) => {
     const {dispatch, state} = props;
     const timelineState = select.components.timeline.getSubstate(state);
+    
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = state;
+    })
 
     const onSetActiveTimeLevel = (level) => {
         const {state} = props;
@@ -27,7 +32,8 @@ const TimeWidget = (props) => {
     }
 
     const onSetTime = (time) => {
-        dispatch(changeSelectTime(time, dispatch, select.rootSelectors.getSelectTime(state), state));
+        //ref.current is state
+        dispatch(changeSelectTime(time, dispatch, select.rootSelectors.getSelectTime(ref.current), ref.current));
     }
 
     const onStartFollowNow = () => {

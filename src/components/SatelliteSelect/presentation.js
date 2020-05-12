@@ -191,11 +191,11 @@ class Select extends React.PureComponent {
 
 // export default Select;
 function areEqual(prevProps, nextProps) {
-    const shalowEqual = prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight;
+    const shalowEqual = prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight && prevProps.selectTime === nextProps.selectTime && prevProps.focusedSatelliteKey === nextProps.focusedSatelliteKey;
     if(shalowEqual) {
         return shalowEqual;
     } else {
-        return _.isEqual(prevProps.options, nextProps.options) && _.isEqual(prevProps.open, nextProps.open) && _.isEqual(prevProps.maxHeight, nextProps.maxHeight);
+        return _.isEqual(prevProps.options, nextProps.options) && _.isEqual(prevProps.open, nextProps.open) && _.isEqual(prevProps.maxHeight, nextProps.maxHeight) && _.isEqual(prevProps.selectTime, nextProps.selectTime) && _.isEqual(prevProps.focusedSatelliteKey, nextProps.focusedSatelliteKey);
     }
   }
   export default React.memo(Select, areEqual);

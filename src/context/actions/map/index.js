@@ -26,6 +26,11 @@ export const updateMapView = (mapView) => {
         }
     }
 }
+export const updateViewHeadingCorrectionByFocusSatellite = () => {
+    return {
+        type: types.MAP.UPDATE_VIEW_HEADING_CORRECTION_FROM_FOCUSED_SATELLITE,
+    }
+}
 export const setView = (mapView) => {
     return {
         type: types.MAP.SET_VIEW,

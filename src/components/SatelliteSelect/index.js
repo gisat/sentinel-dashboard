@@ -11,7 +11,11 @@ import {
     focusSatellite,
     clearComponent,
 } from '../../context/actions';
-import {setView, updateMapView} from '../../context/actions/map';
+
+import {
+    updateMapView,
+    updateViewHeadingCorrectionByFocusSatellite
+} from '../../context/actions/map';
 
 const SetalliteSelect = (props) => {
     const {dispatch, state, maxHeight} = props;
@@ -19,6 +23,7 @@ const SetalliteSelect = (props) => {
     const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
     const selectTime = select.rootSelectors.getSelectTime(state);
     const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state, selectTime);
+    const focusedSatelliteKey = select.rootSelectors.getFocusedSatellite(state);
 
     const onLayerClick = (evt) => {
         dispatch(toggleLayer(evt.satKey, evt.id))
@@ -37,25 +42,30 @@ const SetalliteSelect = (props) => {
     const onSatelliteClick = (satKey) => {
         const {state} = props;
         const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
+        const mapView = select.map.getView(state);
         const satelliteIsFocused = focusedSatellite === satKey;
         if(satelliteIsFocused) {
             //disable focused satellite
             dispatch(focusSatellite(null))
-            //TODO - dont set prev navigator, but respect current
-            const prevNavigator = select.components.navigatorBackup.getSubstate(state);
-            dispatch(updateMapView({headingCorrection: 0}));
-            dispatch(setView(prevNavigator));
+            const mapView = select.map.getView(state);
+            let heading = 0 - mapView.headingCorrection;
+
+            dispatch(updateMapView({
+                headingCorrection: 0,
+                heading,
+                roll: 0,
+                tilt: 0,
+                center: {...mapView.center ,altitude: 0}
+            }));
             dispatch(clearComponent('navigatorBackup'));
         } else {
             //set focused satellite
-            const navigator = select.map.getView(state);
-            //save current view
-            dispatch(updateComponent('navigatorBackup', {...navigator, center: {...navigator.center}}));
             dispatch(focusSatellite(satKey))
             const orbitInfo = select.data.orbits.getByKey(state, `orbit-${satKey}`);
             const selectTime = select.rootSelectors.getSelectTime(state);
-            const mapView = select.map.getView(state);
-            dispatch(setNavigatorFromOrbit(selectTime, orbitInfo, mapView));
+            dispatch(setNavigatorFromOrbit(selectTime, orbitInfo, mapView, mapView.heading, mapView.roll, mapView.tilt));
+
+            dispatch(updateViewHeadingCorrectionByFocusSatellite());
         }
     }
 
@@ -71,6 +81,8 @@ const SetalliteSelect = (props) => {
 
     return (
         <Presentation 
+            focusedSatelliteKey={focusedSatelliteKey}
+            selectTime={selectTime}
             options={sateliteOptions}
             open={satelliteSelectState.open}
             onLayerClick={onLayerClick}
