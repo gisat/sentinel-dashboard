@@ -8,7 +8,7 @@ import Loader from './Loader';
 import NotificationBadge from '../NotificationBadge';
 
 const AcquisitionPlanOption = (props) => {
-    props.innerProps.onClick = props.onClick;
+    props.innerProps.onClick = () => {};
     props.innerProps.onMouseOver = () => {};
     props.innerProps.onMouseMove = () => {};
 
@@ -53,7 +53,7 @@ const AcquisitionPlanOption = (props) => {
     const badgeLabel = `${props.data.loadedCount}`;
     const CountBadge = <NotificationBadge label={badgeLabel} style={{position: 'relative'}} containerStyle={{position: 'relative'}}/>;
     return (
-        <>
+        <div onClick={props.onClick} data-satkey={props.data.satKey}>
             <components.Option {...props} isFocused={false}>
                 <div style={dataInfoWrapperStyle}>
                     {!props.data.disabled && props.data.active ? CountBadge : null}
@@ -69,18 +69,20 @@ const AcquisitionPlanOption = (props) => {
             <div style={{position:'relative', height: '1px'}}>
                 {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
             </div>
-        </>
+        </div>
     );
 };
 
-const CachedAcquisitionPlanOption = React.memo(AcquisitionPlanOption);
+// const CachedAcquisitionPlanOption = React.memo(AcquisitionPlanOption);
 
 const getAcquisitionPlanOption = (onClick) => {    
     return (props) => {
-        return <CachedAcquisitionPlanOption {...props} onClick={() => {onClick(props.data.satKey)}} />
+        // return <AcquisitionPlanOption {...props} onClick={() => {onClick(props.data.satKey)}} />
+        return <AcquisitionPlanOption {...props} onClick={onClick} data-satkey={props.data.satKey} />
     } 
 }
 
 export {
     getAcquisitionPlanOption,
+    AcquisitionPlanOption
 }

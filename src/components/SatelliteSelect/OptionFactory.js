@@ -1,26 +1,21 @@
 /** @jsx jsx */
 import { jsx, css } from '@emotion/core'
-import React from 'react';
-import PropTypes from 'prop-types';
-import {getLayerOption} from './LayerOption'
-import {getAcquisitionPlanOption} from './AcquisitionPlanOption'
-import {getStatisticsOption} from './StatisticsOption'
+import {LayerOption} from './LayerOption'
+import {AcquisitionPlanOption} from './AcquisitionPlanOption'
+import {StatisticsOption} from './StatisticsOption'
 
 const getOption = ({onLayerClick, onAcquisitionPlanClick, onStatisticsClick}) => {    
     return (props) => {
         if(props.data.type === 'product') {
-            const Option = getLayerOption(onLayerClick);
-            return <Option {...props} />
+            return <LayerOption {...props} onClick={onLayerClick}/>
         };
 
         if(props.data.type === 'acquisitionPlan') {
-            const Option = getAcquisitionPlanOption(onAcquisitionPlanClick);
-            return <Option {...props} />
+            return <AcquisitionPlanOption {...props} onClick={onAcquisitionPlanClick}/>
         };
 
         if(props.data.type === 'statistics') {
-            const Option = getStatisticsOption(onStatisticsClick);
-            return <Option {...props} />
+            return <StatisticsOption {...props} onClick={onStatisticsClick}/>
         };
 
         return null;

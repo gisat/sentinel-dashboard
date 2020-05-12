@@ -57,6 +57,7 @@ const getSatelitesSelectOptions = createSelector(
             const satOption = {
                 groupData: {
                     value: satConfig.id,
+                    satKey: satConfig.id,
                     icon: satConfig.iconClass,
                     disabled: !satellitesUtils.isSatelliteReleaseBeforeDate(satConfig, selectTime),
                     active: focusedSatellite === satConfig.id,

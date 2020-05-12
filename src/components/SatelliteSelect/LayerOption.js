@@ -8,7 +8,7 @@ import Loader from './Loader';
 import NotificationBadge from '../NotificationBadge';
 
 const LayerOption = (props) => {
-    props.innerProps.onClick = props.onClick;
+    props.innerProps.onClick = () => {};
     props.innerProps.onMouseOver = () => {};
     props.innerProps.onMouseMove = () => {};
 
@@ -53,8 +53,8 @@ const LayerOption = (props) => {
     const badgeLabel = props.data.totalCount === props.data.loadedCount ? props.data.totalCount : `${props.data.loadedCount}/${props.data.totalCount}`
     const CountBadge = <NotificationBadge label={badgeLabel} style={{position: 'relative'}} containerStyle={{position: 'relative'}}/>;
     return (
-        <>
-            <components.Option {...props} isFocused={false}>
+        <div onClick={props.onClick} data-satkey={props.data.satKey} data-id={props.data.id}>
+            <components.Option {...props} isFocused={false} data-satkey={props.data.satKey} data-id={props.data.id}>
                 <div style={dataInfoWrapperStyle}>
                     {!props.data.disabled && props.data.active ? CountBadge : null}
                 </div>
@@ -69,18 +69,21 @@ const LayerOption = (props) => {
             <div style={{position:'relative', height: '1px'}}>
                 {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
             </div>
-        </>
+        </div>
     );
 };
 
-const CachedLayerOption = React.memo(LayerOption);
+// const CachedLayerOption = React.memo(LayerOption);
 
 const getLayerOption = (onClick) => {    
     return (props) => {
-        return <CachedLayerOption {...props} onClick={() => onClick(props.data)} />
+        // return <LayerOption {...props} onClick={() => onClick(props.data)} />
+        // return <LayerOption {...props} onClick={onClick} data-satkey={props.data.satKey} data-id={props.data.id}/>
+        return <LayerOption {...props} onClick={onClick}/>
     } 
 }
 
 export {
+    LayerOption,
     getLayerOption,
 }

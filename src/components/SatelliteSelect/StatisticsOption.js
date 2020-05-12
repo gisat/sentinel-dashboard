@@ -8,7 +8,7 @@ import Loader from './Loader';
 import NotificationBadge from '../NotificationBadge';
 
 const StatisticsOption = (props) => {
-    props.innerProps.onClick = props.onClick;
+    props.innerProps.onClick = () => {};
     props.innerProps.onMouseOver = () => {};
     props.innerProps.onMouseMove = () => {};
 
@@ -53,7 +53,7 @@ const StatisticsOption = (props) => {
     const badgeLabel = `${props.data.loadedCount}`;
     // const CountBadge = <NotificationBadge label={badgeLabel} style={{position: 'relative'}} containerStyle={{position: 'relative'}}/>;
     return (
-        <>
+        <div onClick={props.onClick} data-satkey={props.data.satKey}>
             <components.Option {...props} isFocused={false}>
                 <div style={dataInfoWrapperStyle}>
                     {/* {!props.data.disabled && props.data.active ? CountBadge : null} */}
@@ -69,18 +69,20 @@ const StatisticsOption = (props) => {
             <div style={{position:'relative', height: '1px'}}>
                 {props.data.status === 'loading' ? <Loader lkey={props.data.label}/> : null}
             </div>
-        </>
+        </div>
     );
 };
 
-const CachedStatisticsOption = React.memo(StatisticsOption);
+// const CachedStatisticsOption = React.memo(StatisticsOption);
 
 const getStatisticsOption = (onClick) => {    
     return (props) => {
-        return <CachedStatisticsOption {...props} onClick={() => {onClick(props.data.satKey)}} />
+        // return <StatisticsOption {...props} onClick={() => {onClick(props.data.satKey)}} />
+        return <StatisticsOption {...props} onClick={onClick} />
     } 
 }
 
 export {
+    StatisticsOption,
     getStatisticsOption,
 }

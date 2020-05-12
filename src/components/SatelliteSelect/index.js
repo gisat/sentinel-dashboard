@@ -1,7 +1,8 @@
-import React from 'react';
+import React, {useRef} from 'react';
 import Presentation from './presentation';
 import select from '../../context/selectors/';
 import {withContext} from '../../context/withContext';
+
 import {
     toggleLayer,
     toggleAcquisitionPlan,
@@ -23,31 +24,33 @@ const SetalliteSelect = (props) => {
     const satelliteSelectState = select.components.satelliteSelect.getSubstate(state);
     const selectTime = select.rootSelectors.getSelectTime(state);
     const sateliteOptions = select.components.satelliteSelect.getSatelitesSelectOptions(state, selectTime);
-    const focusedSatelliteKey = select.rootSelectors.getFocusedSatellite(state);
+    
+    const mapViewRef = useRef();
+    mapViewRef.current = select.map.getView(state);
+    
+    const selectTimeRef = useRef();
+    selectTimeRef.current = selectTime;
 
     const onLayerClick = (evt) => {
-        dispatch(toggleLayer(evt.satKey, evt.id))
+        dispatch(toggleLayer(evt.currentTarget.dataset.satkey, evt.currentTarget.dataset.id))
     }
 
-    const onAcquisitionPlanClick = (satKey) => {
-        const {state} = props;
-        dispatch(toggleAcquisitionPlan(state, satKey));
+    const onAcquisitionPlanClick = (evt) => {
+        dispatch(toggleAcquisitionPlan(state, evt.currentTarget.dataset.satkey));
     }
 
-    const onStatisticsClick = (satKey) => {
-        const {state} = props;
-        dispatch(toggleStatistics(state, satKey));
+    const onStatisticsClick = (evt) => {
+        dispatch(toggleStatistics(state, evt.currentTarget.dataset.satkey));
     }
 
-    const onSatelliteClick = (satKey) => {
-        const {state} = props;
+    const onSatelliteClick = (evt) => {
+        const satKey = evt.currentTarget.dataset.satkey;
         const focusedSatellite = select.rootSelectors.getFocusedSatellite(state);
-        const mapView = select.map.getView(state);
+        const mapView = mapViewRef.current;
         const satelliteIsFocused = focusedSatellite === satKey;
         if(satelliteIsFocused) {
             //disable focused satellite
             dispatch(focusSatellite(null))
-            const mapView = select.map.getView(state);
             let heading = 0 - mapView.headingCorrection;
 
             dispatch(updateMapView({
@@ -62,7 +65,7 @@ const SetalliteSelect = (props) => {
             //set focused satellite
             dispatch(focusSatellite(satKey))
             const orbitInfo = select.data.orbits.getByKey(state, `orbit-${satKey}`);
-            const selectTime = select.rootSelectors.getSelectTime(state);
+            const selectTime = selectTimeRef.current;
             dispatch(setNavigatorFromOrbit(selectTime, orbitInfo, mapView, mapView.heading, mapView.roll, mapView.tilt));
 
             dispatch(updateViewHeadingCorrectionByFocusSatellite());
@@ -81,8 +84,6 @@ const SetalliteSelect = (props) => {
 
     return (
         <Presentation 
-            focusedSatelliteKey={focusedSatelliteKey}
-            selectTime={selectTime}
             options={sateliteOptions}
             open={satelliteSelectState.open}
             onLayerClick={onLayerClick}

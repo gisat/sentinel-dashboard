@@ -85,7 +85,8 @@ const SatelliteGroupHeading = props => {
     }
     
     return (
-              <div css={{...getStyles('groupHeading', { theme, ...restProps, disabled }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`)} onClick={() => {!disabled && onClick(groupData.value)}} >
+            <div onClick={onClick} data-satkey={groupData.satKey}>
+                <div css={{...getStyles('groupHeading', { theme, ...restProps, disabled }),...(active && activeStyle)}} className={cx({ 'group-heading': true }, `${className || ''} ${active ? 'active' : ''} ${disabled ? 'disabled' : ''}`)} >
                     <div style={{display: "flex",minWidth: '100%'}}>
                         <Icon icon={groupData.icon} style={satIconStyle}/>
                         <span style={labelStyle}>
@@ -98,6 +99,7 @@ const SatelliteGroupHeading = props => {
                             <Loader lkey={groupData.value}/>
                         </div>
                     </div> : null}
+                </div>
             </div>
     );
 };
@@ -107,7 +109,8 @@ const getSatelliteGroupHeading = (onClick) => {
         return <SatelliteGroupHeading {...props} onClick={onClick} />
     } 
 }
-export default React.memo(SatelliteGroupHeading);
+// export default React.memo(SatelliteGroupHeading);
 export {
     getSatelliteGroupHeading,
+    SatelliteGroupHeading,
 }

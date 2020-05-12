@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import SelectBase, { components } from 'react-select';
 import SatelliteGroupOption from './SatelliteGroupOption';
 import {getOption} from './OptionFactory';
-import {getSatelliteGroupHeading} from './SatelliteGroupHeading';
+import {SatelliteGroupHeading} from './SatelliteGroupHeading';
 import _ from 'lodash';
 
 const ValueContainer = ({ children, ...props }) => (
@@ -164,7 +164,7 @@ class Select extends React.PureComponent {
         const components = {
             ValueContainer: ValueContainer,
             Option: getOption({onLayerClick, onAcquisitionPlanClick, onStatisticsClick}),
-            GroupHeading: getSatelliteGroupHeading(onSatelliteClick),
+            GroupHeading: (props) => <SatelliteGroupHeading {...props} onClick={onSatelliteClick} />,
             Group: SatelliteGroupOption,
             SelectContainer,
         }
@@ -191,11 +191,11 @@ class Select extends React.PureComponent {
 
 // export default Select;
 function areEqual(prevProps, nextProps) {
-    const shalowEqual = prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight && prevProps.selectTime === nextProps.selectTime && prevProps.focusedSatelliteKey === nextProps.focusedSatelliteKey;
+    const shalowEqual = prevProps.options === nextProps.options && prevProps.open === nextProps.open && prevProps.maxHeight === nextProps.maxHeight;
     if(shalowEqual) {
         return shalowEqual;
     } else {
-        return _.isEqual(prevProps.options, nextProps.options) && _.isEqual(prevProps.open, nextProps.open) && _.isEqual(prevProps.maxHeight, nextProps.maxHeight) && _.isEqual(prevProps.selectTime, nextProps.selectTime) && _.isEqual(prevProps.focusedSatelliteKey, nextProps.focusedSatelliteKey);
+        return _.isEqual(prevProps.options, nextProps.options) && _.isEqual(prevProps.open, nextProps.open) && _.isEqual(prevProps.maxHeight, nextProps.maxHeight);
     }
   }
   export default React.memo(Select, areEqual);
