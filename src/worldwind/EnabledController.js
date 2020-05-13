@@ -57,6 +57,8 @@ class EnabledController extends BasicWorldWindowController {
         if(this._enabled) {
             if(!this._isFixed) {
                 super.handleSecondaryDrag(recognizer);
+            } else {
+                this.fixedController.handleSecondaryDrag(recognizer);
             }
         }
     }
