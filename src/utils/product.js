@@ -16,14 +16,16 @@ const addBoundariesAltitude = (boundaries = [], altitude = 0) => {
 }
 
 export const productBounds = (boundaries) => {
-    const polygon = new WorldWind.Polygon(addBoundariesAltitude(boundaries, 100), null);
-    polygon.altitudeMode = WorldWind.RELATIVE_TO_GROUND;
+    //ideal would be use SurfacePolygon, but because of local WWW updates is layer broken
+    const polygon = new WorldWind.Polygon(addBoundariesAltitude(boundaries, 90000), null);
+    polygon.altitudeMode = WorldWind.ABSOLUTE;
     polygon.extrude = false; // extrude the polygon edges to the ground
 
     const polygonAttributes = new WorldWind.ShapeAttributes(null);
-    polygonAttributes.drawInterior = false;
+    polygonAttributes.drawInterior = true;
     polygonAttributes.drawOutline = true;
     polygonAttributes.outlineColor = WorldWind.Color.BLUE;
+    polygonAttributes.interiorColor = new WorldWind.Color(0, 1, 1, .2);
     polygonAttributes.drawVerticals = polygon.extrude;
     polygonAttributes.applyLighting = false;
     polygon.attributes = polygonAttributes;
@@ -39,7 +41,12 @@ export const productAttributes = () => {
     return shapeAttributes;
 }
 export const getBoundaries = (product) => {
-    return product && product.boundaries;
+    if(product && product.boundaries) {
+        //close polygon by first point
+        return [[...product.boundaries[0], product.boundaries[0][0]]];
+    } else {
+        return [];
+    }
 }
 
 export const getProductDownloadUrl = (product) => {
