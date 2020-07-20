@@ -64,6 +64,9 @@ export default class Product {
             });
         });
         const renderable = new TexturedSurfacePolygon(boundaries, this.footprintAttributes());
+        renderable.maximumNumEdgeIntervals = 2;
+        renderable.polarThrottle = 1;
+
         if(this._icon) {
             try {
                 renderable.image = await this._icon.icon();

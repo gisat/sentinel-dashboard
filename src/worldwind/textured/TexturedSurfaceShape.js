@@ -5,10 +5,10 @@ import WorldWind from 'webworldwind-esa';
 
 const {
     Angle,
-    Location,
-    PickedObject,
     SurfaceShape,
-    Texture
+    PickedObject,
+    Texture,
+    Location,
 } = WorldWind;
 
 const WGS84_SEMI_MAJOR_AXIS = 6378137.0;
@@ -20,6 +20,13 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             TexturedSurfaceShape.tess = new libtess.GluTesselator();
         }
         return TexturedSurfaceShape.tess;
+    }
+
+    static nextId() {
+        if (!TexturedSurfaceShape._nextId) {
+            TexturedSurfaceShape._nextId = 0;
+        }
+        return TexturedSurfaceShape._nextId++;
     }
 
     static staticStateKey(shape) {
@@ -43,15 +50,8 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             }
         }
 
-        let sector = ' se []';
-        if(shape.sector) {
-            sector = shape.sector.minLatitude + ',' +
-                shape.sector.maxLatitude + ',' +
-                shape.sector.minLongitude + ',' +
-                shape.sector.maxLongitude;
-        }
-
         return 'dn ' + shape.displayName +
+            ' id ' + shape._id +
             ' at ' + (!shape._attributesStateKey ? 'null' : shape._attributesStateKey) +
             ' hi ' + shape.highlighted +
             ' en ' + shape.enabled +
@@ -60,7 +60,10 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             ' po ' + shape.polarThrottle +
             ' img ' + !!shape.image +
             ' se ' + '[' +
-            sector +
+            shape.sector.minLatitude + ',' +
+            shape.sector.maxLatitude + ',' +
+            shape.sector.minLongitude + ',' +
+            shape.sector.maxLongitude +
             ']';
     }
 
@@ -74,6 +77,8 @@ export default class TexturedSurfaceShape extends SurfaceShape {
 
         this._contoursPrepered = false;
         this._contoursInfo = [];
+
+        this._id = TexturedSurfaceShape.nextId();
     }
 
     get image() {
@@ -129,10 +134,6 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             if (!this._contoursPrepered) {
                 if (interiorGeometry.length === 1) {
                     const {anglesMap, topLeftIndex} = this.getCorners(interiorGeometry[0], this._contoursInfo[0].wo);
-                    if(!anglesMap){
-                        //discarted getCorners
-                        return;
-                    }
                     const uvs = this.computeUvs(this._contoursInfo[0].wo, anglesMap, topLeftIndex, this._interiorGeometry[0]);
                     this._contoursInfo[0].anglesMap = anglesMap;
                     this._contoursInfo[0].topLeftIndex = topLeftIndex;
@@ -329,7 +330,11 @@ export default class TexturedSurfaceShape extends SurfaceShape {
 
             if (anglesMap[index]) {
                 //is corner
-                side = this.nextSide(side, wo);
+                // side = this.nextSide(side, wo);
+                // FIXME
+                // hotfix for wrongly rotated sentinel footprints
+                // With hardcoded wo === 'CCW' S1 images are well rotated, but S3 images are still wrongly rotated
+                side = this.nextSide(side, 'CCW');
 
                 var sideStart = locations[index];
                 var sideEnd = null;
@@ -792,11 +797,6 @@ export default class TexturedSurfaceShape extends SurfaceShape {
             }
             return false;
         });
-
-        if(angles.length < 4) {
-            //discart when angles count is less than 4
-            return {};
-        }
 
         /*var p0 = points[angles[0].index];
         var p1 = points[angles[1].index];
