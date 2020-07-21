@@ -68,5 +68,4 @@ export default class TexturedSurfacePolygon extends TexturedSurfaceShape {
         return TexturedSurfacePolygon.staticStateKey(this);
     }
 
-    computeBoundaries(){}
 }

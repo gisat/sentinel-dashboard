@@ -6,20 +6,6 @@
  * @exports SurfaceShape
  * @version $Id: SurfaceShape.js 3191 2015-06-15 19:35:57Z tgaskins $
  */
-
-// import AbstractError from '../error/AbstractError';
-// import Angle from '../geom/Angle';
-// import Location from '../geom/Location';
-// import Logger from '../util/Logger';
-// import NotYetImplementedError from '../error/NotYetImplementedError';
-// import PickedObject from '../pick/PickedObject';
-// import PolygonSplitter from  '../util/PolygonSplitter';
-// import Renderable from '../render/Renderable';
-// import Sector from '../geom/Sector';
-// import ShapeAttributes from '../shapes/ShapeAttributes';
-
-// import * as WorldWind from '../constants';
-
 import WorldWind from 'webworldwind-esa';
 
 const {
@@ -33,8 +19,10 @@ const {
     Renderable,
     Sector,
     ShapeAttributes,
-    SurfaceShape,
+    // SurfaceShape,
 } = WorldWind;
+
+let SurfaceShape = WorldWind.SurfaceShape;
 
 
 /**
@@ -53,348 +41,342 @@ const {
  * @param {ShapeAttributes} attributes The attributes to apply to this shape. May be null, in which case
  * attributes must be set directly before the shape is drawn.
  */
-// var SurfaceShape = function (attributes) {
+SurfaceShape = function (attributes) {
 
-//     Renderable.call(this);
+    Renderable.call(this);
 
-//     // All these are documented with their property accessors below.
-//     this._displayName = "Surface Shape";
-//     this._attributes = attributes ? attributes : new ShapeAttributes(null);
-//     this._highlightAttributes = null;
-//     this._highlighted = false;
-//     this._enabled = true;
-//     this._pathType = WorldWind.GREAT_CIRCLE;
-//     this._maximumNumEdgeIntervals = SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS;
-//     this._polarThrottle = SurfaceShape.DEFAULT_POLAR_THROTTLE;
-//     this._sector = null;
+    // All these are documented with their property accessors below.
+    this._displayName = "Surface Shape";
+    this._attributes = attributes ? attributes : new ShapeAttributes(null);
+    this._highlightAttributes = null;
+    this._highlighted = false;
+    this._enabled = true;
+    this._pathType = WorldWind.GREAT_CIRCLE;
+    this._maximumNumEdgeIntervals = SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS;
+    this._polarThrottle = SurfaceShape.DEFAULT_POLAR_THROTTLE;
+    this._sector = null;
 
-//     /**
-//      * Indicates the object to return as the owner of this shape when picked.
-//      * @type {Object}
-//      * @default null
-//      */
-//     this.pickDelegate = null;
+    /**
+     * Indicates the object to return as the owner of this shape when picked.
+     * @type {Object}
+     * @default null
+     */
+    this.pickDelegate = null;
 
-//     /*
-//      * The bounding sectors for this tile, which may be needed for crossing the dateline.
-//      * @type {Sector[]}
-//      * @protected
-//      */
-//     this._sectors = [];
+    /*
+     * The bounding sectors for this tile, which may be needed for crossing the dateline.
+     * @type {Sector[]}
+     * @protected
+     */
+    this._sectors = [];
 
-//     /*
-//      * The raw collection of locations defining this shape and are explicitly specified by the client of this class.
-//      * @type {Location[]}
-//      * @protected
-//      */
-//     this._locations = null;
+    /*
+     * The raw collection of locations defining this shape and are explicitly specified by the client of this class.
+     * @type {Location[]}
+     * @protected
+     */
+    this._locations = null;
 
-//     /*
-//      * Boundaries that are either the user specified locations or locations that are algorithmically generated.
-//      * @type {Location[]}
-//      * @protected
-//      */
-//     this._boundaries = null;
+    /*
+     * Boundaries that are either the user specified locations or locations that are algorithmically generated.
+     * @type {Location[]}
+     * @protected
+     */
+    this._boundaries = null;
 
-//     /*
-//      * The collection of locations that describes a closed curve which can be filled.
-//      * @type {Location[][]}
-//      * @protected
-//      */
-//     this._interiorGeometry = null;
+    /*
+     * The collection of locations that describes a closed curve which can be filled.
+     * @type {Location[][]}
+     * @protected
+     */
+    this._interiorGeometry = null;
 
-//     /*
-//      * The collection of locations that describe the outline of the shape.
-//      * @type {Location[][]}
-//      * @protected
-//      */
-//     this._outlineGeometry = null;
+    /*
+     * The collection of locations that describe the outline of the shape.
+     * @type {Location[][]}
+     * @protected
+     */
+    this._outlineGeometry = null;
 
-//     /*
-//      * Internal use only.
-//      * Inhibit the filling of the interior. This is to be used ONLY by polylines.
-//      * @type {Boolean}
-//      * @protected
-//      */
-//     this._isInteriorInhibited = false;
+    /*
+     * Internal use only.
+     * Inhibit the filling of the interior. This is to be used ONLY by polylines.
+     * @type {Boolean}
+     * @protected
+     */
+    this._isInteriorInhibited = false;
 
-//     /*
-//      * Indicates whether this object's state key is invalid. Subclasses must set this value to true when their
-//      * attributes change. The state key will be automatically computed the next time it's requested. This flag
-//      * will be set to false when that occurs.
-//      * @type {Boolean}
-//      * @protected
-//      */
-//     this.stateKeyInvalid = true;
+    /*
+     * Indicates whether this object's state key is invalid. Subclasses must set this value to true when their
+     * attributes change. The state key will be automatically computed the next time it's requested. This flag
+     * will be set to false when that occurs.
+     * @type {Boolean}
+     * @protected
+     */
+    this.stateKeyInvalid = true;
 
-//     // Internal use only. Intentionally not documented.
-//     this._attributesStateKey = null;
+    // Internal use only. Intentionally not documented.
+    this._attributesStateKey = null;
 
-//     // Internal use only. Intentionally not documented.
-//     this.isPrepared = false;
+    // Internal use only. Intentionally not documented.
+    this.isPrepared = false;
 
-//     // Internal use only. Intentionally not documented.
-//     this.layer = null;
+    // Internal use only. Intentionally not documented.
+    this.layer = null;
 
-//     // Internal use only. Intentionally not documented.
-//     this.pickColor = null;
+    // Internal use only. Intentionally not documented.
+    this.pickColor = null;
 
-//     //the split contours returned from polygon splitter
-//     this.contours = [];
-//     this.containsPole = false;
-//     this.crossesAntiMeridian = false;
-// };
+    //the split contours returned from polygon splitter
+    this.contours = [];
+    this.containsPole = false;
+    this.crossesAntiMeridian = false;
+};
 
-// SurfaceShape.prototype = Object.create(Renderable.prototype);
+SurfaceShape.prototype = Object.create(Renderable.prototype);
 
-// Object.defineProperties(SurfaceShape.prototype, {
-//     stateKey: {
-//         /**
-//          * A hash key of the total visible external state of the surface shape.
-//          * @memberof SurfaceShape.prototype
-//          * @type {String}
-//          */
-//         get: function () {
-//             // If we don't have a state key for the shape attributes, consider this state key to be invalid.
-//             if (!this._attributesStateKey) {
-//                 // Update the state key for the appropriate attributes for future
-//                 if (this._highlighted) {
-//                     if (!!this._highlightAttributes) {
-//                         this._attributesStateKey = this._highlightAttributes.stateKey;
-//                     }
-//                 } else {
-//                     if (!!this._attributes) {
-//                         this._attributesStateKey = this._attributes.stateKey;
-//                     }
-//                 }
+Object.defineProperties(SurfaceShape.prototype, {
+    stateKey: {
+        /**
+         * A hash key of the total visible external state of the surface shape.
+         * @memberof SurfaceShape.prototype
+         * @type {String}
+         */
+        get: function () {
+            // If we don't have a state key for the shape attributes, consider this state key to be invalid.
+            if (!this._attributesStateKey) {
+                // Update the state key for the appropriate attributes for future
+                if (this._highlighted) {
+                    if (!!this._highlightAttributes) {
+                        this._attributesStateKey = this._highlightAttributes.stateKey;
+                    }
+                } else {
+                    if (!!this._attributes) {
+                        this._attributesStateKey = this._attributes.stateKey;
+                    }
+                }
 
-//                 // If we now actually have a state key for the attributes, it was previously invalid.
-//                 if (!!this._attributesStateKey) {
-//                     this.stateKeyInvalid = true;
-//                 }
-//             } else {
-//                 // Detect a change in the appropriate attributes.
-//                 var currentAttributesStateKey = null;
+                // If we now actually have a state key for the attributes, it was previously invalid.
+                if (!!this._attributesStateKey) {
+                    this.stateKeyInvalid = true;
+                }
+            } else {
+                // Detect a change in the appropriate attributes.
+                var currentAttributesStateKey = null;
 
-//                 if (this._highlighted) {
-//                     // If there are highlight attributes associated with this shape, ...
-//                     if (!!this._highlightAttributes) {
-//                         currentAttributesStateKey = this._highlightAttributes.stateKey;
-//                     }
-//                 } else {
-//                     if (!!this._attributes) {
-//                         currentAttributesStateKey = this._attributes.stateKey;
-//                     }
-//                 }
+                if (this._highlighted) {
+                    // If there are highlight attributes associated with this shape, ...
+                    if (!!this._highlightAttributes) {
+                        currentAttributesStateKey = this._highlightAttributes.stateKey;
+                    }
+                } else {
+                    if (!!this._attributes) {
+                        currentAttributesStateKey = this._attributes.stateKey;
+                    }
+                }
 
-//                 // If the attributes state key changed, ...
-//                 if (currentAttributesStateKey != this._attributesStateKey) {
-//                     this._attributesStateKey = currentAttributesStateKey;
-//                     this.stateKeyInvalid = true;
-//                 }
-//             }
+                // If the attributes state key changed, ...
+                if (currentAttributesStateKey != this._attributesStateKey) {
+                    this._attributesStateKey = currentAttributesStateKey;
+                    this.stateKeyInvalid = true;
+                }
+            }
 
-//             if (this.stateKeyInvalid) {
-//                 this._stateKey = this.computeStateKey();
-//             }
+            if (this.stateKeyInvalid) {
+                this._stateKey = this.computeStateKey();
+            }
 
-//             return this._stateKey;
-//         }
-//     },
+            return this._stateKey;
+        }
+    },
 
-//     /**
-//      * The shape's display name and label text.
-//      * @memberof SurfaceShape.prototype
-//      * @type {String}
-//      * @default Surface Shape
-//      */
-//     displayName: {
-//         get: function () {
-//             return this._displayName;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._displayName = value;
-//         }
-//     },
+    /**
+     * The shape's display name and label text.
+     * @memberof SurfaceShape.prototype
+     * @type {String}
+     * @default Surface Shape
+     */
+    displayName: {
+        get: function () {
+            return this._displayName;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._displayName = value;
+        }
+    },
 
-//     /**
-//      * The shape's attributes. If null and this shape is not highlighted, this shape is not drawn.
-//      * @memberof SurfaceShape.prototype
-//      * @type {ShapeAttributes}
-//      * @default see [ShapeAttributes]{@link ShapeAttributes}
-//      */
-//     attributes: {
-//         get: function () {
-//             return this._attributes;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._attributes = value;
-//             this._attributesStateKey = value.stateKey;
-//         }
-//     },
+    /**
+     * The shape's attributes. If null and this shape is not highlighted, this shape is not drawn.
+     * @memberof SurfaceShape.prototype
+     * @type {ShapeAttributes}
+     * @default see [ShapeAttributes]{@link ShapeAttributes}
+     */
+    attributes: {
+        get: function () {
+            return this._attributes;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._attributes = value;
+            this._attributesStateKey = value.stateKey;
+        }
+    },
 
-//     /**
-//      * The attributes used when this shape's highlighted flag is true. If null and the
-//      * highlighted flag is true, this shape's normal attributes are used. If they, too, are null, this
-//      * shape is not drawn.
-//      * @memberof SurfaceShape.prototype
-//      * @type {ShapeAttributes}
-//      * @default null
-//      */
-//     highlightAttributes: {
-//         get: function () {
-//             return this._highlightAttributes;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._highlightAttributes = value;
-//         }
-//     },
+    /**
+     * The attributes used when this shape's highlighted flag is true. If null and the
+     * highlighted flag is true, this shape's normal attributes are used. If they, too, are null, this
+     * shape is not drawn.
+     * @memberof SurfaceShape.prototype
+     * @type {ShapeAttributes}
+     * @default null
+     */
+    highlightAttributes: {
+        get: function () {
+            return this._highlightAttributes;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._highlightAttributes = value;
+        }
+    },
 
-//     /**
-//      * Indicates whether this shape displays with its highlight attributes rather than its normal attributes.
-//      * @memberof SurfaceShape.prototype
-//      * @type {Boolean}
-//      * @default false
-//      */
-//     highlighted: {
-//         get: function () {
-//             return this._highlighted;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._highlighted = value;
-//         }
-//     },
+    /**
+     * Indicates whether this shape displays with its highlight attributes rather than its normal attributes.
+     * @memberof SurfaceShape.prototype
+     * @type {Boolean}
+     * @default false
+     */
+    highlighted: {
+        get: function () {
+            return this._highlighted;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._highlighted = value;
+        }
+    },
 
-//     /**
-//      * Indicates whether this shape is drawn.
-//      * @memberof SurfaceShape.prototype
-//      * @type {Boolean}
-//      * @default true
-//      */
-//     enabled: {
-//         get: function () {
-//             return this._enabled;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._enabled = value;
-//         }
-//     },
+    /**
+     * Indicates whether this shape is drawn.
+     * @memberof SurfaceShape.prototype
+     * @type {Boolean}
+     * @default true
+     */
+    enabled: {
+        get: function () {
+            return this._enabled;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._enabled = value;
+        }
+    },
 
-//     /**
-//      * The path type to used to interpolate between locations on this shape. Recognized values are:
-//      * <ul>
-//      * <li>WorldWind.GREAT_CIRCLE</li>
-//      * <li>WorldWind.RHUMB_LINE</li>
-//      * <li>WorldWind.LINEAR</li>
-//      * </ul>
-//      * @memberof SurfaceShape.prototype
-//      * @type {String}
-//      * @default WorldWind.GREAT_CIRCLE
-//      */
-//     pathType: {
-//         get: function () {
-//             return this._pathType;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._pathType = value;
-//         }
-//     },
+    /**
+     * The path type to used to interpolate between locations on this shape. Recognized values are:
+     * <ul>
+     * <li>WorldWind.GREAT_CIRCLE</li>
+     * <li>WorldWind.RHUMB_LINE</li>
+     * <li>WorldWind.LINEAR</li>
+     * </ul>
+     * @memberof SurfaceShape.prototype
+     * @type {String}
+     * @default WorldWind.GREAT_CIRCLE
+     */
+    pathType: {
+        get: function () {
+            return this._pathType;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._pathType = value;
+        }
+    },
 
-//     /**
-//      * The maximum number of intervals an edge will be broken into. This is the number of intervals that an
-//      * edge that spans to opposite side of the globe would be broken into. This is strictly an upper bound
-//      * and the number of edge intervals may be lower if this resolution is not needed.
-//      * @memberof SurfaceShape.prototype
-//      * @type {Number}
-//      * @default SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS
-//      */
-//     maximumNumEdgeIntervals: {
-//         get: function () {
-//             return this._maximumNumEdgeIntervals;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._maximumNumEdgeIntervals = value;
-//         }
-//     },
+    /**
+     * The maximum number of intervals an edge will be broken into. This is the number of intervals that an
+     * edge that spans to opposite side of the globe would be broken into. This is strictly an upper bound
+     * and the number of edge intervals may be lower if this resolution is not needed.
+     * @memberof SurfaceShape.prototype
+     * @type {Number}
+     * @default SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS
+     */
+    maximumNumEdgeIntervals: {
+        get: function () {
+            return this._maximumNumEdgeIntervals;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._maximumNumEdgeIntervals = value;
+        }
+    },
 
-//     /**
-//      * A dimensionless number that controls throttling of edge traversal near the poles where edges need to be
-//      * sampled more closely together.
-//      * A value of 0 indicates that no polar throttling is to be performed.
-//      * @memberof SurfaceShape.prototype
-//      * @type {Number}
-//      * @default SurfaceShape.DEFAULT_POLAR_THROTTLE
-//      */
-//     polarThrottle: {
-//         get: function () {
-//             return this._polarThrottle;
-//         },
-//         set: function (value) {
-//             this.stateKeyInvalid = true;
-//             this._polarThrottle = value;
-//         }
-//     },
+    /**
+     * A dimensionless number that controls throttling of edge traversal near the poles where edges need to be
+     * sampled more closely together.
+     * A value of 0 indicates that no polar throttling is to be performed.
+     * @memberof SurfaceShape.prototype
+     * @type {Number}
+     * @default SurfaceShape.DEFAULT_POLAR_THROTTLE
+     */
+    polarThrottle: {
+        get: function () {
+            return this._polarThrottle;
+        },
+        set: function (value) {
+            this.stateKeyInvalid = true;
+            this._polarThrottle = value;
+        }
+    },
 
-//     /**
-//      * Defines the extent of the shape in latitude and longitude.
-//      * This sector only has valid data once the boundary is defined. Prior to this, it is null.
-//      * @memberof SurfaceShape.prototype
-//      * @type {Sector}
-//      */
-//     sector: {
-//         get: function () {
-//             return this._sector;
-//         }
-//     }
-// });
-
-// SurfaceShape.staticStateKey = function (shape) {
-//     shape.stateKeyInvalid = false;
-
-//     if (shape.highlighted) {
-//         if (!shape._highlightAttributes) {
-//             if (!shape._attributes) {
-//                 shape._attributesStateKey = null;
-//             } else {
-//                 shape._attributesStateKey = shape._attributes.stateKey;
-//             }
-//         } else {
-//             shape._attributesStateKey = shape._highlightAttributes.stateKey;
-//         }
-//     } else {
-//         if (!shape._attributes) {
-//             shape._attributesStateKey = null;
-//         } else {
-//             shape._attributesStateKey = shape._attributes.stateKey;
-//         }
-//     }
-
-//     return "dn " + shape.displayName +
-//         " at " + (!shape._attributesStateKey ? "null" : shape._attributesStateKey) +
-//         " hi " + shape.highlighted +
-//         " en " + shape.enabled +
-//         " pt " + shape.pathType +
-//         " ne " + shape.maximumNumEdgeIntervals +
-//         " po " + shape.polarThrottle +
-//         " se " + "[" +
-//         shape.sector.minLatitude + "," +
-//         shape.sector.maxLatitude + "," +
-//         shape.sector.minLongitude + "," +
-//         shape.sector.maxLongitude +
-//         "]";
-// };
-
-SurfaceShape.prototype.sector = {
-    get: function () {
-        return this._sector;
+    /**
+     * Defines the extent of the shape in latitude and longitude.
+     * This sector only has valid data once the boundary is defined. Prior to this, it is null.
+     * @memberof SurfaceShape.prototype
+     * @type {Sector}
+     */
+    sector: {
+        get: function () {
+            return this._sector;
+        }
     }
+});
+
+SurfaceShape.staticStateKey = function (shape) {
+    shape.stateKeyInvalid = false;
+
+    if (shape.highlighted) {
+        if (!shape._highlightAttributes) {
+            if (!shape._attributes) {
+                shape._attributesStateKey = null;
+            } else {
+                shape._attributesStateKey = shape._attributes.stateKey;
+            }
+        } else {
+            shape._attributesStateKey = shape._highlightAttributes.stateKey;
+        }
+    } else {
+        if (!shape._attributes) {
+            shape._attributesStateKey = null;
+        } else {
+            shape._attributesStateKey = shape._attributes.stateKey;
+        }
+    }
+
+    return "dn " + shape.displayName +
+        " at " + (!shape._attributesStateKey ? "null" : shape._attributesStateKey) +
+        " hi " + shape.highlighted +
+        " en " + shape.enabled +
+        " pt " + shape.pathType +
+        " ne " + shape.maximumNumEdgeIntervals +
+        " po " + shape.polarThrottle +
+        " se " + "[" +
+        shape.sector.minLatitude + "," +
+        shape.sector.maxLatitude + "," +
+        shape.sector.minLongitude + "," +
+        shape.sector.maxLongitude +
+        "]";
 };
 
 SurfaceShape.prototype.computeStateKey = function () {
@@ -895,4 +877,4 @@ SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS = 128;
  */
 SurfaceShape.DEFAULT_POLAR_THROTTLE = 10;
 
-// export default SurfaceShape;
+WorldWind.SurfaceShape = SurfaceShape;

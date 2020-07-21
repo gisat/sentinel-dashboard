@@ -1,5 +1,5 @@
-import './worldwind/www-overrides/SurfaceShape';
 import './worldwind/www-overrides/SurfaceShapeTileBuilder';
+import './worldwind/www-overrides/SurfaceShape';
 import './worldwind/www-overrides/SurfaceShapeTile';
 import './worldwind/www-overrides/TiledImageLayer';
 
