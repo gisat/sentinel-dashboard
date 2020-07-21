@@ -1,7 +1,6 @@
 import moment from 'moment';
 import Product from './Product';
 import Query from './Query';
-import {xml2js} from 'xml-js';
 
 const getProductsInTime = (products, startDate, endDate) => {
     const startDateMoment = moment.utc(startDate);
@@ -10,14 +9,14 @@ const getProductsInTime = (products, startDate, endDate) => {
     return products.filter((product) => {
         const metadata = product.metadata();
         const beginpositionDate = metadata.date.find((d) => {
-            return d._attributes.name === 'beginposition'
+            return d.name === 'beginposition'
         })
-        const beginposition = beginpositionDate && beginpositionDate._text && moment.utc(beginpositionDate._text)
+        const beginposition = beginpositionDate && beginpositionDate.content && moment.utc(beginpositionDate.content)
 
         const endpositionDate = metadata.date.find((d) => {
-            return d._attributes.name === 'endposition'
+            return d.name === 'endposition'
         })
-        const endposition = endpositionDate && endpositionDate._text && moment.utc(endpositionDate._text)
+        const endposition = endpositionDate && endpositionDate.content && moment.utc(endpositionDate.content)
 
         return beginposition.isBetween(startDateMoment, endDateMoment) || endposition.isBetween(startDateMoment, endDateMoment)
     });
@@ -27,14 +26,14 @@ export const productIntersectTime = (product, time) => {
     const timeMoment = moment(time);
     const metadata = product.metadata();
     const beginpositionDate = metadata.date.find((d) => {
-        return d._attributes.name === 'beginposition'
+        return d.name === 'beginposition'
     })
-    const beginposition = beginpositionDate && beginpositionDate._text && moment.utc(beginpositionDate._text)
+    const beginposition = beginpositionDate && beginpositionDate.content && moment.utc(beginpositionDate.content)
 
     const endpositionDate = metadata.date.find((d) => {
-            return d._attributes.name === 'endposition'
+            return d.name === 'endposition'
         })
-    const endposition = endpositionDate && endpositionDate._text && moment.utc(endpositionDate._text)
+    const endposition = endpositionDate && endpositionDate.content && moment.utc(endpositionDate.content    )
 
     return timeMoment.isBetween(beginposition, endposition);
 }
@@ -53,19 +52,19 @@ export const parseEntry = (entry) => {
             date:[...entry.date],
         };
 
-        parsedEntry.id = entry.id._text;
+        parsedEntry.id = entry.id;
 
         const str = {};
         entry.str.forEach(element => {
-            const name = element._attributes.name;
-            str[name] = element._text;
+            const name = element.name;
+            str[name] = element;
         });
         parsedEntry.str = str;
 
         parsedEntry.link = entry.link.map(element => {
             return {
-                rel: element._attributes.rel,
-                href: element._attributes.href
+                rel: element.rel,
+                href: element.href
             };
         });
         return parsedEntry;
@@ -299,18 +298,12 @@ export default class Products {
                 }
             });
 
-            const atomFeed = await response.text();
-
-            
-            const root = xml2js(atomFeed, {compact: true});
-            const feed = root.feed;
-            if(feed.entry && typeof feed.entry.length === 'undefined') {
-                feed.entry = [feed.entry];
-            }
+            const res = await response.json();
+            const feed = res.feed;
 
             // Here it is necessary to decide whether there are more results.
-            const totalResults = Number(feed['opensearch:totalResults']._text);
-            const itemsPerPage = Number(feed['opensearch:itemsPerPage']._text);
+            const totalResults = Number(feed['opensearch:totalResults']);
+            const itemsPerPage = Number(feed['opensearch:itemsPerPage']);
 
             feed.next = (startIndex + itemsPerPage) < totalResults;
             this._cache.set(url, JSON.stringify(feed));

@@ -35,8 +35,8 @@ export default class Query {
         const productsQuery = serializeProductType(this._products);
         toSerialize.push(platformNameQuery, productsQuery);
         const queryValue = toSerialize.join('AND');
-
-        return `?q=${encodeURIComponent(queryValue)}&rows=100&start=${this._startIndex}&orderby=${encodeURIComponent('beginposition desc')}`;
+        const format = `format=json`;
+        return `?q=${encodeURIComponent(queryValue)}&rows=100&start=${this._startIndex}&orderby=${encodeURIComponent('beginposition desc')}&${format}`;
     }
 }
 

@@ -18,7 +18,7 @@ export default class Product {
         this._entry = entry;
 
         // Renderable related information
-        this._footprint = entry.str && entry.str.footprint && entry.str.footprint || null;
+        this._footprint = entry.str && entry.str.footprint && entry.str.footprint && entry.str.footprint.content || null;
         const icons = entry.link && entry.link.length > 0 &&
             entry.link.filter(link => link.rel && link.rel === 'icon') || [];
         const iconUrl = icons.length > 0 && icons[0].href || null;

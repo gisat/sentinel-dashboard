@@ -58,7 +58,7 @@ const SearchToolbarPresentation = (props) => {
                     Previous
                 </Button>
                 <div className={'title'}>
-                  {activeProduct.title._text}
+                  {activeProduct.title}
                 </div>
                 <Button 
                   ghost

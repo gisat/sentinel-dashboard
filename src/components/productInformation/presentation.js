@@ -31,7 +31,7 @@ const Heading = ({product, text, isOnline}) => {
 
 const getDataList = (data) => {
     return data.map((i, index) => {
-        return <FormGroup title={i._attributes.name} value={i._text} id={`${index}_${i._attributes.name}`} readOnly={true} key={`${index}_${i._attributes.name}`}/>
+        return <FormGroup title={i.name} value={i.content} id={`${index}_${i.name}`} readOnly={true} key={`${index}_${i.name}`}/>
     });
 };
 
@@ -45,18 +45,18 @@ const ProductInformation = ({product, heading, online}) => {
     const intList = int ? getDataList(int) : null;
 
     //str
-    const strList = str ? Object.entries(str).map(([title, value], index) => <FormGroup title={title} value={value} id={`${index}_${title}`} key={`${index}_${title}`} readOnly={true}/>) : null;
+    const strList = str ? Object.entries(str).map(([title, value], index) => <FormGroup title={title} value={value.content} id={`${index}_${title}`} key={`${index}_${title}`} readOnly={true}/>) : null;
 
     //summary
-    const summaryItem = summary && summary._text ? <FormGroup title={'Summary'} value={summary._text} id={`summary`} readOnly={true}/> : null;
+    const summaryItem = summary && summary.content ? <FormGroup title={'Summary'} value={summary.content} id={`summary`} readOnly={true}/> : null;
 
     //title
-    const titleItem = title && title._text ? <FormGroup title={'Title'} value={title._text} id={`title`} readOnly={true}/> : null;
+    const titleItem = title && title.content ? <FormGroup title={'Title'} value={title.content} id={`title`} readOnly={true}/> : null;
 
     return (
         <div className={'product-info'}>
             <h1>
-                {heading ? heading : <Heading text={`${str.platformname} - ${str.producttype}`} product={product} isOnline={online}/>}
+                {heading ? heading : <Heading text={`${str.platformname.content} - ${str.producttype.content}`} product={product} isOnline={online}/>}
             </h1>
             <Form className={'ptr-product-info'}>
                 <section>

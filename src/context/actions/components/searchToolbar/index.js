@@ -51,14 +51,14 @@ export const clearComponent = () => {
 };
 
 const getResultBeginDate = (result) => {
-    const beginPositionIndex = result.date.findIndex((d) => d._attributes.name === 'beginposition');
-    const strDate = result.date[beginPositionIndex]._text;
+    const beginPositionIndex = result.date.findIndex((d) => d.name === 'beginposition');
+    const strDate = result.date[beginPositionIndex].content;
     return strDate ? new Date(strDate) : null;
 }
 
 const getResultEndDate = (result) => {
-    const beginPositionIndex = result.date.findIndex((d) => d._attributes.name === 'endposition');
-    const strDate = result.date[beginPositionIndex]._text;
+    const beginPositionIndex = result.date.findIndex((d) => d.name === 'endposition');
+    const strDate = result.date[beginPositionIndex].content;
     return strDate ? new Date(strDate) : null;
 }
 

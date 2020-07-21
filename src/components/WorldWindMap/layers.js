@@ -61,12 +61,12 @@ const multiRangeTopologyLayer = new MultiRangeLayer('multiRangeTopologyLayer', {
 
 
 export function getLayerKeySCIHubResult (layerConfig) {
-    return `${layerConfig.id._text}`;
+    return `${layerConfig.id}`;
 }
 
 export function getLayerKeyFromConfig (layerConfig) {
     //identify search layer
-    if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id._text) {
+    if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id) {
         return getLayerKeySCIHubResult(layerConfig.results[0]);
     } else if(layerConfig.satKey && layerConfig.layerKey) {
         return `${layerConfig.satKey}-${layerConfig.layerKey}`;   
@@ -78,7 +78,7 @@ export function getLayerKeyFromConfig (layerConfig) {
 export function getLayerIdFromConfig (layerConfig) {
     if(layerConfig.satKey && layerConfig.layerKey && layerConfig.beginTime && layerConfig.endTime) {
         return `${layerConfig.satKey}-${layerConfig.layerKey}-${layerConfig.beginTime.toString()}-${layerConfig.endTime.toString()}`;   
-    } else if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id._text) {
+    } else if(layerConfig && layerConfig.results && layerConfig.results[0] && layerConfig.results[0].id && layerConfig.results[0].id) {
         return getLayerKeySCIHubResult(layerConfig.results[0]);
     }else {
         return layerConfig.key;
@@ -276,7 +276,7 @@ const getSwathLayer = (layerConfig, wwd, time) => {
                     const products = renderables.map((r) => getProductByKey(r.userProperties.key));
                     const intersectedProduct = products.find((p) => productIntersectTime(p, time))
                     if(intersectedProduct) {
-                        const type = intersectedProduct.metadata().str.sensoroperationalmode;
+                        const type = intersectedProduct.metadata().str.sensoroperationalmode && intersectedProduct.metadata().str.sensoroperationalmode.content;
                         const color = getColorForSatType(layerConfig.satName, type); //get color by type
                         cacheLayer.setType(type);
                         cacheLayer.setColor(color);
