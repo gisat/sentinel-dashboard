@@ -19,6 +19,9 @@ const {
     Renderable,
     Sector,
     ShapeAttributes,
+    Vec3,
+    MemoryCache,
+    BoundingBox,
     // SurfaceShape,
 } = WorldWind;
 
@@ -119,7 +122,7 @@ SurfaceShape = function (attributes) {
     this._attributesStateKey = null;
 
     // Internal use only. Intentionally not documented.
-    this.isPrepared = false;
+    this.boundariesArePrepared = false;
 
     // Internal use only. Intentionally not documented.
     this.layer = null;
@@ -131,6 +134,23 @@ SurfaceShape = function (attributes) {
     this.contours = [];
     this.containsPole = false;
     this.crossesAntiMeridian = false;
+
+    /**
+     * Indicates how long to use terrain-specific shape data before regenerating it, in milliseconds. A value
+     * of zero specifies that shape data should be regenerated every frame. While this causes the shape to
+     * adapt more frequently to the terrain, it decreases performance.
+     * @type {Number}
+     * @default 2000 (milliseconds)
+     */
+    this.expirationInterval = 2000;
+
+    // Internal use only. Intentionally not documented.
+    // Holds the per-globe data
+    this.shapeDataCache = new MemoryCache(3, 2);
+
+    // Internal use only. Intentionally not documented.
+    // The shape-data-cache data that is for the currently active globe.
+    this.currentData = null;
 };
 
 SurfaceShape.prototype = Object.create(Renderable.prototype);
@@ -290,6 +310,7 @@ Object.defineProperties(SurfaceShape.prototype, {
         },
         set: function (value) {
             this.stateKeyInvalid = true;
+            this.resetBoundaries();
             this._pathType = value;
         }
     },
@@ -308,6 +329,7 @@ Object.defineProperties(SurfaceShape.prototype, {
         },
         set: function (value) {
             this.stateKeyInvalid = true;
+            this.resetBoundaries();
             this._maximumNumEdgeIntervals = value;
         }
     },
@@ -326,6 +348,7 @@ Object.defineProperties(SurfaceShape.prototype, {
         },
         set: function (value) {
             this.stateKeyInvalid = true;
+            this.resetBoundaries();
             this._polarThrottle = value;
         }
     },
@@ -405,8 +428,66 @@ SurfaceShape.prototype.computeBoundaries = function (globe) {
         Logger.logMessage(Logger.LEVEL_SEVERE, "SurfaceShape", "computeBoundaries", "abstractInvocation"));
 };
 
-// Internal function. Intentionally not documented.
-SurfaceShape.prototype.render = function (dc) {
+
+// Internal. Intentionally not documented.
+SurfaceShape.prototype.intersectsFrustum = function (dc) {
+
+    if (this.currentData && this.currentData.extent) {
+        if (dc.pickingMode) {
+            return this.currentData.extent.intersectsFrustum(dc.pickFrustum);
+        } else {
+            return this.currentData.extent.intersectsFrustum(dc.frustumInModelCoordinates);
+        }
+    } else {
+        return true;
+    }
+};
+
+/**
+ * Indicates whether a specified shape data object is current. Subclasses may override this method to add
+ * criteria indicating whether the shape data object is current, but must also call this method on this base
+ * class. Applications do not call this method.
+ * @param {DrawContext} dc The current draw context.
+ * @param {Object} shapeData The object to validate.
+ * @returns {Boolean} true if the object is current, otherwise false.
+ * @protected
+ */
+SurfaceShape.prototype.isShapeDataCurrent = function (dc, shapeData) {
+    return shapeData.verticalExaggeration === dc.verticalExaggeration
+        && shapeData.expiryTime > Date.now();
+};
+
+/**
+ * Creates a new shape data object for the current globe state. Subclasses may override this method to
+ * modify the shape data object that this method creates, but must also call this method on this base class.
+ * Applications do not call this method.
+ * @returns {Object} The shape data object.
+ * @protected
+ */
+SurfaceShape.prototype.createShapeDataObject = function () {
+    return {};
+};
+
+// Intentionally not documented.
+SurfaceShape.prototype.resetExpiration = function (shapeData) {
+    // The random addition in the line below prevents all shapes from regenerating during the same frame.
+    shapeData.expiryTime = Date.now() + this.expirationInterval + 1e3 * Math.random();
+};
+
+// Internal. Intentionally not documented.
+SurfaceShape.prototype.establishCurrentData = function (dc) {
+    this.currentData = this.shapeDataCache.entryForKey(dc.globeStateKey);
+    if (!this.currentData) {
+        this.currentData = this.createShapeDataObject();
+        this.resetExpiration(this.currentData);
+        this.shapeDataCache.putEntry(dc.globeStateKey, this.currentData, 1);
+    }
+
+    this.currentData.isExpired = !this.isShapeDataCurrent(dc, this.currentData);
+};
+
+ // Internal function. Intentionally not documented.
+ SurfaceShape.prototype.render = function (dc) {
     if (!this.enabled) {
         return;
     }
@@ -415,8 +496,22 @@ SurfaceShape.prototype.render = function (dc) {
 
     this.prepareBoundaries(dc);
 
+    this.establishCurrentData(dc);
+
+    if (this.currentData.isExpired || !this.currentData.extent) {
+        this.computeExtent(dc);
+        this.currentData.verticalExaggeration = dc.verticalExaggeration;
+        this.resetExpiration(this.currentData);
+    }
+
+    // Use the last computed extent to see if this shape is out of view.
+    if (this.currentData && this.currentData.extent && !this.intersectsFrustum(dc)) {
+        return;
+    }
+
     dc.surfaceShapeTileBuilder.insertSurfaceShape(this);
 };
+
 
 // Internal function. Intentionally not documented.
 SurfaceShape.prototype.interpolateLocations = function (locations) {
@@ -518,13 +613,10 @@ SurfaceShape.prototype.throttledStep = function (dt, location) {
 
 // Internal function. Intentionally not documented.
 SurfaceShape.prototype.prepareBoundaries = function (dc) {
-    if (this.isPrepared) {
+    if (this.boundariesArePrepared) {
         return;
     }
 
-    // Some shapes generate boundaries, such as ellipses and sectors;
-    // others don't, such as polylines and polygons.
-    // Handle the latter below.
     if (!this._boundaries) {
         this.computeBoundaries(dc);
     }
@@ -542,7 +634,13 @@ SurfaceShape.prototype.prepareBoundaries = function (dc) {
 
     this.prepareSectors();
 
-    this.isPrepared = true;
+    this.boundariesArePrepared = true;
+};
+
+// Internal. Resets boundaries for SurfaceShape recomputing.
+SurfaceShape.prototype.resetBoundaries = function () {
+    this.boundariesArePrepared = false;
+    this.shapeDataCache.clear(false);
 };
 
 //Internal. Formats the boundaries of a surface shape to be a multi dimensional array
@@ -607,6 +705,186 @@ SurfaceShape.prototype.computeSectors = function (dc) {
 
     return this._sectors;
 };
+
+
+/**
+ * Computes the extent for the shape based on its sectors.
+ *
+ * @param {DrawContext} dc The drawing context containing a globe.
+ *
+ * @return {BoundingBox} The extent for the shape.
+ */
+SurfaceShape.prototype.computeExtent = function (dc) {
+
+    if (!this._sectors || this._sectors.length === 0) {
+        return null;
+    }
+
+    if (!this.currentData) {
+        return null;
+    }
+
+    if (!this.currentData.extent) {
+        this.currentData.extent = new BoundingBox();
+    }
+
+
+    var boxPoints;
+    // This surface shape does not cross the international dateline, and therefore has a single bounding sector.
+    // Return the box which contains that sector.
+    if (this._sectors.length === 1) {
+        boxPoints = this._sectors[0].computeBoundingPoints(dc.globe, dc.verticalExaggeration);
+        this.currentData.extent.setToVec3Points(boxPoints);
+    }
+    // This surface crosses the international dateline, and its bounding sectors are split along the dateline.
+    // Return a box which contains the corners of the boxes bounding each sector.
+    else {
+        var boxCorners = [];
+
+        for (var i = 0; i < this._sectors.length; i++) {
+            boxPoints = this._sectors[i].computeBoundingPoints(dc.globe, dc.verticalExaggeration);
+            var box = new BoundingBox();
+            box.setToVec3Points(boxPoints);
+            var corners = box.getCorners();
+            for (var j = 0; j < corners.length; j++) {
+                boxCorners.push(corners[j]);
+            }
+        }
+        this.currentData.extent.setToVec3Points(boxCorners);
+    }
+
+    return this.currentData.extent;
+
+};
+
+ /**
+ * Computes a new set of locations translated from a specified location to a new location for a shape.
+ *
+ * @param {Globe} globe The globe on which to compute a new set of locations.
+ * @param {Location} oldLocation The original reference location.
+ * @param {Location} newLocation The new reference location.
+ * @param {Location[]} locations The locations to translate.
+ *
+ * @return {Location[]} The translated locations.
+ */
+SurfaceShape.prototype.computeShiftedLocations = function(globe, oldLocation, newLocation, locations) {
+    var newLocations = [];
+    var result = new Vec3(0, 0, 0);
+    var newPos = new WorldWind.Position(0, 0, 0);
+
+    var oldPoint = globe.computePointFromLocation(oldLocation.latitude, oldLocation.longitude,
+        new Vec3(0, 0, 0));
+    var newPoint = globe.computePointFromLocation(newLocation.latitude, newLocation.longitude,
+        new Vec3(0, 0, 0));
+
+    if(globe.is2D()){
+        var delta = newPoint.subtract(oldPoint);
+
+        for (var i = 0, len = locations.length; i < len; i++) {
+            globe.computePointFromLocation(locations[i].latitude, locations[i].longitude, result);
+            result.add(delta);
+            globe.computePositionFromPoint(result[0], result[1], result[2], newPos);
+            newLocations.push(new Location(newPos.latitude, newPos.longitude));
+        }
+    } else {
+        // Euler method
+
+        // var xVecOld = new Vec3(0, oldPoint[1], oldPoint[2]);
+        // var yVecOld =  new Vec3(oldPoint[0], 0, oldPoint[2]);
+        // var zVecOld =  new Vec3(oldPoint[0], oldPoint[1], 0);
+        // var xVecNew = new Vec3(0, newPoint[1], newPoint[2]);
+        // var yVecNew =  new Vec3(newPoint[0], 0, newPoint[2]);
+        // var zVecNew =  new Vec3(newPoint[0], newPoint[1], 0);
+        //
+        //
+        // var alpha = Math.acos(xVecOld.dot(xVecNew) / (xVecOld.magnitude() * xVecNew.magnitude()));
+        // var beta = Math.acos(yVecOld.dot(yVecNew) / (yVecOld.magnitude() * yVecNew.magnitude()));
+        // var gama = Math.acos(zVecOld.dot(zVecNew) / (zVecOld.magnitude() * zVecNew.magnitude()));
+        //
+        // var alpha = Math.atan2()
+        //
+        // var crossX = xVecOld.cross(xVecNew);
+        // var crossY = yVecOld.cross(yVecNew);
+        // var crossZ = zVecOld.cross(zVecNew);
+        //
+        // if(new Vec3(1, 0, 0).dot(crossX) < 0){
+        //      alpha = -alpha;
+        // }
+        //
+        // if(new Vec3(0, 1, 0).dot(crossY) < 0){
+        //     beta = -beta;
+        // }
+        //
+        // if(new Vec3(0, 0, 1).dot(crossZ) < 0){
+        //     gama = -gama;
+        // }
+        //
+        // for (var i = 0, len = locations.length; i < len; i++) {
+        //     globe.computePointFromLocation(locations[i].latitude, locations[i].longitude, result);
+        //     var newX = result[0] * Math.cos(beta) * Math.cos(gama) +
+        //                result[1] * (Math.cos(beta) * (-Math.sin(gama))) +
+        //                result[2] * Math.sin(beta);
+        //
+        //     var newY = result[0] * ((-Math.sin(alpha)) * (-Math.sin(beta)) * (Math.cos(gama)) + Math.cos(alpha) * Math.sin(gama)) +
+        //                result[1] * ( (-Math.sin(alpha)) * (-Math.sin(beta)) * (-Math.sin(gama)) + Math.cos(alpha) * Math.cos(gama) ) +
+        //                result[2] * Math.sin(alpha) * Math.cos(beta);
+        //
+        //     var newZ = result[0] * (Math.cos(alpha) * (-Math.sin(beta)) * Math.cos(gama) + Math.sin(alpha) * Math.sin(gama)) +
+        //                result[1] * (Math.cos(alpha) * (-Math.sin(beta)) * (-Math.sin(gama)) + Math.sin(alpha) * Math.cos(gama)) +
+        //                result[2] * Math.cos(alpha) * Math.cos(beta);
+        //
+        //     globe.computePositionFromPoint(newX, newY, newZ, newPos);
+        //     newLocations.push(new Location(newPos.latitude, newPos.longitude));
+        // }
+
+        var delta_lat = newLocation.latitude - oldLocation.latitude;
+        var delta_long = newLocation.longitude - oldLocation.longitude;
+        var max = -90;
+        var min = 90;
+
+        for (var i = 0, len = locations.length; i < len; i++) {
+            var new_lat = locations[i].latitude + delta_lat;
+            var new_long = locations[i].longitude + delta_long;
+
+
+            if (new_lat > 90) {
+                new_lat = 180 - new_lat;
+                new_long += 180;
+            } else if (new_lat < -90) {
+                new_lat = -180 - new_lat;
+                new_long += 180;
+            }
+
+            if (new_long < -180) {
+                new_long += 360;
+            } else if (new_long > 180) {
+                new_long -= 360;
+            }
+
+
+            if (new_lat > max) {
+                max = new_lat;
+            }
+
+            if (new_lat < min) {
+                min = new_lat;
+            }
+
+            newLocations.push(new Location(new_lat, new_long));
+        }
+
+        if (max > 90) {
+            var delta = max - 90;
+            for (var i = 0, len = newLocations.length; i < len; i++) {
+                newLocations[i].latitude -= delta;
+            }
+        }
+    }
+
+    return newLocations;
+};
+
+
 
 // Internal use only. Intentionally not documented.
 SurfaceShape.prototype.prepareSectors = function () {
@@ -878,3 +1156,5 @@ SurfaceShape.DEFAULT_NUM_EDGE_INTERVALS = 128;
 SurfaceShape.DEFAULT_POLAR_THROTTLE = 10;
 
 WorldWind.SurfaceShape = SurfaceShape;
+
+export default SurfaceShape;
