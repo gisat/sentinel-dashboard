@@ -60,6 +60,53 @@ SurfaceShapeTileBuilder.prototype.addTile = function (dc, tile) {
     this.surfaceShapeTiles.push(tile);
 };
 
+
+/**
+ * Perform the rendering of any accumulated surface shapes by building the surface shape tiles that contain these
+ * shapes and then rendering those tiles.
+ *
+ * @param {DrawContext} dc The drawing context.
+ */
+SurfaceShapeTileBuilder.prototype.doRender = function (dc) {
+    if (dc.pickingMode) {
+        // Picking rendering strategy:
+        //  1) save all tiles created prior to picking,
+        //  2) construct and render new tiles with pick-based contents (colored with pick IDs),
+        //  3) restore all prior tiles.
+        // This has a big potential win for normal rendering, since there is a lot of coherence
+        // from frame to frame if no picking is occurring.
+        for (var idx = 0, len = this.surfaceShapes.length; idx < len; idx += 1) {
+            this.surfaceShapes[idx].resetPickColor();
+        }
+
+        SurfaceShapeTileBuilder.pickSequence += 1;
+
+        var savedTiles = this.surfaceShapeTiles;
+        var savedTopLevelTiles = this.topLevelTiles;
+
+        this.surfaceShapeTiles = [];
+        this.topLevelTiles = [];
+
+        this.buildTiles(dc);
+
+        if (dc.deepPicking) {
+            // Normally, we render all shapes together in one tile (or a small number, but this detail
+            // doesn't matter). For deep picking, we need to render each shape individually.
+            this.doDeepPickingRender(dc);
+
+        } else {
+            dc.surfaceTileRenderer.renderTiles(dc, this.surfaceShapeTiles, 1);
+        }
+
+        this.surfaceShapeTiles = savedTiles;
+        this.topLevelTiles = savedTopLevelTiles;
+    } else {
+        this.buildTiles(dc);
+
+        dc.surfaceTileRenderer.renderTiles(dc, this.surfaceShapeTiles, 1);
+    }
+};
+
 SurfaceShapeTileBuilder.prototype.doDeepPickingRender = function (dc) {
     var idxTile, lenTiles, idxShape, lenShapes, idxPick, lenPicks, po, shape, tile;
 
