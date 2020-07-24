@@ -47,7 +47,6 @@ SurfaceShapeTileBuilder.prototype.addTile = function (dc, tile) {
 
     if (tile.needsUpdate(dc)) {
 
-        //debugger;
         const fbo = SurfaceShapeTileBuilder.getFbo(dc);
         if (!SurfaceShapeTileBuilder.__fboBound__) {
             fbo.bind(dc.currentGlContext, this.tileWidth, this.tileHeight);

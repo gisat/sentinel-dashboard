@@ -43,7 +43,7 @@ export const productAttributes = () => {
 export const getBoundaries = (product) => {
     if(product && product.boundaries) {
         //close polygon by first point
-        return [[...product.boundaries[0], product.boundaries[0][0]]];
+        return product.boundaries;
     } else {
         return [];
     }

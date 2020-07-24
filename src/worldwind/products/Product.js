@@ -1,11 +1,11 @@
-import QuickLook from "./QuickLook";
 import WorldWind from 'webworldwind-esa';
+import QuickLook from "./QuickLook";
+import {parseEntry} from "./SciHubJSONParser";
 import TexturedSurfacePolygon from '../textured/TexturedSurfacePolygon';
 
 const {
     Color,
     ShapeAttributes,
-    Wkt
 } = WorldWind;
 
 export default class Product {
@@ -55,14 +55,8 @@ export default class Product {
             return Promise.resolve(null);
         }
 
-        let boundaries = [];
-        new Wkt(this._footprint).load((wkt, objects) => {
-            objects.forEach(object => {
-                object.shapes().forEach(shape => {
-                    boundaries = shape._boundaries;
-                });
-            });
-        });
+        const feature = parseEntry(this._entry)
+        let boundaries = feature.geometry[0];
         const renderable = new TexturedSurfacePolygon(boundaries, this.footprintAttributes());
         renderable.maximumNumEdgeIntervals = 2;
         renderable.polarThrottle = 1;
@@ -86,8 +80,9 @@ export default class Product {
         const shapeAttributes = new ShapeAttributes(null);
         shapeAttributes.drawOutline = true;
         shapeAttributes.drawInterior = true;
-        shapeAttributes.outlineColor = new Color(1, 1, 0, .5);
-        shapeAttributes.outlineWidth = 4;
+        shapeAttributes.outlineColor = new Color(1, 0, 0, 1);
+        shapeAttributes.interiorColor = new Color(1, 1, 0, 0.3);
+        shapeAttributes.outlineWidth = 1;
         return shapeAttributes;
     }
 }

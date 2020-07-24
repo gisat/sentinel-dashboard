@@ -292,7 +292,10 @@ export default class Products {
         }
 
         try {
-            const response = await this._fetch(url, {
+            //
+            // TODO - solenix proxy needs request without Authorization
+            //
+            const response = await window.fetch(url, {
                 headers: {
                     'Accept': 'application/json'
                 }

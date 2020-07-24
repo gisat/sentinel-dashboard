@@ -330,11 +330,7 @@ export default class TexturedSurfaceShape extends SurfaceShape {
 
             if (anglesMap[index]) {
                 //is corner
-                // side = this.nextSide(side, wo);
-                // FIXME
-                // hotfix for wrongly rotated sentinel footprints
-                // With hardcoded wo === 'CCW' S1 images are well rotated, but S3 images are still wrongly rotated
-                side = this.nextSide(side, 'CCW');
+                side = this.nextSide(side, wo);
 
                 var sideStart = locations[index];
                 var sideEnd = null;

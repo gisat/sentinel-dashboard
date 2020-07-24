@@ -1,12 +1,11 @@
 import SciHubProducts from '../../../../worldwind/products/Products';
-import {hubPassword, hubUsername} from "../../../../config";
+import {hubPassword, hubUsername, sciHubUrl} from "../../../../config";
 import types from '../../../types';
 import {setComponent} from '../../../actions';
 
 const searchCache = new window.Map();
 const csiRenderablesCache = new window.Map();
-
-const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials);
+const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials, sciHubUrl);
 
 function fetchWithCredentials (url, options = {}) {
     if (!options.headers) {

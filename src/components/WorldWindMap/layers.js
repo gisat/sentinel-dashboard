@@ -15,7 +15,7 @@ import {getPlansKeys} from '../../utils/acquisitionPlans';
 import {getBoundaries, productBounds} from '../../utils/product';
 import {getModel} from './satellitesModels';
 import SciHubProducts, {productIntersectTime} from '../../worldwind/products/Products';
-import {hubPassword, hubUsername} from "../../config";
+import {hubPassword, hubUsername, sciHubUrl} from "../../config";
 import { getSwathKey, getColorForSatType } from '../../utils/swath';
 
 window.WorldWind.configuration.baseUrl = `${window.location.origin}${window.location.pathname}`;
@@ -34,7 +34,7 @@ const {
 const csiRenderablesCache = new window.Map();
 const searchCache = new window.Map();
 const layersCache = new window.Map();
-const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials);
+const productsScihub = new SciHubProducts(csiRenderablesCache, searchCache, fetchWithCredentials, sciHubUrl);
 const defaultBackgroundLayer = new SentinelCloudlessLayer();
 const defaultStarfieldLayer = new StarFieldLayer('./images/stars.json');
 const defaultAtmosphereLayer = new AtmosphereLayer('./images/dnb_land_ocean_ice_2012.png');

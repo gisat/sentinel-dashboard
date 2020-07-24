@@ -15,7 +15,6 @@ const {
  * @returns {null}
  */
 DrawContext.prototype.resolvePick = function (pickableObject) {
-    debugger
     if (!(pickableObject.userObject instanceof SurfaceShape) && this.deepPicking && !this.regionPicking) {
         var color = this.readPickColor(this.pickPoint);
         if (!color) { // getPickColor returns null if the pick point selects the clear color

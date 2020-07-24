@@ -22,7 +22,8 @@
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
     "test": "react-app-rewired test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "proxy": "lcp --proxyUrl https://eoapps.solenix.ch/ --port 3031 --origin http://localhost:3000 --proxyPartial \"\" --credentials"
   },
   "eslintConfig": {
     "extends": "react-app"
@@ -43,6 +44,7 @@
     "@emotion/core": "^10.0.15",
     "@emotion/css": "^10.0.14",
     "@emotion/styled": "^10.0.15",
+    "local-cors-proxy": "^1.1.0",
     "lodash": "^4.17.15",
     "re-reselect": "^3.4.0",
     "react-app-rewired": "^2.1.3",
